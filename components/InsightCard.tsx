@@ -42,12 +42,12 @@ export function InsightCard({ insight, delay = 0 }: InsightCardProps) {
           </div>
 
           {/* Title */}
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+          <h2 className="text-xl sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
             {insight.title}
           </h2>
 
           {/* Excerpt */}
-          <p className="text-gray-600 dark:text-gray-400 mb-4 flex-grow line-clamp-3">
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 flex-grow line-clamp-3">
             {insight.excerpt}
           </p>
 
