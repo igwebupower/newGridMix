@@ -175,18 +175,43 @@ export default function Dashboard() {
         </div>
 
         {/* Solar Intraday Section */}
-        {todaySolarCurve && todaySolarCurve.length > 0 && (
-          <Card
-            title="☀️ Solar Generation Today"
-            subtitle="Live solar output curve with yesterday comparison"
-            delay={0.4}
-          >
+        <Card
+          title="☀️ Solar Generation Today"
+          subtitle={
+            solarData && solarData.generation_mw === 0
+              ? "🌙 Nighttime - No solar generation (see yesterday's curve for reference)"
+              : "Live solar output curve with yesterday comparison"
+          }
+          delay={0.4}
+        >
+          {todaySolarCurve && todaySolarCurve.length > 0 ? (
             <SolarIntradayChart
               todayData={todaySolarCurve}
               yesterdayData={yesterdaySolarCurve}
             />
-          </Card>
-        )}
+          ) : (
+            <div className="text-center py-12">
+              <div className="glass p-8 rounded-lg inline-block">
+                <svg
+                  className="w-16 h-16 text-yellow-500 mx-auto mb-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Loading solar data...
+                </p>
+              </div>
+            </div>
+          )}
+        </Card>
 
         {/* Interconnector Flows */}
         {gridData.interconnectors && gridData.interconnectors.length > 0 && (
