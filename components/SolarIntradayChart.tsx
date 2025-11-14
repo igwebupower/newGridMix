@@ -93,7 +93,7 @@ export function SolarIntradayChart({ todayData, yesterdayData }: SolarIntradayCh
           transition={{ delay: 0.1 }}
           className="glass p-4 rounded-lg text-center"
         >
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Today's Peak</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Today&apos;s Peak</p>
           <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
             {peak.peak_mw.toFixed(0)} MW
           </p>
