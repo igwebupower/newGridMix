@@ -71,6 +71,16 @@ export function Header({ lastUpdated }: HeaderProps) {
               >
                 Insights
               </Link>
+              <Link
+                href="/api/docs"
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  pathname?.startsWith('/api/docs')
+                    ? 'bg-green-500/10 text-green-600 dark:text-green-400'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                API
+              </Link>
             </nav>
           </div>
 
