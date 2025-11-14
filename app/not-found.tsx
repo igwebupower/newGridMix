@@ -126,7 +126,7 @@ export default function NotFound() {
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  While you're here, check out the current UK grid status
+                  While you&apos;re here, check out the current UK grid status
                 </h3>
               </div>
 
@@ -234,7 +234,7 @@ export default function NotFound() {
               className="glass p-6 rounded-xl border border-gray-200 dark:border-gray-700 text-center"
             >
               <p className="text-gray-600 dark:text-gray-400 mb-4">
-                Still can't find what you're looking for?
+                Still can&apos;t find what you&apos;re looking for?
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link
@@ -287,7 +287,7 @@ export default function NotFound() {
             className="mt-12 text-center"
           >
             <p className="text-sm text-gray-500 dark:text-gray-500 italic">
-              "This page has less power than a wind turbine on a calm day."
+              &quot;This page has less power than a wind turbine on a calm day.&quot;
             </p>
           </motion.div>
         </div>

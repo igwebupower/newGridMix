@@ -48,7 +48,9 @@ export interface HistoricalData {
   intensity: {
     forecast: number;
     actual: number;
+    index?: string;
   };
+  demand?: number;
 }
 
 export interface Stats {

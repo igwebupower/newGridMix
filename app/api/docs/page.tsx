@@ -873,7 +873,7 @@ func main() {
                 <a href="mailto:hello@gridmix.co.uk" className="font-semibold underline hover:text-blue-700 dark:hover:text-blue-300">
                   hello@gridmix.co.uk
                 </a>
-                {' '}and we'll work with you to find a solution.
+                {' '}and we&apos;ll work with you to find a solution.
               </p>
             </div>
           </div>
