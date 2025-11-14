@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { Header } from '@/components/Header';
+import { DashboardStructuredData, StructuredData } from '@/components/StructuredData';
 import { Card } from '@/components/Card';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import { LiveStatus } from '@/components/LiveStatus';
@@ -180,6 +181,9 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+      <DashboardStructuredData />
+      <StructuredData type="website" data={{}} />
+      <StructuredData type="organization" data={{}} />
       <Header lastUpdated={lastUpdated} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">

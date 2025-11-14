@@ -23,11 +23,11 @@ export default function InsightsPage() {
           className="text-center mb-16"
         >
           <h1 className="text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            Insights
+            UK Energy Insights & Analysis
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Deep dives into the UK energy grid, renewable technology, and the transition to net zero.
-            Explore how our electricity system works and where it&apos;s heading.
+            Expert analysis and deep dives into the UK energy grid, renewable technology, and the transition to net zero.
+            Explore how our electricity system works, understand carbon intensity trends, and discover where Britain&apos;s energy future is heading.
           </p>
         </motion.div>
 
