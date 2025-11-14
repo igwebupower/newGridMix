@@ -19,6 +19,9 @@ import {
   getCurrentSolarData,
   getTodaySolarCurve,
   getYesterdaySolarCurve,
+  getCurrentFrequency,
+  getCurrentSystemPrice,
+  calculateGridHealthScore,
   formatTimestamp,
 } from '@/lib/api';
 
@@ -90,11 +93,43 @@ export default function Dashboard() {
     }
   );
 
+  // Fetch frequency data
+  const { data: frequencyData } = useSWR(
+    'frequency',
+    getCurrentFrequency,
+    {
+      refreshInterval: 15000, // Refresh every 15 seconds (frequency updates rapidly)
+      revalidateOnFocus: true,
+    }
+  );
+
+  // Fetch system price
+  const { data: systemPrice } = useSWR(
+    'systemPrice',
+    getCurrentSystemPrice,
+    {
+      refreshInterval: 300000, // Refresh every 5 minutes
+    }
+  );
+
   useEffect(() => {
     if (gridData) {
       setLastUpdated(formatTimestamp(gridData.to));
     }
   }, [gridData]);
+
+  // Calculate derived values
+  const storageOutput = gridData?.generationmix.find(item => item.fuel === 'hydro')?.mw || 0;
+  const netImportExport = (gridData?.totalImports || 0) - (gridData?.totalExports || 0);
+
+  // Calculate grid health score
+  const gridHealth = gridData && stats && frequencyData
+    ? calculateGridHealthScore(
+        frequencyData.frequency,
+        gridData.intensity.actual || gridData.intensity.forecast,
+        stats.renewable_perc
+      )
+    : undefined;
 
   const isLoading = !gridData || !stats;
   const hasError = gridError || statsError;
@@ -153,6 +188,11 @@ export default function Dashboard() {
           stats={stats}
           intensity={gridData.intensity.actual || gridData.intensity.forecast}
           solarData={solarData}
+          frequencyData={frequencyData}
+          systemPrice={systemPrice}
+          gridHealth={gridHealth}
+          netImportExport={netImportExport}
+          storageOutput={storageOutput}
         />
 
         {/* Energy Mix Section */}

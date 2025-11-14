@@ -73,6 +73,27 @@ export interface SolarIntradayData {
   generation_mw: number;
 }
 
+export interface FrequencyData {
+  frequency: number;
+  datetime: string;
+  status: 'stable' | 'warning' | 'critical';
+}
+
+export interface SystemPriceData {
+  price: number;
+  datetime: string;
+}
+
+export interface GridHealthScore {
+  score: number;
+  grade: string;
+  factors: {
+    frequency: number;
+    carbon: number;
+    renewable: number;
+  };
+}
+
 // Map BMRS fuel types to our display types
 const fuelTypeMapping: Record<string, string> = {
   'BIOMASS': 'biomass',
@@ -621,4 +642,183 @@ export function getTodaysPeak(intradayData: SolarIntradayData[]): {
     peak_mw: peak.generation_mw,
     peak_time: formatTimestamp(peak.datetime),
   };
+}
+
+// ============================================
+// Grid Frequency and Advanced Metrics
+// ============================================
+
+// Fetch current grid frequency
+export async function getCurrentFrequency(): Promise<FrequencyData> {
+  try {
+    const response = await fetch(
+      `${BMRS_API_BASE}/datasets/FREQ?format=json`,
+      {
+        cache: 'no-store',
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch frequency data');
+    }
+
+    const data = await response.json();
+
+    if (!data.data || data.data.length === 0) {
+      return {
+        frequency: 50.0,
+        datetime: new Date().toISOString(),
+        status: 'stable',
+      };
+    }
+
+    // Get the most recent frequency reading
+    const latest = data.data[0];
+    const freq = latest.frequency;
+
+    // Determine status based on frequency deviation
+    let status: 'stable' | 'warning' | 'critical';
+    if (freq >= 49.8 && freq <= 50.2) {
+      status = 'stable';
+    } else if (freq >= 49.5 && freq <= 50.5) {
+      status = 'warning';
+    } else {
+      status = 'critical';
+    }
+
+    return {
+      frequency: freq,
+      datetime: latest.measurementTime,
+      status,
+    };
+  } catch (error) {
+    console.error('Error fetching frequency:', error);
+    return {
+      frequency: 50.0,
+      datetime: new Date().toISOString(),
+      status: 'stable',
+    };
+  }
+}
+
+// Calculate Grid Health Score (0-100)
+export function calculateGridHealthScore(
+  frequency: number,
+  carbonIntensity: number,
+  renewablePerc: number
+): GridHealthScore {
+  // Frequency score (0-40 points)
+  // Perfect: 50.00 Hz = 40 points
+  // Acceptable: 49.8-50.2 Hz = 30-40 points
+  // Warning: 49.5-50.5 Hz = 10-30 points
+  // Critical: outside = 0-10 points
+  const freqDeviation = Math.abs(frequency - 50.0);
+  let freqScore = 0;
+  if (freqDeviation <= 0.02) {
+    freqScore = 40;
+  } else if (freqDeviation <= 0.2) {
+    freqScore = 40 - (freqDeviation - 0.02) * 55.56; // Linear scale
+  } else if (freqDeviation <= 0.5) {
+    freqScore = 30 - (freqDeviation - 0.2) * 66.67;
+  } else {
+    freqScore = Math.max(0, 10 - freqDeviation * 2);
+  }
+
+  // Carbon score (0-30 points)
+  // Excellent: <100 gCO2/kWh = 30 points
+  // Good: 100-200 = 20-30 points
+  // Fair: 200-300 = 10-20 points
+  // Poor: >300 = 0-10 points
+  let carbonScore = 0;
+  if (carbonIntensity < 100) {
+    carbonScore = 30;
+  } else if (carbonIntensity < 200) {
+    carbonScore = 30 - ((carbonIntensity - 100) / 100) * 10;
+  } else if (carbonIntensity < 300) {
+    carbonScore = 20 - ((carbonIntensity - 200) / 100) * 10;
+  } else {
+    carbonScore = Math.max(0, 10 - ((carbonIntensity - 300) / 100) * 2);
+  }
+
+  // Renewable score (0-30 points)
+  // Excellent: >75% = 30 points
+  // Good: 50-75% = 20-30 points
+  // Fair: 25-50% = 10-20 points
+  // Poor: <25% = 0-10 points
+  let renewableScore = 0;
+  if (renewablePerc > 75) {
+    renewableScore = 30;
+  } else if (renewablePerc > 50) {
+    renewableScore = 20 + ((renewablePerc - 50) / 25) * 10;
+  } else if (renewablePerc > 25) {
+    renewableScore = 10 + ((renewablePerc - 25) / 25) * 10;
+  } else {
+    renewableScore = (renewablePerc / 25) * 10;
+  }
+
+  const totalScore = Math.round(freqScore + carbonScore + renewableScore);
+
+  // Determine grade
+  let grade = '';
+  if (totalScore >= 90) grade = 'A+';
+  else if (totalScore >= 85) grade = 'A';
+  else if (totalScore >= 80) grade = 'A-';
+  else if (totalScore >= 75) grade = 'B+';
+  else if (totalScore >= 70) grade = 'B';
+  else if (totalScore >= 65) grade = 'B-';
+  else if (totalScore >= 60) grade = 'C+';
+  else if (totalScore >= 55) grade = 'C';
+  else if (totalScore >= 50) grade = 'C-';
+  else if (totalScore >= 45) grade = 'D+';
+  else if (totalScore >= 40) grade = 'D';
+  else grade = 'F';
+
+  return {
+    score: totalScore,
+    grade,
+    factors: {
+      frequency: Math.round(freqScore),
+      carbon: Math.round(carbonScore),
+      renewable: Math.round(renewableScore),
+    },
+  };
+}
+
+// Fetch current system price (MIP - Market Index Price)
+export async function getCurrentSystemPrice(): Promise<SystemPriceData> {
+  try {
+    const response = await fetch(
+      `${BMRS_API_BASE}/datasets/MID?format=json`,
+      {
+        cache: 'no-store',
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch system price data');
+    }
+
+    const data = await response.json();
+
+    if (!data.data || data.data.length === 0) {
+      return {
+        price: 0,
+        datetime: new Date().toISOString(),
+      };
+    }
+
+    // Get the most recent price
+    const latest = data.data[0];
+
+    return {
+      price: latest.price || 0,
+      datetime: latest.settlementDate,
+    };
+  } catch (error) {
+    console.error('Error fetching system price:', error);
+    return {
+      price: 0,
+      datetime: new Date().toISOString(),
+    };
+  }
 }
