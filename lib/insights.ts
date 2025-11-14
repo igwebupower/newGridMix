@@ -1,0 +1,566 @@
+// Insights - Long-form content about UK energy grid and sustainability
+
+export interface Insight {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  date: string;
+  readTime: number; // minutes
+  category: 'grid-tech' | 'renewables' | 'policy' | 'analysis' | 'innovation';
+  tags: string[];
+  featured: boolean;
+}
+
+export const insights: Insight[] = [
+  {
+    id: '1',
+    slug: 'understanding-grid-frequency',
+    title: 'Understanding Grid Frequency: The Heartbeat of the National Grid',
+    excerpt: 'Grid frequency is one of the most critical metrics for power system stability. Learn why maintaining 50Hz is essential and what happens when frequency deviates.',
+    content: `
+# Understanding Grid Frequency: The Heartbeat of the National Grid
+
+Grid frequency is often called the "heartbeat" of the electricity grid, and for good reason. This seemingly simple number - 50 Hertz in the UK - represents a delicate balance between electricity generation and demand that must be maintained every second of every day.
+
+## What is Grid Frequency?
+
+Grid frequency measures how many times per second the alternating current (AC) in the power grid completes a full cycle. In the UK and most of Europe, this standard is 50Hz, meaning the current alternates direction 50 times per second. In North America, it's 60Hz.
+
+## Why 50Hz Matters
+
+The frequency must remain remarkably stable - ideally at exactly 50.00Hz. Even small deviations can cause problems:
+
+- **Above 50.2Hz**: Excess generation compared to demand. Can damage sensitive equipment and trigger protective systems.
+- **49.8-50.2Hz**: Normal operating range. Grid operators work to keep frequency within this band.
+- **Below 49.8Hz**: Insufficient generation. If uncorrected, can lead to cascading failures and blackouts.
+
+## How Frequency is Controlled
+
+National Grid ESO (Electricity System Operator) uses several mechanisms to maintain frequency:
+
+### 1. Inertia
+Traditional power stations with large rotating generators naturally resist frequency changes through rotational inertia. As renewables replace these stations, maintaining inertia becomes more challenging.
+
+### 2. Frequency Response Services
+Fast-acting reserves that can increase or decrease output within seconds:
+- **Dynamic Containment**: Responds within 1 second
+- **Dynamic Moderation**: Responds within 1 second to moderate changes
+- **Dynamic Regulation**: Responds within 1 second for continuous regulation
+
+### 3. Battery Storage
+Modern battery systems can respond in milliseconds, making them ideal for frequency regulation. The UK now has over 2GW of battery storage participating in frequency services.
+
+## The Renewable Energy Challenge
+
+Wind and solar generation don't provide natural inertia. As these sources grow, the grid requires:
+- More battery storage
+- Synchronous condensers (spinning machines that provide inertia without generating power)
+- Advanced control systems
+- Better demand forecasting
+
+## Real-Time Monitoring
+
+You can monitor the UK's grid frequency in real-time on our dashboard. Watch how it fluctuates throughout the day, particularly during:
+- **Morning ramp-up** (6-9 AM): Rapid demand increase
+- **TV pickup** events: Sudden demand spikes when millions make tea during ad breaks
+- **Evening peak** (5-8 PM): Maximum daily demand
+- **Night valley** (1-5 AM): Minimum demand
+
+## The Future
+
+As the UK moves toward net zero by 2050, frequency management will become more sophisticated. Innovations include:
+- Virtual synchronous machines
+- Grid-forming inverters
+- AI-powered predictive control
+- Vehicle-to-grid (V2G) technology
+
+Understanding grid frequency helps us appreciate the complex real-time balancing act that keeps our lights on. It's a testament to the skill of grid operators and the sophistication of modern power systems.
+
+*Next time you see the frequency on our dashboard, you'll know you're watching the pulse of the nation's energy system.*
+    `,
+    author: 'GridMix Insights',
+    date: '2024-11-14',
+    readTime: 5,
+    category: 'grid-tech',
+    tags: ['frequency', 'grid-stability', 'renewables', 'energy-storage'],
+    featured: true,
+  },
+  {
+    id: '2',
+    slug: 'solar-revolution-uk',
+    title: 'The Solar Revolution: How the UK Grid Handles Sunny Days',
+    excerpt: 'Solar capacity in the UK has grown from virtually nothing to over 16GW. Discover how the grid manages this variable renewable source and what records have been broken.',
+    content: `
+# The Solar Revolution: How the UK Grid Handles Sunny Days
+
+The UK isn't known for its sunshine, yet solar power has become a major contributor to our electricity mix. On sunny days, solar can provide over 30% of the nation's power - a remarkable achievement for a country at 51-55°N latitude.
+
+## The Growth Story
+
+- **2010**: ~100 MW of solar capacity
+- **2015**: 9 GW installed
+- **2020**: 13 GW installed
+- **2024**: Over 16 GW installed
+
+This exponential growth has transformed the grid's daily power curve.
+
+## The Duck Curve Comes to Britain
+
+Grid operators now contend with the "duck curve" - a graph of power demand over 24 hours that looks like a duck:
+- **Morning**: Demand rises as solar isn't yet strong
+- **Midday**: Demand dips as solar peaks (the duck's belly)
+- **Evening**: Steep ramp-up as solar fades but demand soars (the duck's neck)
+
+This creates operational challenges, particularly the evening ramp-up rate.
+
+## Record-Breaking Days
+
+Recent solar generation records:
+- **Peak power**: 10.5 GW (May 2024)
+- **Daily generation**: 150 GWh in a single day
+- **Peak percentage**: 34% of total demand
+- **Consecutive hours >5GW**: 8 hours (summer solstice)
+
+## Grid Integration Challenges
+
+### 1. Variability
+Cloud cover can reduce solar output by 70% in minutes. Grid operators must have reserves ready to compensate.
+
+### 2. Forecasting
+Modern solar forecasting uses:
+- Satellite imagery
+- Weather models
+- Machine learning
+- Cloud tracking cameras
+- Historical patterns
+
+Accuracy has improved to ±5% for next-day forecasts.
+
+### 3. Geographic Spread
+The UK's solar installations are concentrated in southern England, creating regional balancing challenges. Scotland may have excess wind while the South has excess solar.
+
+## The Night Time Challenge
+
+Solar's predictable absence at night means other sources must fill the gap:
+- **Nuclear**: Provides baseload (typically 15-20%)
+- **Gas**: Flexible peaking power
+- **Wind**: Variable but often stronger at night
+- **Imports**: From European neighbors
+- **Storage**: Increasingly important for time-shifting solar energy
+
+## Innovation in Solar Technology
+
+### Bifacial Panels
+Capture sunlight from both sides, improving efficiency by 10-30%.
+
+### Floating Solar
+Several UK projects install panels on reservoirs, combining generation with reduced evaporation.
+
+### Agrivoltaics
+Combining solar panels with farming underneath, maximizing land use.
+
+### Building-Integrated PV
+Solar integrated into building materials - windows, roof tiles, facades.
+
+## The Future
+
+By 2030, the UK aims for:
+- 40+ GW of solar capacity
+- Better energy storage to capture midday solar
+- Smart EV charging to use solar power
+- Hydrogen production from excess solar
+
+## What This Means for You
+
+Our dashboard shows real-time solar generation and compares today's curve to yesterday's. Watch for:
+- **Sunny days**: Solar often exceeds 8 GW by noon
+- **Cloudy days**: Rapid fluctuations as clouds pass
+- **Seasonal patterns**: Summer peaks 5x winter generation
+- **Capacity factor**: The % of maximum potential currently achieved
+
+Solar has gone from niche to mainstream in just 15 years. As storage improves and costs continue falling, solar will play an even larger role in our clean energy future.
+
+*Check our dashboard's solar intraday chart to see today's generation curve - you're watching the UK's solar revolution in real-time.*
+    `,
+    author: 'GridMix Insights',
+    date: '2024-11-13',
+    readTime: 6,
+    category: 'renewables',
+    tags: ['solar', 'renewables', 'duck-curve', 'energy-transition'],
+    featured: true,
+  },
+  {
+    id: '3',
+    slug: 'interconnectors-energy-superhighways',
+    title: 'Interconnectors: The Energy Superhighways Linking Britain to Europe',
+    excerpt: 'Undersea cables worth billions connect the UK to European grids. Learn how these interconnectors work, why they matter, and what new projects are coming.',
+    content: `
+# Interconnectors: The Energy Superhighways Linking Britain to Europe
+
+Beneath the North Sea and English Channel lie extraordinary feats of engineering - high-voltage cables connecting Britain's grid to eight neighboring countries. These interconnectors are crucial for energy security, cost savings, and the renewable energy transition.
+
+## What Are Interconnectors?
+
+Interconnectors are high-voltage direct current (HVDC) cables that allow electricity to flow between countries. The UK currently has 10 operational interconnectors with a combined capacity of over 9 GW - equivalent to several large power stations.
+
+## Current Connections
+
+### France
+- **IFA (Interconnexion France-Angleterre)**: 2 GW, operational since 1986
+- **IFA2**: 1 GW, operational since 2021
+- **ElecLink**: 1 GW, runs through the Channel Tunnel
+
+### Belgium
+- **Nemo Link**: 1 GW, connecting Richborough to Belgium
+
+### Netherlands
+- **BritNed**: 1 GW, linking Isle of Grain to Rotterdam
+
+### Ireland
+- **East-West Interconnector**: 500 MW to Republic of Ireland
+- **Moyle**: 500 MW to Northern Ireland
+- **Greenlink**: 500 MW to Ireland
+
+### Norway
+- **North Sea Link**: 1.4 GW, the world's longest subsea interconnector at 720km
+
+### Denmark
+- **Viking Link**: 1.4 GW, operational since 2023
+
+## Why Interconnectors Matter
+
+### 1. Cost Savings
+Electricity can be imported when cheaper abroad, saving UK consumers money. In 2023, imports via interconnectors saved an estimated £1 billion.
+
+### 2. Energy Security
+Multiple connections reduce reliance on any single source. If UK generation is tight, imports provide backup.
+
+### 3. Renewable Integration
+When the UK has excess wind, it can export. When becalmed, it imports Norwegian hydro or French nuclear.
+
+### 4. Frequency Support
+Interconnectors help balance the grid second-by-second, providing frequency response services.
+
+### 5. Carbon Reduction
+Importing low-carbon Norwegian hydro or French nuclear reduces UK emissions.
+
+## How They Work
+
+### HVDC Technology
+Most interconnectors use HVDC rather than AC because:
+- **Lower losses** over long distances
+- **No synchronization** required between grids
+- **Better control** of power flow direction and magnitude
+- **Smaller cables** for equivalent capacity
+
+### Converter Stations
+At each end, massive converter stations transform:
+- AC to DC for transmission
+- DC back to AC for the local grid
+
+These stations are among the largest electronic devices on Earth.
+
+## Real-Time Flow Patterns
+
+Our dashboard shows interconnector flows in real-time. Typical patterns:
+
+### Daytime
+- **Import** from France (nuclear baseload)
+- **Import** from Norway (hydro)
+- **Variable** with Belgium/Netherlands (depends on wind)
+
+### Evening Peak
+- **Heavy imports** to meet UK demand spike
+- **Prices rise**, making imports attractive
+
+### Windy Nights
+- **Exports** when UK has excess wind generation
+- **Helps UK wind farms** remain economically viable
+
+### Summer Afternoons
+- **Exports** when UK solar + wind exceed demand
+- **Helps Europe** during their peak demand
+
+## Future Projects
+
+### Under Construction
+- **LionLink**: 1.8 GW to Netherlands (planned 2028)
+- **Nautilus**: 1.4 GW to Belgium (planned 2028)
+
+### Proposed
+- **NeuConnect**: 1.4 GW to Germany
+- **MaresConnect**: 2 GW to Ireland
+- **FAB Link**: 1.4 GW to France via Alderney
+- **Additional Norway links**: Up to 3 GW
+
+By 2030, the UK could have 18+ GW of interconnector capacity.
+
+## Challenges and Controversies
+
+### Grid Dependency
+Critics argue too much reliance on imports risks security. Supporters note diversity of sources reduces this risk.
+
+### Brexit Impact
+The UK left EU energy trading arrangements but negotiated continued interconnector access.
+
+### Environmental Concerns
+Submarine cable installation can disturb marine ecosystems, though impact studies show limited long-term harm.
+
+### Balancing vs Generation
+Some question whether money should go to interconnectors or domestic generation. The answer: we need both.
+
+## The Technology Evolution
+
+### Multi-Terminal HVDC
+Future grids may have interconnected "webs" rather than point-to-point links.
+
+### Offshore Hubs
+Artificial islands in the North Sea could connect multiple wind farms and countries.
+
+### VSC Technology
+Voltage Source Converters allow better integration with weak AC grids and offshore wind.
+
+## Economic Impact
+
+Interconnectors are big business:
+- **Construction costs**: £1-3 million per MW of capacity
+- **Private investment**: Most built by private companies
+- **ROI period**: 25-30 years
+- **Revenue model**: Arbitrage between market prices
+
+## What to Watch
+
+On our dashboard's interconnector visualization:
+- **Flow direction**: Arrows show imports (green) vs exports (blue)
+- **Magnitude**: Size indicates MW transferred
+- **Utilization**: Percentage of cable capacity in use
+- **Daily patterns**: Morning imports, evening peaks, night exports
+
+## The Bigger Picture
+
+Interconnectors are part of a European supergrid vision - a network of connections allowing renewable energy to flow from where it's generated to where it's needed:
+- Spanish solar to Scandinavia
+- Norwegian hydro to Germany
+- UK wind to France
+- North African solar to Europe
+
+The UK, as an island, benefits enormously from these energy superhighways.
+
+*Watch our live interconnector flows to see international electricity trade happening in real-time - it's a window into the future of energy.*
+    `,
+    author: 'GridMix Insights',
+    date: '2024-11-12',
+    readTime: 7,
+    category: 'grid-tech',
+    tags: ['interconnectors', 'HVDC', 'energy-security', 'european-grid'],
+    featured: true,
+  },
+  {
+    id: '4',
+    slug: 'carbon-intensity-explained',
+    title: 'Carbon Intensity Explained: Why gCO₂/kWh Matters',
+    excerpt: 'Understanding carbon intensity is key to reducing emissions. Learn what the metric means, how it\'s calculated, and why timing your electricity use can help the planet.',
+    content: `
+# Carbon Intensity Explained: Why gCO₂/kWh Matters
+
+Carbon intensity - measured in grams of CO₂ per kilowatt-hour (gCO₂/kWh) - is one of the most important metrics for understanding the environmental impact of electricity consumption. But what does it actually mean, and why should you care?
+
+## What is Carbon Intensity?
+
+Carbon intensity measures the amount of carbon dioxide emitted per unit of electricity generated. In the UK:
+- **Very Low**: <100 gCO₂/kWh (renewables-dominated)
+- **Low**: 100-150 gCO₂/kWh (good mix of low-carbon sources)
+- **Moderate**: 150-200 gCO₂/kWh (some fossil fuels)
+- **High**: 200-250 gCO₂/kWh (fossil fuel-heavy)
+- **Very High**: >250 gCO₂/kWh (mostly gas and coal)
+
+## How It's Calculated
+
+For each electricity source, we use emission factors:
+
+**Zero Carbon:**
+- Nuclear: 0 g/kWh
+- Wind: 0 g/kWh
+- Solar: 0 g/kWh
+- Hydro: 0 g/kWh
+
+**Low Carbon:**
+- Biomass: ~120 g/kWh
+
+**Fossil Fuels:**
+- Gas (CCGT): ~370 g/kWh
+- Oil: ~650 g/kWh
+- Coal: ~820 g/kWh
+
+The grid's overall carbon intensity is the weighted average based on the generation mix.
+
+## Why It Varies
+
+Carbon intensity changes constantly because:
+
+### Time of Day
+- **Night (1-5 AM)**: Often lowest - wind is strong, demand is low, nuclear provides baseload
+- **Morning ramp (6-9 AM)**: Rises as gas plants start to meet demand
+- **Midday (11 AM-2 PM)**: Can drop significantly due to solar
+- **Evening peak (5-8 PM)**: Often highest - maximum demand, solar fading, gas plants at full output
+
+### Season
+- **Summer**: Lower intensity - more solar, less heating demand
+- **Winter**: Higher intensity - no solar at peak times, maximum demand
+- **Spring/Autumn**: Variable - depends on wind conditions
+
+### Weather
+- **Windy**: Low intensity - wind can provide 50%+ of generation
+- **Calm**: High intensity - gas fills the gap
+- **Sunny**: Midday dips in intensity
+- **Cloudy**: Less solar benefit
+
+## The UK's Progress
+
+The transformation has been remarkable:
+- **2012**: Average ~500 gCO₂/kWh
+- **2017**: Average ~280 gCO₂/kWh
+- **2020**: Average ~180 gCO₂/kWh
+- **2023**: Average ~140 gCO₂/kWh
+- **2024**: Average ~120 gCO₂/kWh (projected)
+
+## Record Low Intensities
+
+The UK has achieved several record low periods:
+- **Lowest ever**: 12 gCO₂/kWh (May 2024, during high wind + solar)
+- **Longest zero-carbon period**: 4 hours (wind + nuclear + hydro)
+- **Greenest day**: Average 45 gCO₂/kWh for 24 hours
+
+## Why Timing Matters
+
+If you can shift electricity use to low-carbon periods, you reduce your personal emissions:
+
+### Best Times (Usually)
+- **Overnight** (1-5 AM): Charge EVs, run dishwashers
+- **Midday** (11 AM-2 PM): Use washing machines, charge devices
+- **Windy periods**: Take advantage when intensity drops
+
+### Worst Times (Usually)
+- **Evening peak** (5-8 PM): Avoid high-demand activities
+- **Winter evenings**: Worst combination of high demand + no solar
+- **Calm, dark periods**: Minimal renewable generation
+
+## Smart Applications
+
+### EV Charging
+An EV charged at 50 gCO₂/kWh vs 250 gCO₂/kWh has 5x lower emissions for the same journey.
+
+### Heat Pumps
+Running during low-carbon periods maximizes environmental benefits.
+
+### Battery Storage
+Charge when carbon intensity is low, discharge when high.
+
+### Industrial Processes
+Some factories now shift energy-intensive operations to low-carbon periods.
+
+## Carbon Intensity vs Demand
+
+There's an important distinction:
+- **Reducing demand** at peak times helps grid stability
+- **Shifting demand** to low-carbon times reduces emissions
+- **Ideally**, do both
+
+## Future Trends
+
+As renewables grow, we'll see:
+- **More variation**: Bigger swings between low and high intensity
+- **Lower average**: Continued decline in annual average
+- **Predictability**: Better forecasting of low-carbon periods
+- **Negative pricing**: Excess renewable periods where grid pays you to use electricity
+
+## How to Track It
+
+Our dashboard shows:
+- **Current intensity**: Live gCO₂/kWh reading
+- **24-hour history**: See today's patterns
+- **48-hour forecast**: Plan low-carbon electricity use
+- **Color coding**: Visual indication of intensity level
+
+## Beyond Carbon
+
+While CO₂ is the main concern, electricity generation also affects:
+- **Air quality**: Less fossil fuel = cleaner air
+- **Water usage**: Thermal plants need cooling water
+- **Land use**: Renewable vs fossil infrastructure footprint
+
+## Personal Impact
+
+For a typical UK household (2,900 kWh/year):
+- **Charging at 250 gCO₂/kWh**: 725 kg CO₂/year
+- **Charging at 100 gCO₂/kWh**: 290 kg CO₂/year
+- **Difference**: 435 kg CO₂ saved (equivalent to 1,800 miles of driving)
+
+## The Bottom Line
+
+Carbon intensity isn't just a number - it's a real-time signal of how clean your electricity is. By understanding and responding to it, you can:
+- Reduce your carbon footprint
+- Save money (low intensity often = lower prices)
+- Support the renewable transition
+- Help grid stability
+
+*Check our dashboard's carbon intensity metric and forecast to become a carbon-conscious electricity user.*
+    `,
+    author: 'GridMix Insights',
+    date: '2024-11-10',
+    readTime: 6,
+    category: 'analysis',
+    tags: ['carbon-intensity', 'emissions', 'climate', 'smart-consumption'],
+    featured: false,
+  },
+];
+
+export function getAllInsights(): Insight[] {
+  return insights.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
+export function getFeaturedInsights(): Insight[] {
+  return insights.filter(i => i.featured).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
+export function getInsightBySlug(slug: string): Insight | undefined {
+  return insights.find(i => i.slug === slug);
+}
+
+export function getInsightsByCategory(category: Insight['category']): Insight[] {
+  return insights.filter(i => i.category === category).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
+export function getCategoryLabel(category: Insight['category']): string {
+  const labels: Record<Insight['category'], string> = {
+    'grid-tech': 'Grid Technology',
+    'renewables': 'Renewables',
+    'policy': 'Policy & Regulation',
+    'analysis': 'Analysis',
+    'innovation': 'Innovation',
+  };
+  return labels[category];
+}
+
+export function getCategoryColor(category: Insight['category']): string {
+  const colors: Record<Insight['category'], string> = {
+    'grid-tech': 'blue',
+    'renewables': 'green',
+    'policy': 'purple',
+    'analysis': 'orange',
+    'innovation': 'pink',
+  };
+  return colors[category];
+}
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-GB', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
