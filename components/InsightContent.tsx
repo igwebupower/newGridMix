@@ -131,7 +131,7 @@ export function InsightContent({ insight }: InsightContentProps) {
         <p className="text-gray-600 dark:text-gray-400 mb-6">
           Experience real-time UK grid monitoring on our live dashboard
         </p>
-        <a
+        <Link
           href="/"
           className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
         >
@@ -139,7 +139,7 @@ export function InsightContent({ insight }: InsightContentProps) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
           View Live Dashboard
-        </a>
+        </Link>
       </motion.div>
 
       {/* Read More */}
