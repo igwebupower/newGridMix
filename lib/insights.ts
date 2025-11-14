@@ -359,6 +359,251 @@ The UK, as an island, benefits enormously from these energy superhighways.
     featured: true,
   },
   {
+    id: '5',
+    slug: 'changing-shape-electricity-demand-gb',
+    title: 'The Changing Shape of Electricity Demand in Great Britain',
+    excerpt: 'After decades of steady growth, GB electricity demand has plateaued—even declined. But with heat pumps, EVs, and AI data centres on the horizon, a dramatic reversal may be coming. Explore the forces reshaping our grid.',
+    content: `
+# The Changing Shape of Electricity Demand in Great Britain
+
+For most of the 20th century, electricity demand followed a simple pattern: up and to the right. More people, more appliances, more industry—more power. But something remarkable happened over the past two decades. Despite economic growth, population increase, and our ever-expanding digital lives, **electricity demand in Great Britain has been falling**.
+
+Even more intriguing: this trend may be about to reverse dramatically.
+
+## Executive Summary: The Paradox
+
+> **Key Finding**: GB electricity demand fell **2.6% in Q2 2025** compared to the previous year, continuing a decades-long trend of stagnation despite GDP growth and increased technology adoption.
+
+Yet forward-looking scenarios suggest demand could **surge by 2035–2050** as we electrify heat and transport, and as AI computing loads multiply. The grid must prepare for either modest growth or a substantial spike—or both simultaneously in different regions.
+
+For platforms like GridMix that monitor the grid in real-time, these shifts create both challenges and opportunities: new load patterns, regional variations, and the critical need for granular, transparent data.
+
+---
+
+## Part I: The Historical Reality—Demand That Stopped Growing
+
+### The Numbers Don't Lie
+
+Official statistics paint a consistent picture:
+
+| Period | Trend | Key Driver |
+|--------|-------|------------|
+| **Q2 2025** | -2.6% vs Q2 2024 | Warmer weather, efficiency gains |
+| **Domestic consumption** | -2.0% vs previous year | LED lighting, efficient appliances |
+| **Industrial demand** | Modest decline (weather-adjusted) | Shift away from heavy industry |
+| **Renewable share** | **54.5%** in Q2 2025 | Generation mix transformation |
+
+*Source: UK Department for Energy Security & Net Zero, Energy Trends September 2025*
+
+The disconnect is striking: renewable generation capacity is **booming**, but underlying demand isn&apos;t rising to match it.
+
+### What Smart Meter Data Reveals
+
+Research from **Nesta** analyzing millions of smart meter readings found that household consumption is "plateauing or stagnating" even as we add new devices. The expected growth from electrification hasn&apos;t materialized—yet.
+
+This challenges the fundamental assumption that electricity demand grows inexorably with prosperity.
+
+---
+
+## Part II: Five Forces Flattening Demand
+
+### 1. The Efficiency Revolution
+
+**LED lighting** alone transformed household consumption:
+- Old incandescent bulb: 60W
+- LED equivalent: 8W
+- **87% reduction** in lighting energy use
+
+Multiply this across white goods, heating systems, insulation standards, and industrial processes, and the cumulative effect is enormous.
+
+> The Committee on Climate Change highlights energy efficiency as the **single largest factor** in demand stagnation.
+
+### 2. Economic Restructuring
+
+Britain&apos;s shift from manufacturing to services fundamentally altered energy intensity:
+
+- **1980s**: Heavy industry (steel, chemicals, mining) dominated
+- **2020s**: Services, tech, finance lead the economy
+- **Result**: Lower electricity use per unit of GDP
+
+### 3. Price Signals and Behavior
+
+High energy prices—particularly post-2022—drove conservation:
+- Households installed smart thermostats
+- Businesses optimized operations
+- Time-of-use tariffs shifted consumption patterns
+
+### 4. Distributed Generation
+
+Rooftop solar and local generation reduce **net demand** from the central grid:
+- Over **1.3 million** solar installations in the UK
+- Behind-the-meter generation doesn&apos;t show up in grid demand statistics
+- Creates "invisible" consumption that official stats miss
+
+### 5. Digital Efficiency
+
+Paradoxically, while we&apos;re more digital than ever, devices have become remarkably efficient:
+- Modern smartphone: ~5W when charging
+- Smart TV: 50W (vs 200W for old plasma screens)
+- Data centers: Improving efficiency by 10-20% annually through better cooling and chip design
+
+---
+
+## Part III: The Future—Three Divergent Scenarios
+
+### Scenario A: Modest Growth (Business as Usual)
+
+If efficiency gains continue to offset new demand:
+- **2030**: 5-10% growth vs 2025
+- **2050**: 15-25% growth
+- **Driver**: Gradual EV adoption, limited heat pump uptake
+
+### Scenario B: Electrification Surge
+
+If heat and transport electrify rapidly:
+- **2030**: 25-40% growth vs 2025
+- **2050**: **100%+ growth** (doubling of demand)
+- **Driver**: Widespread heat pumps (15+ million), EVs (30+ million), hydrogen production
+
+> Academic modeling suggests the network may need an **additional 71 GW of capacity** by 2050 for industrial electrification alone.
+>
+> *—Gailani & Taylor, "Assessing Electricity Network Capacity Requirements," 2024*
+
+### Scenario C: The AI Wild Card
+
+Data centers and AI workloads introduce massive uncertainty:
+- **Current UK data center load**: ~3 GW
+- **Potential by 2030**: 6-12 GW (if AI growth continues)
+- **Global context**: IEA projects data center electricity use could **double globally by 2030**
+
+A single large AI training facility can draw 100-500 MW—equivalent to a small city.
+
+---
+
+## Part IV: The AI Impact—Threat or Opportunity?
+
+### The Demand Side
+
+AI and large-scale computing are **already** affecting UK grid planning:
+
+**Energy-Intensive AI Activities:**
+- **Training large language models**: 1-10 GWh per model
+- **Inference/deployment**: Continuous 24/7 load
+- **Data center cooling**: Can equal computing load
+- **Geographic concentration**: Clusters near fiber/power infrastructure
+
+### The Efficiency Side
+
+But AI is also a tool for **reducing** demand:
+
+- **Building management**: AI optimizes HVAC, cutting usage 15-30%
+- **Grid forecasting**: Better predictions reduce waste
+- **Industrial processes**: Smart manufacturing reduces energy intensity
+- **EV charging**: AI schedules charging during low-carbon, low-cost periods
+
+The net effect depends on policy, technology deployment, and market incentives.
+
+---
+
+## Part V: What This Means for GridMix Users
+
+### 1. Demand Monitoring Becomes Strategic
+
+With growth no longer guaranteed, **watching demand patterns** is as important as tracking generation:
+- Spot early signs of electrification (EV charging spikes, heat pump ramp-ups)
+- Identify regional load clusters (data centers, industrial zones)
+- Track demand response effectiveness
+
+### 2. New Load Signatures
+
+Future demand will look different:
+- **EV charging peaks**: Evening "second peak" after work
+- **Heat pump winter surge**: Cold snaps driving massive demand
+- **Data center baseload**: Constant 24/7 draw with minimal variation
+- **Flexible demand**: Loads that shift based on price/carbon signals
+
+### 3. Grid Flexibility Is Everything
+
+Whether demand grows modestly or dramatically, **variability** will increase:
+- More demand-side participation
+- Regional mismatches (solar in South, wind in Scotland, EVs in cities)
+- Need for real-time balancing
+
+GridMix&apos;s role in visualizing these dynamics becomes **mission-critical**.
+
+### 4. Data Quality Matters More Than Ever
+
+Accurate, granular, timely data is essential:
+- **5-minute resolution** to catch rapid changes
+- **Regional breakdowns** to identify local constraints
+- **Forecast vs actual** to improve modeling
+- **Historical context** to spot long-term trends
+
+---
+
+## Part VI: Policy and Planning Recommendations
+
+### For Grid Operators
+
+1. **Scenario-based investment**: Plan for a **wide envelope** of outcomes (±50% demand by 2040)
+2. **Modular infrastructure**: Build flexibility into network upgrades
+3. **Regional planning**: Don&apos;t assume uniform growth—some areas may see 200% increases while others stay flat
+
+### For Policymakers
+
+1. **Continue efficiency programs**: Gains here offset growth elsewhere
+2. **Strategic siting of large loads**: Incentivize data centers/industry to locate near generation and grid capacity
+3. **Demand-side incentives**: Reward flexible consumption, time-shifting, and storage
+4. **Transparent data**: Mandate real-time, open access to grid data (like GridMix provides)
+
+### For Industry and Consumers
+
+1. **Smart monitoring**: Use tools like GridMix to understand consumption patterns
+2. **Time-of-use awareness**: Shift loads to low-carbon, low-cost periods
+3. **Participate in flexibility markets**: EVs, batteries, smart appliances can earn revenue
+4. **Invest in efficiency first**: Every kWh saved is cheaper than generating a new one
+
+---
+
+## The Bottom Line: Preparing for Whichever Future Arrives
+
+The era of predictable, steadily growing electricity demand is over. The next 25 years could see:
+
+- **Continued stagnation** if efficiency and behavior change keep pace with electrification
+- **Explosive growth** if heat pumps, EVs, and AI computing take off rapidly
+- **Regional divergence** with some areas booming and others flat
+- **Extreme variability** as weather-dependent renewables and flexible loads dominate
+
+> The grid must be ready for **both modest growth and rapid escalation**—simultaneously.
+
+For GridMix and its users, this means:
+- Real-time monitoring becomes more valuable
+- Understanding demand patterns is as crucial as tracking supply
+- Flexibility, storage, and smart consumption will define the next generation grid
+
+**The key message**: Don&apos;t assume the past predicts the future. The electricity system is entering uncharted territory—and platforms that provide clear, real-time visibility into what&apos;s actually happening will be essential guides.
+
+---
+
+## References and Further Reading
+
+1. **Department for Energy Security & Net Zero**: [Energy Trends, September 2025](https://www.gov.uk/government/collections/energy-trends)
+2. **Nesta**: [Understanding GB Energy Consumption Through Smart Meter Data, August 2025](https://www.nesta.org.uk)
+3. **National Grid ESO**: Future Energy Scenarios (various years)
+4. **Gailani & Taylor**: ["Assessing Electricity Network Capacity Requirements for Industrial Decarbonisation in GB," November 2024](https://arxiv.org)
+5. **International Energy Agency**: Global data center energy consumption projections
+6. **Elexon BSC**: Real-time grid data and analysis
+
+*All statistics current as of November 2025. Grid data updates every 30 seconds on the GridMix dashboard.*
+    `,
+    author: 'GridMix Research',
+    date: '2025-11-14',
+    readTime: 15,
+    category: 'analysis',
+    tags: ['demand', 'forecasting', 'AI', 'electrification', 'grid-planning', 'policy'],
+    featured: true,
+  },
+  {
     id: '4',
     slug: 'carbon-intensity-explained',
     title: 'Carbon Intensity Explained: Why gCO₂/kWh Matters',
