@@ -19,21 +19,36 @@ export default function CookiePage() {
         onSave={() => setShowSettings(false)}
       />
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="glass p-8 md:p-12 rounded-2xl"
+          className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl border border-gray-200 dark:border-gray-800 overflow-hidden"
         >
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            Cookie Policy
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
-            Last updated: {new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
-          </p>
+          {/* Header */}
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 px-8 md:px-12 py-12 border-b border-gray-200 dark:border-gray-800">
+            <div className="inline-block px-3 py-1 bg-amber-600 text-white text-xs font-bold uppercase tracking-wider rounded mb-6">
+              Legal
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
+              Cookie Policy
+            </h1>
+            <p className="text-base text-gray-600 dark:text-gray-400">
+              Last updated: {new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
+          </div>
 
-          <div className="prose prose-lg dark:prose-invert max-w-none">
+          {/* Content */}
+          <div className="px-8 md:px-12 py-12 prose prose-lg dark:prose-invert max-w-none
+            prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white
+            prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:pb-3 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-800
+            prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4 prose-h3:text-gray-800 dark:prose-h3:text-gray-200
+            prose-p:text-lg prose-p:leading-relaxed prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:mb-6
+            prose-ul:my-6 prose-ul:space-y-3
+            prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-li:leading-relaxed
+            prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-semibold
+            prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:font-medium prose-a:no-underline hover:prose-a:underline">
             <h2>1. What Are Cookies?</h2>
             <p>
               Cookies are small text files that are placed on your computer or mobile device when you visit a website. They are widely used to make websites work more efficiently and provide information to website owners.
@@ -200,16 +215,26 @@ export default function CookiePage() {
               <li>By email: <a href="mailto:hello@gridmix.co.uk" className="text-blue-600 dark:text-blue-400 hover:underline">hello@gridmix.co.uk</a></li>
             </ul>
 
-            <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-semibold mb-4">Related Legal Documents</h3>
-              <div className="flex flex-wrap gap-4">
-                <Link href="/privacy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-                  Privacy Policy
-                </Link>
-                <Link href="/terms" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-                  Terms of Service
-                </Link>
-              </div>
+          </div>
+
+          {/* Footer Links */}
+          <div className="px-8 md:px-12 py-8 bg-gray-50 dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-4">
+              Related Legal Documents
+            </h3>
+            <div className="flex flex-wrap gap-6">
+              <Link href="/privacy" className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors group">
+                <svg className="w-4 h-4 mr-2 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Privacy Policy
+              </Link>
+              <Link href="/terms" className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors group">
+                <svg className="w-4 h-4 mr-2 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Terms of Service
+              </Link>
             </div>
           </div>
         </motion.div>
