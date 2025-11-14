@@ -502,12 +502,10 @@ export function getIntensityLevel(intensity: number): {
 // Fetch current solar generation (national)
 export async function getCurrentSolarData(): Promise<SolarData> {
   try {
-    const response = await fetch(
-      `${PVLIVE_API_BASE}/gsp/0`,
-      {
-        cache: 'no-store',
-      }
-    );
+    // Use proxy route to bypass CORS restrictions
+    const response = await fetch('/api/solar/current', {
+      cache: 'no-store',
+    });
 
     if (!response.ok) {
       throw new Error('Failed to fetch solar data');
@@ -549,16 +547,10 @@ export async function getCurrentSolarData(): Promise<SolarData> {
 // Fetch today's solar generation curve (intraday)
 export async function getTodaySolarCurve(): Promise<SolarIntradayData[]> {
   try {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const todayISO = today.toISOString().split('.')[0];
-
-    const response = await fetch(
-      `${PVLIVE_API_BASE}/gsp/0?start=${todayISO}`,
-      {
-        cache: 'no-store',
-      }
-    );
+    // Use proxy route to bypass CORS restrictions
+    const response = await fetch('/api/solar/today', {
+      cache: 'no-store',
+    });
 
     if (!response.ok) {
       throw new Error('Failed to fetch intraday solar data');
@@ -586,20 +578,9 @@ export async function getTodaySolarCurve(): Promise<SolarIntradayData[]> {
 // Fetch yesterday's solar curve for comparison
 export async function getYesterdaySolarCurve(): Promise<SolarIntradayData[]> {
   try {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    const startOfDay = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
-    const endOfDay = new Date(startOfDay);
-    endOfDay.setDate(endOfDay.getDate() + 1);
-
-    const startISO = startOfDay.toISOString().split('.')[0];
-    const endISO = endOfDay.toISOString().split('.')[0];
-
-    const response = await fetch(
-      `${PVLIVE_API_BASE}/gsp/0?start=${startISO}&end=${endISO}`,
-      {
-        cache: 'no-store',
+    // Use proxy route to bypass CORS restrictions
+    const response = await fetch('/api/solar/yesterday', {
+      cache: 'no-store',
       }
     );
 
