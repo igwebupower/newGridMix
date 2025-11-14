@@ -24,9 +24,6 @@ const nextConfig = {
   // Strict mode for better SEO and accessibility
   reactStrictMode: true,
 
-  // Enable SWC minification
-  swcMinify: true,
-
   // Trailing slashes for consistent URLs
   trailingSlash: false,
 };

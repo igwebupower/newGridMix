@@ -10,7 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Generate insight URLs
   const insightUrls = insights.map((insight) => ({
     url: `${baseUrl}/insights/${insight.id}`,
-    lastModified: insight.updatedDate || insight.date,
+    lastModified: insight.date,
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }));
