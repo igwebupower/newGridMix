@@ -128,8 +128,8 @@ export default function InsightsPage() {
               Cookie Policy
             </a>
             <span>•</span>
-            <a href="mailto:hello@gridmix.co.uk" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-              Contact
+            <a href="mailto:hello@gridmix.co.uk" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
+              hello@gridmix.co.uk
             </a>
           </div>
         </footer>
