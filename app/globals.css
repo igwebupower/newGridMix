@@ -102,3 +102,75 @@ html {
   );
   background-size: 1000px 100%;
 }
+
+/* Magazine Layout Styles */
+.magazine-layout {
+  @apply antialiased;
+}
+
+/* Magazine content with better paragraph spacing */
+.magazine-content {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+/* Ensure proper paragraph separation */
+.magazine-content p + p {
+  @apply mt-8;
+}
+
+/* List spacing improvements */
+.magazine-content ul li,
+.magazine-content ol li {
+  @apply my-4;
+}
+
+.magazine-content ul li p,
+.magazine-content ol li p {
+  @apply mt-2 mb-0;
+}
+
+/* Heading spacing - ensure clear separation */
+.magazine-content h2 + p,
+.magazine-content h3 + p,
+.magazine-content h4 + p {
+  @apply mt-6;
+}
+
+/* Add serif font import for elegant headings */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap');
+
+.font-serif {
+  font-family: 'Merriweather', Georgia, serif;
+}
+
+/* Print-quality text rendering */
+.magazine-content {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure blockquotes stand out */
+.magazine-content blockquote p {
+  @apply mb-0 !important;
+}
+
+/* Better focus states for accessibility */
+.magazine-content a:focus {
+  @apply outline-2 outline-offset-2 outline-blue-600 rounded;
+}
+
+/* Responsive typography adjustments */
+@media (max-width: 768px) {
+  .magazine-content {
+    @apply text-lg;
+  }
+
+  .magazine-content h2 {
+    @apply text-3xl;
+  }
+
+  .magazine-content h3 {
+    @apply text-2xl;
+  }
+}
