@@ -57,103 +57,26 @@ export default function SupportPage() {
             </div>
           </div>
           <h1 className="text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6">
-            Keep GridMix Free & Ad-Free
+            Support GridMix
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-            Your support helps us maintain a clean, fast, and valuable resource for understanding
-            the UK energy grid. No ads. No tracking. Just pure energy data.
+            Help keep GridMix free, fast, and ad-free for everyone.
           </p>
         </motion.div>
 
-        {/* Value Proposition */}
+        {/* Why Support Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="glass p-8 rounded-2xl mb-12"
+          className="glass p-8 rounded-2xl mb-12 max-w-3xl mx-auto"
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
-            What You Get (Completely Free)
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="text-4xl mb-3">📊</div>
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                Real-Time Data
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Live UK grid mix, carbon intensity, and solar generation updated every 30 seconds
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl mb-3">🚫</div>
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                Zero Ads
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                No advertisements, no pop-ups, no interruptions to your experience
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl mb-3">📚</div>
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                Educational Content
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                In-depth insights about UK energy, grid technology, and the renewable transition
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Cost Transparency */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="glass p-8 rounded-2xl mb-12"
-        >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
-            Where Your Support Goes
-          </h2>
-          <div className="space-y-4 max-w-2xl mx-auto">
-            <div className="flex items-center justify-between p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20">
-              <div className="flex items-center space-x-3">
-                <span className="text-2xl">🌐</span>
-                <span className="font-medium text-gray-900 dark:text-gray-100">Hosting & Infrastructure</span>
-              </div>
-              <span className="text-blue-600 dark:text-blue-400 font-semibold">~£30/month</span>
-            </div>
-            <div className="flex items-center justify-between p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20">
-              <div className="flex items-center space-x-3">
-                <span className="text-2xl">🔄</span>
-                <span className="font-medium text-gray-900 dark:text-gray-100">API Calls & Data Transfer</span>
-              </div>
-              <span className="text-purple-600 dark:text-purple-400 font-semibold">~£15/month</span>
-            </div>
-            <div className="flex items-center justify-between p-4 rounded-lg bg-green-50 dark:bg-green-900/20">
-              <div className="flex items-center space-x-3">
-                <span className="text-2xl">🛠️</span>
-                <span className="font-medium text-gray-900 dark:text-gray-100">Development & Maintenance</span>
-              </div>
-              <span className="text-green-600 dark:text-green-400 font-semibold">~£20/month</span>
-            </div>
-            <div className="flex items-center justify-between p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20">
-              <div className="flex items-center space-x-3">
-                <span className="text-2xl">🔒</span>
-                <span className="font-medium text-gray-900 dark:text-gray-100">Domain & SSL Certificates</span>
-              </div>
-              <span className="text-amber-600 dark:text-amber-400 font-semibold">~£10/month</span>
-            </div>
-            <div className="border-t-2 border-gray-200 dark:border-gray-700 pt-4 mt-4">
-              <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-                <span className="font-bold text-lg">Total Monthly Cost</span>
-                <span className="font-bold text-2xl">~£75/month</span>
-              </div>
-            </div>
-          </div>
-          <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
-            100% of donations go directly to keeping GridMix running. No salaries, no profits.
+          <p className="text-lg text-gray-700 dark:text-gray-300 text-center leading-relaxed mb-6">
+            GridMix runs on donations to cover hosting, API costs, and maintenance.
+            Your support helps keep this service free, fast, and ad-free for everyone interested in UK energy data.
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+            Every contribution goes directly to keeping the lights on. No salaries, no profits.
           </p>
         </motion.div>
 
@@ -165,7 +88,7 @@ export default function SupportPage() {
           className="mb-12"
         >
           <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8 text-center">
-            Choose Your Support Level
+            Choose an Amount
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {donationTiers.map((tier, index) => (
@@ -340,55 +263,39 @@ export default function SupportPage() {
           </div>
         </motion.div>
 
-        {/* FAQ Section */}
+        {/* Simple FAQ */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="glass p-8 rounded-2xl mb-12"
+          className="glass p-8 rounded-2xl mb-12 max-w-2xl mx-auto"
         >
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
-            Frequently Asked Questions
+            Quick FAQs
           </h2>
-          <div className="space-y-6 max-w-3xl mx-auto">
+          <div className="space-y-4 text-sm">
             <div>
-              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2">
+              <p className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
                 Is GridMix really free?
-              </h3>
+              </p>
               <p className="text-gray-600 dark:text-gray-400">
-                Yes! GridMix is completely free to use with no ads, no tracking, and no premium features locked behind paywalls. We believe energy data should be accessible to everyone.
+                Yes! Completely free, no ads, no premium features. Always will be.
               </p>
             </div>
             <div>
-              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2">
-                Do I get anything extra for donating?
-              </h3>
+              <p className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                Do I get perks for donating?
+              </p>
               <p className="text-gray-600 dark:text-gray-400">
-                No perks or rewards - and that&apos;s intentional! We want GridMix to remain equal for all users. Your donation simply helps keep the service running for everyone.
+                No. Your donation simply helps keep the service running for everyone.
               </p>
             </div>
             <div>
-              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2">
-                Are donations recurring or one-time?
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Most donation methods are one-time payments. GitHub Sponsors offers monthly recurring support if you prefer. You choose what works best for you!
+              <p className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                Can&apos;t donate right now?
               </p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2">
-                Can I see how donations are used?
-              </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                We&apos;re committed to transparency. All hosting costs and infrastructure expenses are outlined above. 100% goes to keeping GridMix running.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2">
-                What if I can&apos;t donate?
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                That&apos;s absolutely fine! GridMix will remain free regardless. You can still help by sharing GridMix with others who might find it useful, or providing feedback to help us improve.
+                That&apos;s absolutely fine! Share GridMix with others or send feedback instead.
               </p>
             </div>
           </div>
@@ -399,29 +306,21 @@ export default function SupportPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="glass p-12 rounded-2xl text-center"
+          className="glass p-12 rounded-2xl text-center max-w-2xl mx-auto"
         >
-          <div className="text-6xl mb-6">🙏</div>
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            Thank You for Your Support
+          <div className="text-5xl mb-4">🙏</div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+            Thank You
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-            Every contribution, no matter the size, makes a real difference. You&apos;re helping keep energy data accessible, transparent, and ad-free for everyone interested in the UK&apos;s renewable transition.
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            Every contribution helps keep GridMix running for everyone.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link
-              href="/"
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              Back to Dashboard
-            </Link>
-            <Link
-              href="/insights"
-              className="px-6 py-3 glass border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 font-semibold rounded-lg hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200"
-            >
-              Read Our Insights
-            </Link>
-          </div>
+          <Link
+            href="/"
+            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+          >
+            Back to Dashboard
+          </Link>
         </motion.div>
       </main>
     </div>

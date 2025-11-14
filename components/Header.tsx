@@ -71,17 +71,6 @@ export function Header({ lastUpdated }: HeaderProps) {
               >
                 Insights
               </Link>
-              <Link
-                href="/support"
-                className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center space-x-1 ${
-                  pathname === '/support'
-                    ? 'bg-green-500/10 text-green-600 dark:text-green-400'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-                }`}
-              >
-                <span>💚</span>
-                <span>Support</span>
-              </Link>
             </nav>
           </div>
 
@@ -97,6 +86,18 @@ export function Header({ lastUpdated }: HeaderProps) {
                 </p>
               </div>
             )}
+
+            {/* Subtle Sponsor Button */}
+            <Link
+              href="/support"
+              className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-all border border-gray-200 dark:border-gray-700 hover:border-pink-300 dark:hover:border-pink-700"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+              </svg>
+              <span>Sponsor</span>
+            </Link>
+
             <ThemeToggle />
           </div>
         </div>
