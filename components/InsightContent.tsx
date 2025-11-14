@@ -100,44 +100,44 @@ export function InsightContent({ insight }: InsightContentProps) {
         transition={{ duration: 0.6, delay: 0.2 }}
         className="mb-20"
       >
-        <div className="magazine-content prose prose-xl dark:prose-invert max-w-none
+        <div className="magazine-content prose prose-lg dark:prose-invert max-w-none
           prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white prose-headings:tracking-tight
 
-          prose-h1:text-5xl prose-h1:md:text-6xl prose-h1:mb-8 prose-h1:mt-16 prose-h1:leading-[1.1]
+          prose-h1:text-3xl prose-h1:md:text-4xl prose-h1:mb-6 prose-h1:mt-12 prose-h1:leading-tight
 
-          prose-h2:text-4xl prose-h2:md:text-5xl prose-h2:mb-8 prose-h2:mt-20 prose-h2:pb-4 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-800 prose-h2:leading-[1.2]
+          prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mb-6 prose-h2:mt-12 prose-h2:pb-3 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-800 prose-h2:leading-tight
 
-          prose-h3:text-3xl prose-h3:mb-6 prose-h3:mt-16 prose-h3:leading-[1.3] prose-h3:text-gray-800 dark:prose-h3:text-gray-200
+          prose-h3:text-xl prose-h3:md:text-2xl prose-h3:mb-4 prose-h3:mt-8 prose-h3:leading-snug prose-h3:text-gray-800 dark:prose-h3:text-gray-200
 
-          prose-h4:text-2xl prose-h4:mb-4 prose-h4:mt-12 prose-h4:font-semibold
+          prose-h4:text-lg prose-h4:md:text-xl prose-h4:mb-3 prose-h4:mt-6 prose-h4:font-semibold
 
-          prose-p:text-lg prose-p:md:text-xl prose-p:leading-[1.8] prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:mb-8 prose-p:mt-0
+          prose-p:text-base prose-p:md:text-lg prose-p:leading-relaxed prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:mb-6 prose-p:mt-0
 
-          first:prose-p:text-xl first:prose-p:md:text-2xl first:prose-p:leading-[1.7] first:prose-p:font-normal first:prose-p:text-gray-800 dark:first:prose-p:text-gray-200
+          first:prose-p:text-lg first:prose-p:md:text-xl first:prose-p:leading-relaxed first:prose-p:font-normal first:prose-p:text-gray-800 dark:first:prose-p:text-gray-200
 
           prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-bold
           prose-em:italic prose-em:text-gray-800 dark:prose-em:text-gray-200
 
-          prose-ul:my-10 prose-ul:space-y-4 prose-ul:text-lg
-          prose-ol:my-10 prose-ol:space-y-4 prose-ol:text-lg
-          prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-li:leading-[1.8] prose-li:pl-2
+          prose-ul:my-6 prose-ul:space-y-2 prose-ul:text-base prose-ul:md:text-lg
+          prose-ol:my-6 prose-ol:space-y-2 prose-ol:text-base prose-ol:md:text-lg
+          prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-li:leading-relaxed prose-li:pl-2
           prose-li:marker:text-blue-600 dark:prose-li:marker:text-blue-400 prose-li:marker:font-bold
 
           prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:font-semibold prose-a:no-underline prose-a:border-b-2 prose-a:border-blue-200 dark:prose-a:border-blue-900 hover:prose-a:border-blue-600 dark:hover:prose-a:border-blue-400 prose-a:transition-colors
 
-          prose-blockquote:border-l-[6px] prose-blockquote:border-blue-600 prose-blockquote:pl-8 prose-blockquote:py-4 prose-blockquote:pr-8 prose-blockquote:my-12 prose-blockquote:bg-blue-50 dark:prose-blockquote:bg-blue-950/30 prose-blockquote:rounded-r-lg prose-blockquote:italic prose-blockquote:text-2xl prose-blockquote:leading-[1.6] prose-blockquote:text-gray-800 dark:prose-blockquote:text-gray-200 prose-blockquote:font-serif
+          prose-blockquote:border-l-4 prose-blockquote:border-blue-600 prose-blockquote:pl-6 prose-blockquote:py-3 prose-blockquote:pr-6 prose-blockquote:my-8 prose-blockquote:bg-blue-50 dark:prose-blockquote:bg-blue-950/30 prose-blockquote:rounded-r-lg prose-blockquote:not-italic prose-blockquote:text-base prose-blockquote:md:text-lg prose-blockquote:leading-relaxed prose-blockquote:text-gray-800 dark:prose-blockquote:text-gray-200
 
-          prose-code:text-base prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-2 prose-code:py-1 prose-code:rounded-md prose-code:text-blue-600 dark:prose-code:text-blue-400 prose-code:font-mono prose-code:font-medium prose-code:before:content-[''] prose-code:after:content-['']
+          prose-code:text-sm prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-2 prose-code:py-1 prose-code:rounded-md prose-code:text-blue-600 dark:prose-code:text-blue-400 prose-code:font-mono prose-code:font-medium prose-code:before:content-[''] prose-code:after:content-['']
 
-          prose-pre:bg-gray-900 dark:prose-pre:bg-gray-950 prose-pre:my-12 prose-pre:p-6 prose-pre:rounded-xl prose-pre:border prose-pre:border-gray-800
+          prose-pre:bg-gray-900 dark:prose-pre:bg-gray-950 prose-pre:my-8 prose-pre:p-6 prose-pre:rounded-xl prose-pre:border prose-pre:border-gray-800
 
-          prose-hr:border-gray-300 dark:prose-hr:border-gray-700 prose-hr:my-16 prose-hr:border-t-2
+          prose-hr:border-gray-300 dark:prose-hr:border-gray-700 prose-hr:my-12 prose-hr:border-t-2
 
-          prose-img:rounded-2xl prose-img:shadow-2xl prose-img:my-12 prose-img:w-full
+          prose-img:rounded-2xl prose-img:shadow-2xl prose-img:my-8 prose-img:w-full
 
-          prose-table:my-12 prose-table:border-collapse
-          prose-th:bg-gray-100 dark:prose-th:bg-gray-800 prose-th:p-4 prose-th:text-left prose-th:font-bold
-          prose-td:p-4 prose-td:border-t prose-td:border-gray-200 dark:prose-td:border-gray-800">
+          prose-table:my-8 prose-table:border-collapse prose-table:w-full prose-table:text-sm prose-table:md:text-base
+          prose-th:bg-gray-100 dark:prose-th:bg-gray-800 prose-th:p-3 prose-th:text-left prose-th:font-bold prose-th:text-gray-900 dark:prose-th:text-gray-100 prose-th:border prose-th:border-gray-300 dark:prose-th:border-gray-700
+          prose-td:p-3 prose-td:border prose-td:border-gray-300 dark:prose-td:border-gray-700 prose-td:text-gray-700 dark:prose-td:text-gray-300">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {insight.content}
           </ReactMarkdown>
