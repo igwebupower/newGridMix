@@ -10,18 +10,19 @@ export interface GenerationMix {
   mw: number;
 }
 
+export interface Interconnector {
+  name: string;
+  country: string;
+  flow: number; // Positive = import, Negative = export
+  capacity: number;
+}
+
 export interface BMRSFuelItem {
   startTime: string;
   settlementDate: string;
   settlementPeriod: number;
-  psrType: string; // Fuel type
-  quantity: number; // MW
-}
-
-export interface DemandData {
-  startTime: string;
-  demand: number;
-  forecast?: number;
+  fuelType: string;
+  generation: number; // MW
 }
 
 export interface GridData {
@@ -33,7 +34,10 @@ export interface GridData {
     index: string;
   };
   generationmix: GenerationMix[];
+  interconnectors: Interconnector[];
   totalGeneration: number;
+  totalImports: number;
+  totalExports: number;
 }
 
 export interface HistoricalData {
@@ -55,20 +59,32 @@ export interface Stats {
   imports_perc: number;
 }
 
-// Map BMRS PSR types to our fuel types
+// Map BMRS fuel types to our display types
 const fuelTypeMapping: Record<string, string> = {
-  'Biomass': 'biomass',
-  'Fossil Gas': 'gas',
-  'Fossil Hard coal': 'coal',
-  'Fossil Oil': 'oil',
-  'Hydro Pumped Storage': 'hydro',
-  'Hydro Run-of-river and poundage': 'hydro',
-  'Nuclear': 'nuclear',
-  'Solar': 'solar',
-  'Wind Offshore': 'wind',
-  'Wind Onshore': 'wind',
-  'Other': 'other',
-  'Interconnector': 'imports',
+  'BIOMASS': 'biomass',
+  'CCGT': 'gas',
+  'OCGT': 'gas',
+  'COAL': 'coal',
+  'OIL': 'oil',
+  'NPSHYD': 'hydro',
+  'PS': 'hydro',
+  'NUCLEAR': 'nuclear',
+  'WIND': 'wind',
+  'OTHER': 'other',
+};
+
+// Interconnector name mapping
+const interconnectorMapping: Record<string, { name: string; country: string; capacity: number }> = {
+  'INTELEC': { name: 'ElecLink', country: 'France', capacity: 1000 },
+  'INTEW': { name: 'East-West', country: 'Ireland', capacity: 500 },
+  'INTFR': { name: 'IFA', country: 'France', capacity: 2000 },
+  'INTGRNL': { name: 'Greenlink', country: 'Ireland', capacity: 500 },
+  'INTIFA2': { name: 'IFA2', country: 'France', capacity: 1000 },
+  'INTIRL': { name: 'Moyle', country: 'N. Ireland', capacity: 500 },
+  'INTNED': { name: 'BritNed', country: 'Netherlands', capacity: 1000 },
+  'INTNEM': { name: 'Nemo', country: 'Belgium', capacity: 1000 },
+  'INTNSL': { name: 'NSL', country: 'Norway', capacity: 1400 },
+  'INTVKL': { name: 'Viking', country: 'Denmark', capacity: 1400 },
 };
 
 // Fetch current instantaneous generation mix
@@ -78,7 +94,7 @@ export async function getCurrentGridData(): Promise<GridData> {
     const response = await fetch(
       `${BMRS_API_BASE}/datasets/FUELINST?format=json`,
       {
-        next: { revalidate: 30 }, // Revalidate every 30 seconds
+        cache: 'no-store', // Disable caching for real-time data
       }
     );
 
@@ -95,14 +111,52 @@ export async function getCurrentGridData(): Promise<GridData> {
     // Get the most recent data point for each fuel type
     const latestData = getLatestDataByFuelType(data.data);
 
-    // Calculate total generation
-    const totalGeneration = latestData.reduce((sum, item) => sum + item.quantity, 0);
+    // Separate interconnectors and generation
+    const interconnectorData: BMRSFuelItem[] = [];
+    const generationData: BMRSFuelItem[] = [];
 
-    // Calculate percentages
-    const generationmix: GenerationMix[] = latestData.map(item => ({
-      fuel: fuelTypeMapping[item.psrType] || 'other',
-      mw: item.quantity,
-      perc: (item.quantity / totalGeneration) * 100,
+    latestData.forEach(item => {
+      if (item.fuelType.startsWith('INT')) {
+        interconnectorData.push(item);
+      } else if (fuelTypeMapping[item.fuelType]) {
+        generationData.push(item);
+      }
+    });
+
+    // Calculate total generation (excluding interconnectors)
+    const totalGeneration = generationData.reduce((sum, item) => sum + Math.max(0, item.generation), 0);
+
+    // Process interconnectors
+    const interconnectors: Interconnector[] = interconnectorData.map(item => {
+      const info = interconnectorMapping[item.fuelType] || {
+        name: item.fuelType,
+        country: 'Unknown',
+        capacity: 1000,
+      };
+      return {
+        name: info.name,
+        country: info.country,
+        flow: item.generation,
+        capacity: info.capacity,
+      };
+    });
+
+    // Calculate total imports/exports
+    const totalImports = interconnectors
+      .filter(ic => ic.flow > 0)
+      .reduce((sum, ic) => sum + ic.flow, 0);
+
+    const totalExports = Math.abs(
+      interconnectors
+        .filter(ic => ic.flow < 0)
+        .reduce((sum, ic) => sum + ic.flow, 0)
+    );
+
+    // Calculate percentages for generation mix
+    const generationmix: GenerationMix[] = generationData.map(item => ({
+      fuel: fuelTypeMapping[item.fuelType] || 'other',
+      mw: Math.max(0, item.generation),
+      perc: (Math.max(0, item.generation) / totalGeneration) * 100,
     }));
 
     // Aggregate same fuel types
@@ -111,7 +165,7 @@ export async function getCurrentGridData(): Promise<GridData> {
     // Get the latest timestamp
     const latestTime = latestData[0]?.startTime || new Date().toISOString();
 
-    // Carbon intensity estimation (simplified)
+    // Carbon intensity estimation
     const intensity = estimateCarbonIntensity(aggregatedMix);
 
     return {
@@ -123,7 +177,10 @@ export async function getCurrentGridData(): Promise<GridData> {
         index: getIntensityIndex(intensity),
       },
       generationmix: aggregatedMix,
+      interconnectors,
       totalGeneration,
+      totalImports,
+      totalExports,
     };
   } catch (error) {
     console.error('Error fetching grid data:', error);
@@ -136,16 +193,16 @@ function getLatestDataByFuelType(data: BMRSFuelItem[]): BMRSFuelItem[] {
   const latestByType: Record<string, BMRSFuelItem> = {};
 
   data.forEach(item => {
-    if (!latestByType[item.psrType] ||
-        new Date(item.startTime) > new Date(latestByType[item.psrType].startTime)) {
-      latestByType[item.psrType] = item;
+    if (!latestByType[item.fuelType] ||
+        new Date(item.startTime) > new Date(latestByType[item.fuelType].startTime)) {
+      latestByType[item.fuelType] = item;
     }
   });
 
   return Object.values(latestByType);
 }
 
-// Aggregate fuel types (combine wind, hydro, etc.)
+// Aggregate fuel types (combine different gas types, etc.)
 function aggregateFuelTypes(mix: GenerationMix[]): GenerationMix[] {
   const aggregated: Record<string, GenerationMix> = {};
 
@@ -158,7 +215,7 @@ function aggregateFuelTypes(mix: GenerationMix[]): GenerationMix[] {
     }
   });
 
-  return Object.values(aggregated);
+  return Object.values(aggregated).filter(item => item.mw > 0);
 }
 
 // Estimate carbon intensity based on generation mix
@@ -173,7 +230,6 @@ function estimateCarbonIntensity(mix: GenerationMix[]): number {
     'wind': 0,
     'solar': 0,
     'other': 200,
-    'imports': 300, // Average
   };
 
   let totalCarbon = 0;
@@ -200,12 +256,12 @@ export async function getCurrentDemand(): Promise<number> {
     const response = await fetch(
       `${BMRS_API_BASE}/datasets/INDDEM?format=json`,
       {
-        next: { revalidate: 30 },
+        cache: 'no-store',
       }
     );
 
     if (!response.ok) {
-      throw new Error('Failed to fetch demand data');
+      return 0;
     }
 
     const data = await response.json();
@@ -244,13 +300,13 @@ export async function getGridStats(): Promise<Stats> {
 
     const nuclear_perc = mix.find(item => item.fuel === 'nuclear')?.perc || 0;
 
-    const imports_perc = mix.find(item => item.fuel === 'imports')?.perc || 0;
+    const imports_perc = (gridData.totalImports / gridData.totalGeneration) * 100;
 
     const low_carbon_perc = renewable_perc + nuclear_perc;
 
     return {
       demand,
-      frequency: 50.0, // Standard UK grid frequency
+      frequency: 50.0,
       low_carbon_perc,
       renewable_perc,
       fossil_perc,
@@ -263,7 +319,7 @@ export async function getGridStats(): Promise<Stats> {
   }
 }
 
-// Fetch historical generation data (last 24-48 hours)
+// Fetch historical generation data
 export async function getHistoricalGeneration(hours: number = 24): Promise<HistoricalData[]> {
   try {
     const now = new Date();
@@ -272,12 +328,12 @@ export async function getHistoricalGeneration(hours: number = 24): Promise<Histo
     const response = await fetch(
       `${BMRS_API_BASE}/datasets/FUELHH?from=${from.toISOString()}&to=${now.toISOString()}&format=json`,
       {
-        next: { revalidate: 300 },
+        cache: 'no-store',
       }
     );
 
     if (!response.ok) {
-      throw new Error('Failed to fetch historical data');
+      return [];
     }
 
     const data = await response.json();
@@ -304,8 +360,8 @@ export async function getHistoricalGeneration(hours: number = 24): Promise<Histo
 }
 
 // Group data by settlement period
-function groupBySettlementPeriod(data: BMRSFuelItem[]): any[] {
-  const grouped: Record<string, BMRSFuelItem[]> = {};
+function groupBySettlementPeriod(data: any[]): any[] {
+  const grouped: Record<string, any[]> = {};
 
   data.forEach(item => {
     const key = `${item.settlementDate}_${item.settlementPeriod}`;
@@ -316,11 +372,17 @@ function groupBySettlementPeriod(data: BMRSFuelItem[]): any[] {
   });
 
   return Object.entries(grouped).map(([key, items]) => {
-    const totalGen = items.reduce((sum, item) => sum + item.quantity, 0);
-    const mix = items.map(item => ({
-      fuel: fuelTypeMapping[item.psrType] || 'other',
-      mw: item.quantity,
-      perc: (item.quantity / totalGen) * 100,
+    const genItems = items.filter(item =>
+      !item.fuelType.startsWith('INT') &&
+      fuelTypeMapping[item.fuelType]
+    );
+
+    const totalGen = genItems.reduce((sum, item) => sum + Math.max(0, item.generation), 0);
+
+    const mix = genItems.map(item => ({
+      fuel: fuelTypeMapping[item.fuelType] || 'other',
+      mw: Math.max(0, item.generation),
+      perc: (Math.max(0, item.generation) / totalGen) * 100,
     }));
 
     const aggregated = aggregateFuelTypes(mix);
@@ -333,14 +395,12 @@ function groupBySettlementPeriod(data: BMRSFuelItem[]): any[] {
   }).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
 }
 
-// Fetch forecast (uses historical as placeholder for now)
+// Fetch forecast
 export async function getIntensityForecast(hours: number = 24): Promise<HistoricalData[]> {
-  // For now, return historical data as forecast placeholder
-  // In production, you would use FOU2T14D dataset
   return getHistoricalGeneration(hours);
 }
 
-// Fetch historical intensity data (wrapper)
+// Fetch historical intensity data
 export async function getHistoricalIntensity(hours: number = 24): Promise<HistoricalData[]> {
   return getHistoricalGeneration(hours);
 }
@@ -351,8 +411,7 @@ export function formatFuelName(fuel: string): string {
     'biomass': 'Biomass',
     'coal': 'Coal',
     'oil': 'Oil',
-    'imports': 'Imports',
-    'gas': 'Natural Gas',
+    'gas': 'Gas',
     'nuclear': 'Nuclear',
     'other': 'Other',
     'hydro': 'Hydro',
@@ -374,7 +433,6 @@ export function getFuelColor(fuel: string): string {
     'gas': '#ef4444',
     'coal': '#1f2937',
     'oil': '#78350f',
-    'imports': '#6b7280',
     'other': '#9ca3af',
   };
 

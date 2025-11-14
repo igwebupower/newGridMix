@@ -9,6 +9,7 @@ import { LiveStatus } from '@/components/LiveStatus';
 import { EnergyMixChart } from '@/components/EnergyMixChart';
 import { IntensityChart } from '@/components/IntensityChart';
 import { SourceBreakdown } from '@/components/SourceBreakdown';
+import { InterconnectorFlows } from '@/components/InterconnectorFlows';
 import {
   getCurrentGridData,
   getGridStats,
@@ -140,6 +141,21 @@ export default function Dashboard() {
           </Card>
         </div>
 
+        {/* Interconnector Flows */}
+        {gridData.interconnectors && gridData.interconnectors.length > 0 && (
+          <Card
+            title="Interconnector Flows"
+            subtitle="Energy imports and exports across GB borders"
+            delay={0.4}
+          >
+            <InterconnectorFlows
+              interconnectors={gridData.interconnectors}
+              totalImports={gridData.totalImports}
+              totalExports={gridData.totalExports}
+            />
+          </Card>
+        )}
+
         {/* Trends Section */}
         {historicalData && historicalData.length > 0 && (
           <Card
@@ -167,12 +183,12 @@ export default function Dashboard() {
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Data provided by{' '}
             <a
-              href="https://carbonintensity.org.uk/"
+              href="https://www.elexon.co.uk/data/balancing-mechanism-reporting-agent/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-500 hover:text-blue-600 transition-colors"
             >
-              National Grid ESO
+              Elexon BMRS
             </a>
           </p>
           <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
