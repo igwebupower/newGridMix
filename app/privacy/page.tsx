@@ -84,7 +84,7 @@ export default function PrivacyPage() {
                 <strong>Elexon BMRS API:</strong> We fetch real-time UK electricity generation data from the Balancing Mechanism Reporting Service (BMRS) operated by Elexon. This data is publicly available and anonymized.
               </li>
               <li>
-                <strong>University of Sheffield Solar PVLive API:</strong> We fetch real-time and historical UK solar generation data from Sheffield Solar's PVLive service. This data is publicly available and does not contain personal information.
+                <strong>University of Sheffield Solar PVLive API:</strong> We fetch real-time and historical UK solar generation data from Sheffield Solar&apos;s PVLive service. This data is publicly available and does not contain personal information.
               </li>
             </ul>
             <p>
@@ -96,7 +96,7 @@ export default function PrivacyPage() {
               We retain automatically collected information (such as analytics data) for as long as necessary to fulfill the purposes outlined in this privacy policy, unless a longer retention period is required by law.
             </p>
             <p>
-              Cookie preferences are stored in your browser's local storage and remain until you clear them or change your preferences.
+              Cookie preferences are stored in your browser&apos;s local storage and remain until you clear them or change your preferences.
             </p>
 
             <h2>6. Data Security</h2>
