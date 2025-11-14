@@ -502,10 +502,16 @@ export function getIntensityLevel(intensity: number): {
 // Fetch current solar generation (national)
 export async function getCurrentSolarData(): Promise<SolarData> {
   try {
-    // Use proxy route to bypass CORS restrictions
-    const response = await fetch('/api/solar/current', {
-      cache: 'no-store',
-    });
+    // Directly fetch from Sheffield Solar API (server-side)
+    const response = await fetch(
+      'https://api0.solar.sheffield.ac.uk/pvlive/v3/gsp/0?extra_fields=capacity_mwp',
+      {
+        cache: 'no-store',
+        headers: {
+          'Accept': 'application/json',
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error('Failed to fetch solar data');
@@ -547,10 +553,17 @@ export async function getCurrentSolarData(): Promise<SolarData> {
 // Fetch today's solar generation curve (intraday)
 export async function getTodaySolarCurve(): Promise<SolarIntradayData[]> {
   try {
-    // Use proxy route to bypass CORS restrictions
-    const response = await fetch('/api/solar/today', {
-      cache: 'no-store',
-    });
+    // Directly fetch from Sheffield Solar API (server-side)
+    const today = new Date().toISOString().split('T')[0];
+    const response = await fetch(
+      `https://api0.solar.sheffield.ac.uk/pvlive/v3/gsp/0?start=${today}T00:00:00&extra_fields=capacity_mwp`,
+      {
+        cache: 'no-store',
+        headers: {
+          'Accept': 'application/json',
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error('Failed to fetch intraday solar data');

@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
       carbon_intensity: {
         actual: gridData.intensity.actual || gridData.intensity.forecast,
         forecast: gridData.intensity.forecast,
-        level: gridData.intensity.index.toLowerCase(),
+        level: gridData.intensity.index?.toLowerCase() || 'unknown',
       },
       frequency: {
         hz: parseFloat(frequencyData.frequency.toFixed(3)),
