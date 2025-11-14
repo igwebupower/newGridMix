@@ -107,10 +107,27 @@ export default function InsightsPage() {
         </motion.div>
 
         {/* Footer */}
-        <footer className="text-center py-12 mt-12">
+        <footer className="text-center py-12 mt-12 space-y-4">
           <p className="text-sm text-gray-500 dark:text-gray-400">
             GridMix Insights - Understanding the UK Energy Transition
           </p>
+          <div className="flex flex-wrap justify-center gap-4 text-xs text-gray-400 dark:text-gray-500">
+            <a href="/privacy" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+              Privacy Policy
+            </a>
+            <span>•</span>
+            <a href="/terms" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+              Terms of Service
+            </a>
+            <span>•</span>
+            <a href="/cookies" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+              Cookie Policy
+            </a>
+            <span>•</span>
+            <a href="mailto:hello@gridmix.co.uk" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+              Contact
+            </a>
+          </div>
         </footer>
       </main>
     </div>
