@@ -71,6 +71,17 @@ export function Header({ lastUpdated }: HeaderProps) {
               >
                 Insights
               </Link>
+              <Link
+                href="/support"
+                className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center space-x-1 ${
+                  pathname === '/support'
+                    ? 'bg-green-500/10 text-green-600 dark:text-green-400'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                <span>💚</span>
+                <span>Support</span>
+              </Link>
             </nav>
           </div>
 
