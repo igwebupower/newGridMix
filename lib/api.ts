@@ -1,7 +1,9 @@
 // GridMix API Integration Layer
 // Integrates with BMRS (Balancing Mechanism Reporting Service) Elexon API
+// and Sheffield Solar PVLive for accurate solar data
 
 const BMRS_API_BASE = 'https://data.elexon.co.uk/bmrs/api/v1';
+const PVLIVE_API_BASE = 'https://api0.solar.sheffield.ac.uk/pvlive/api/v4';
 
 // Types
 export interface GenerationMix {
@@ -57,6 +59,18 @@ export interface Stats {
   fossil_perc: number;
   nuclear_perc: number;
   imports_perc: number;
+}
+
+export interface SolarData {
+  generation_mw: number;
+  datetime: string;
+  capacity_percent: number;
+  installed_capacity_mw?: number;
+}
+
+export interface SolarIntradayData {
+  datetime: string;
+  generation_mw: number;
 }
 
 // Map BMRS fuel types to our display types
@@ -458,4 +472,153 @@ export function getIntensityLevel(intensity: number): {
   if (intensity < 200) return { level: 'Moderate', color: '#f59e0b' };
   if (intensity < 250) return { level: 'High', color: '#ef4444' };
   return { level: 'Very High', color: '#dc2626' };
+}
+
+// ============================================
+// Sheffield Solar PVLive API Functions
+// ============================================
+
+// Fetch current solar generation (national)
+export async function getCurrentSolarData(): Promise<SolarData> {
+  try {
+    const response = await fetch(
+      `${PVLIVE_API_BASE}/gsp/0`,
+      {
+        cache: 'no-store',
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch solar data');
+    }
+
+    const data = await response.json();
+
+    if (!data.data || data.data.length === 0) {
+      return {
+        generation_mw: 0,
+        datetime: new Date().toISOString(),
+        capacity_percent: 0,
+      };
+    }
+
+    // Latest data point: [gsp_id, datetime, generation_mw]
+    const latest = data.data[0];
+
+    // Estimate installed capacity (GB has ~15-16 GW of solar capacity as of 2024)
+    const estimatedCapacityMW = 16000;
+    const capacityPercent = (latest[2] / estimatedCapacityMW) * 100;
+
+    return {
+      generation_mw: latest[2] || 0,
+      datetime: latest[1],
+      capacity_percent: Math.min(capacityPercent, 100),
+      installed_capacity_mw: estimatedCapacityMW,
+    };
+  } catch (error) {
+    console.error('Error fetching solar data:', error);
+    return {
+      generation_mw: 0,
+      datetime: new Date().toISOString(),
+      capacity_percent: 0,
+    };
+  }
+}
+
+// Fetch today's solar generation curve (intraday)
+export async function getTodaySolarCurve(): Promise<SolarIntradayData[]> {
+  try {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayISO = today.toISOString().split('.')[0];
+
+    const response = await fetch(
+      `${PVLIVE_API_BASE}/gsp/0?start=${todayISO}`,
+      {
+        cache: 'no-store',
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch intraday solar data');
+    }
+
+    const data = await response.json();
+
+    if (!data.data || data.data.length === 0) {
+      return [];
+    }
+
+    // Convert to our format and reverse (API returns newest first)
+    return data.data
+      .map((item: any) => ({
+        datetime: item[1],
+        generation_mw: item[2] || 0,
+      }))
+      .reverse();
+  } catch (error) {
+    console.error('Error fetching intraday solar data:', error);
+    return [];
+  }
+}
+
+// Fetch yesterday's solar curve for comparison
+export async function getYesterdaySolarCurve(): Promise<SolarIntradayData[]> {
+  try {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const startOfDay = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+    const endOfDay = new Date(startOfDay);
+    endOfDay.setDate(endOfDay.getDate() + 1);
+
+    const startISO = startOfDay.toISOString().split('.')[0];
+    const endISO = endOfDay.toISOString().split('.')[0];
+
+    const response = await fetch(
+      `${PVLIVE_API_BASE}/gsp/0?start=${startISO}&end=${endISO}`,
+      {
+        cache: 'no-store',
+      }
+    );
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const data = await response.json();
+
+    if (!data.data || data.data.length === 0) {
+      return [];
+    }
+
+    return data.data
+      .map((item: any) => ({
+        datetime: item[1],
+        generation_mw: item[2] || 0,
+      }))
+      .reverse();
+  } catch (error) {
+    console.error('Error fetching yesterday solar data:', error);
+    return [];
+  }
+}
+
+// Helper: Get today's peak solar generation
+export function getTodaysPeak(intradayData: SolarIntradayData[]): {
+  peak_mw: number;
+  peak_time: string;
+} {
+  if (!intradayData || intradayData.length === 0) {
+    return { peak_mw: 0, peak_time: '' };
+  }
+
+  const peak = intradayData.reduce((max, item) =>
+    item.generation_mw > max.generation_mw ? item : max
+  );
+
+  return {
+    peak_mw: peak.generation_mw,
+    peak_time: formatTimestamp(peak.datetime),
+  };
 }

@@ -10,11 +10,15 @@ import { EnergyMixChart } from '@/components/EnergyMixChart';
 import { IntensityChart } from '@/components/IntensityChart';
 import { SourceBreakdown } from '@/components/SourceBreakdown';
 import { InterconnectorFlows } from '@/components/InterconnectorFlows';
+import { SolarIntradayChart } from '@/components/SolarIntradayChart';
 import {
   getCurrentGridData,
   getGridStats,
   getHistoricalIntensity,
   getIntensityForecast,
+  getCurrentSolarData,
+  getTodaySolarCurve,
+  getYesterdaySolarCurve,
   formatTimestamp,
 } from '@/lib/api';
 
@@ -55,6 +59,34 @@ export default function Dashboard() {
     () => getIntensityForecast(48),
     {
       refreshInterval: 300000,
+    }
+  );
+
+  // Fetch solar data
+  const { data: solarData } = useSWR(
+    'solarCurrent',
+    getCurrentSolarData,
+    {
+      refreshInterval: 30000, // Refresh every 30 seconds
+      revalidateOnFocus: true,
+    }
+  );
+
+  // Fetch today's solar curve
+  const { data: todaySolarCurve } = useSWR(
+    'solarToday',
+    getTodaySolarCurve,
+    {
+      refreshInterval: 300000, // Refresh every 5 minutes
+    }
+  );
+
+  // Fetch yesterday's solar curve
+  const { data: yesterdaySolarCurve } = useSWR(
+    'solarYesterday',
+    getYesterdaySolarCurve,
+    {
+      refreshInterval: 3600000, // Refresh every hour
     }
   );
 
@@ -120,6 +152,7 @@ export default function Dashboard() {
         <LiveStatus
           stats={stats}
           intensity={gridData.intensity.actual || gridData.intensity.forecast}
+          solarData={solarData}
         />
 
         {/* Energy Mix Section */}
@@ -140,6 +173,20 @@ export default function Dashboard() {
             <SourceBreakdown data={gridData.generationmix} />
           </Card>
         </div>
+
+        {/* Solar Intraday Section */}
+        {todaySolarCurve && todaySolarCurve.length > 0 && (
+          <Card
+            title="☀️ Solar Generation Today"
+            subtitle="Live solar output curve with yesterday comparison"
+            delay={0.4}
+          >
+            <SolarIntradayChart
+              todayData={todaySolarCurve}
+              yesterdayData={yesterdaySolarCurve}
+            />
+          </Card>
+        )}
 
         {/* Interconnector Flows */}
         {gridData.interconnectors && gridData.interconnectors.length > 0 && (
