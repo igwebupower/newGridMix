@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
 import { Insight, formatDate, getCategoryLabel, getCategoryColor } from '@/lib/insights';
+import { MarkdownImage } from './BlogImage';
 
 interface InsightContentProps {
   insight: Insight;
@@ -138,7 +139,12 @@ export function InsightContent({ insight }: InsightContentProps) {
           prose-table:my-8 prose-table:border-collapse prose-table:w-full prose-table:text-sm prose-table:md:text-base
           prose-th:bg-gray-100 dark:prose-th:bg-gray-800 prose-th:p-3 prose-th:text-left prose-th:font-bold prose-th:text-gray-900 dark:prose-th:text-gray-100 prose-th:border prose-th:border-gray-300 dark:prose-th:border-gray-700
           prose-td:p-3 prose-td:border prose-td:border-gray-300 dark:prose-td:border-gray-700 prose-td:text-gray-700 dark:prose-td:text-gray-300">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              img: MarkdownImage,
+            }}
+          >
             {insight.content}
           </ReactMarkdown>
         </div>
