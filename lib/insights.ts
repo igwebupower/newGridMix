@@ -125,8 +125,6 @@ Recent UK records include:
 - **Peak share of total power**: 34%
 - **Consecutive hours above 5 GW**: 8 hours (summer solstice—[National Grid ESO, 2024](https://www.nationalgrideso.com/))
 
-![[large] Record Solar Day|Stacked area chart showing hourly solar contribution within total electricity mix during a record-breaking sunny day, with solar highlighted in yellow](Assets/blog/solar-record-day-mix.png)
-
 ## Forecasting and Managing Variability
 
 Clouds can reduce PV output by up to 70% in minutes ([Richardson et al., 2022](https://www.sciencedirect.com/science/article/pii/S0360544221027857)).
@@ -168,8 +166,6 @@ Advances include:
 ## The Road to 2030
 
 The UK aims for >40 GW of solar by 2030 ([DESNZ, 2023](https://www.gov.uk/government/organisations/department-for-energy-security-and-net-zero)), with expanded storage, smart EV charging, and hydrogen electrolysis to handle peaks.
-
-![[medium] Solar Energy Flow|Infographic illustrating energy flow and storage utilization for midday solar surplus over a complete 24-hour cycle, showing charging and discharging patterns](Assets/blog/solar-daily-energy-flow.png)
 
 Your [GridMix dashboard](/) visualizes these changes in real time, helping UK consumers and analysts track the nation's solar revolution.
 
