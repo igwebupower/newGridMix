@@ -22,7 +22,10 @@ export async function createSession(): Promise<string> {
 export async function verifySession(token: string): Promise<AuthSession | null> {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
-    return payload as AuthSession;
+    if (typeof payload.admin === 'boolean' && typeof payload.createdAt === 'number') {
+      return payload as unknown as AuthSession;
+    }
+    return null;
   } catch (error) {
     return null;
   }
