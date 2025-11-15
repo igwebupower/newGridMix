@@ -107,7 +107,7 @@ Fifteen years ago, solar was a niche technology; today it is foundational. Falli
 | 2020 | 13.0 GW | IEA PVPS, 2021 |
 | 2024 | 16.2 GW | National Grid ESO, 2024 |
 
-![[medium] UK Solar Capacity Growth|Time-series chart showing exponential growth in UK solar PV capacity from 2010 to 2024, with key policy milestones annotated including feed-in tariffs and renewable obligation certificates](Assets/blog/uk-solar-capacity-growth.png)
+![[medium] UK Solar Capacity Growth|Time-series chart showing exponential growth in UK solar PV capacity from 2010 to 2024, with key policy milestones annotated including feed-in tariffs and renewable obligation certificates](/Assets/blog/uk-solar-capacity-growth.png)
 
 ## The Duck Curve Arrives in Britain
 
@@ -115,7 +115,7 @@ The UK now experiences the "duck curve"—where midday net electricity demand di
 
 This creates technical challenges for operators as flexible generation and storage need to ramp up quickly in the evening.
 
-![[medium] Duck Curve Effect|Overlay of two daily demand curves comparing cloudy versus sunny days, illustrating the characteristic duck shape with midday dip and evening ramp](Assets/blog/uk-duck-curve-comparison.png)
+![[medium] Duck Curve Effect|Overlay of two daily demand curves comparing cloudy versus sunny days, illustrating the characteristic duck shape with midday dip and evening ramp](/Assets/blog/uk-duck-curve-comparison.png)
 
 ## Breaking Solar Records
 
@@ -136,13 +136,13 @@ National Grid ESO uses:
 
 Forecasting accuracy now approaches ±5% for 24 hours ([Met Office, 2024](https://www.metoffice.gov.uk/)).
 
-![[medium] Forecast vs Actual|Line graph comparing forecasted solar output versus actual generation over a 24-hour period, showing forecast accuracy and variance](Assets/blog/solar-forecast-actual.png)
+![[medium] Forecast vs Actual|Line graph comparing forecasted solar output versus actual generation over a 24-hour period, showing forecast accuracy and variance](/Assets/blog/solar-forecast-actual.png)
 
 ## The Geography of Generation
 
 Southern England hosts the bulk of solar capacity, while Scotland has more wind farms, making grid balancing increasingly complex ([National Grid ESO FES, 2024](https://www.nationalgrideso.com/future-energy/future-energy-scenarios)).
 
-![[small] Solar Capacity Map|Heat map showing solar PV capacity density across UK regions, with darker shades indicating higher concentration in southern England](Assets/blog/uk-solar-regional-map.png)
+![[small] Solar Capacity Map|Heat map showing solar PV capacity density across UK regions, with darker shades indicating higher concentration in southern England](/Assets/blog/uk-solar-regional-map.png)
 
 ## Night, Winter, and the Balancing Mix
 
