@@ -219,17 +219,22 @@ export default function SupportPage() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="glass p-8 rounded-2xl mb-12"
         >
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
-            Ways to Support
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 text-center">
+            Choose Your Payment Method
           </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-8 text-center">
+            Support GridMix with a one-time or recurring contribution
+          </p>
 
-          <div className="space-y-6 max-w-2xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {/* Stripe - Primary */}
             <div className="glass p-6 rounded-xl border-2 border-blue-500">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                    <span className="text-2xl">💳</span>
+                    <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
                   </div>
                   <div>
                     <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">Credit/Debit Card</h3>
@@ -258,7 +263,7 @@ export default function SupportPage() {
                     <span>Processing...</span>
                   </>
                 ) : selectedAmount ? (
-                  <span>{isRecurring ? `Donate £${selectedAmount}/month` : `Donate £${selectedAmount}`} via Stripe</span>
+                  <span>{isRecurring ? `Donate £${selectedAmount}/month` : `Donate £${selectedAmount}`}</span>
                 ) : (
                   <span>Select an amount above</span>
                 )}
@@ -271,50 +276,6 @@ export default function SupportPage() {
               <p className="text-xs text-gray-500 dark:text-gray-500 mt-3 text-center">
                 {isRecurring ? 'Monthly subscription' : 'One-time payment'} • Secure & encrypted • No account needed
               </p>
-            </div>
-
-            {/* PayPal */}
-            <div className="glass p-6 rounded-xl">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-12 h-12 rounded-lg bg-blue-600 flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">PayPal</span>
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">PayPal</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Donate with your PayPal account</p>
-                </div>
-              </div>
-              <button
-                disabled={!selectedAmount}
-                className={`w-full py-4 rounded-lg font-semibold transition-all duration-200 ${
-                  selectedAmount
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl'
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                }`}
-              >
-                {selectedAmount ? `Donate £${selectedAmount} via PayPal` : 'Select an amount above'}
-              </button>
-            </div>
-
-            {/* Buy Me a Coffee */}
-            <div className="glass p-6 rounded-xl">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-12 h-12 rounded-lg bg-amber-500 flex items-center justify-center">
-                  <span className="text-2xl">☕</span>
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">Buy Me a Coffee</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Quick and easy one-time support</p>
-                </div>
-              </div>
-              <a
-                href="https://www.buymeacoffee.com/gridmix"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full py-4 rounded-lg font-semibold bg-amber-500 hover:bg-amber-600 text-white text-center transition-all duration-200 shadow-lg hover:shadow-xl"
-              >
-                Support on Buy Me a Coffee
-              </a>
             </div>
 
             {/* GitHub Sponsors */}
@@ -331,13 +292,16 @@ export default function SupportPage() {
                 </div>
               </div>
               <a
-                href="https://github.com/sponsors/gridmix"
+                href="https://github.com/sponsors/igwebupower"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block w-full py-4 rounded-lg font-semibold bg-gray-800 dark:bg-gray-700 hover:bg-gray-900 dark:hover:bg-gray-600 text-white text-center transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 Sponsor on GitHub
               </a>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-3 text-center">
+                Perfect for developers • Manage via GitHub • Public recognition
+              </p>
             </div>
           </div>
 
