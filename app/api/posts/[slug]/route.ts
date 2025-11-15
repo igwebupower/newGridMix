@@ -7,10 +7,10 @@ const POSTS_DIR = path.join(process.cwd(), 'data', 'posts');
 // GET single post by slug
 export async function GET(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
     const filePath = path.join(POSTS_DIR, `${slug}.json`);
 
     if (!fs.existsSync(filePath)) {
@@ -36,10 +36,10 @@ export async function GET(
 // PUT update post
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
     const updatedPost = await req.json();
     const filePath = path.join(POSTS_DIR, `${slug}.json`);
 
@@ -83,10 +83,10 @@ export async function PUT(
 // DELETE post
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
     const filePath = path.join(POSTS_DIR, `${slug}.json`);
 
     if (!fs.existsSync(filePath)) {
