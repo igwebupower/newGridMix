@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { RichTextEditor } from '@/components/RichTextEditor';
 import Link from 'next/link';
@@ -45,13 +45,7 @@ export default function EditorPage() {
 
   const [tagInput, setTagInput] = useState('');
 
-  useEffect(() => {
-    if (!isNew) {
-      fetchPost();
-    }
-  }, [slug, isNew]);
-
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     try {
       const res = await fetch(`/api/posts/${slug}`);
       const data = await res.json();
@@ -66,7 +60,13 @@ export default function EditorPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [slug]);
+
+  useEffect(() => {
+    if (!isNew) {
+      fetchPost();
+    }
+  }, [isNew, fetchPost]);
 
   const handleSave = async () => {
     // Validate required fields
