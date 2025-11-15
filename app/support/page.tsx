@@ -7,6 +7,43 @@ import { useState } from 'react';
 
 export default function SupportPage() {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleCheckout = async () => {
+    if (!selectedAmount) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: selectedAmount,
+          isRecurring,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      // Redirect to Stripe Checkout
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong. Please try again.');
+      setLoading(false);
+    }
+  };
 
   const donationTiers = [
     {
@@ -139,6 +176,40 @@ export default function SupportPage() {
               />
             </div>
           </div>
+
+          {/* One-time vs Recurring Toggle */}
+          <div className="mt-8 glass p-6 rounded-xl max-w-md mx-auto">
+            <label className="block text-center mb-4 font-semibold text-gray-900 dark:text-gray-100">
+              Donation Type:
+            </label>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setIsRecurring(false)}
+                className={`flex-1 px-6 py-3 rounded-lg font-semibold transition-all ${
+                  !isRecurring
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                }`}
+              >
+                One-time
+              </button>
+              <button
+                onClick={() => setIsRecurring(true)}
+                className={`flex-1 px-6 py-3 rounded-lg font-semibold transition-all ${
+                  isRecurring
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                }`}
+              >
+                Monthly
+              </button>
+            </div>
+            {isRecurring && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 text-center">
+                Cancel anytime from your Stripe customer portal
+              </p>
+            )}
+          </div>
         </motion.div>
 
         {/* Payment Options */}
@@ -170,17 +241,35 @@ export default function SupportPage() {
                 </span>
               </div>
               <button
-                disabled={!selectedAmount}
-                className={`w-full py-4 rounded-lg font-semibold transition-all duration-200 ${
-                  selectedAmount
+                onClick={handleCheckout}
+                disabled={!selectedAmount || loading}
+                className={`w-full py-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center space-x-2 ${
+                  selectedAmount && !loading
                     ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl'
                     : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
                 }`}
               >
-                {selectedAmount ? `Donate £${selectedAmount} via Stripe` : 'Select an amount above'}
+                {loading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    <span>Processing...</span>
+                  </>
+                ) : selectedAmount ? (
+                  <span>{isRecurring ? `Donate £${selectedAmount}/month` : `Donate £${selectedAmount}`} via Stripe</span>
+                ) : (
+                  <span>Select an amount above</span>
+                )}
               </button>
+              {error && (
+                <p className="text-sm text-red-600 dark:text-red-400 mt-2 text-center">
+                  {error}
+                </p>
+              )}
               <p className="text-xs text-gray-500 dark:text-gray-500 mt-3 text-center">
-                One-time payment • Secure & encrypted • No account needed
+                {isRecurring ? 'Monthly subscription' : 'One-time payment'} • Secure & encrypted • No account needed
               </p>
             </div>
 
@@ -252,13 +341,9 @@ export default function SupportPage() {
             </div>
           </div>
 
-          <div className="mt-8 p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+          <div className="mt-8 p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
             <p className="text-sm text-gray-700 dark:text-gray-300 text-center">
-              <strong>Note:</strong> Payment integration is currently being set up. In the meantime, you can support us via{' '}
-              <a href="mailto:hello@gridmix.co.uk" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
-                hello@gridmix.co.uk
-              </a>
-              {' '}for alternative payment methods.
+              <strong>✓ Secure payments powered by Stripe</strong> • All transactions are encrypted and secure. We never see your card details.
             </p>
           </div>
         </motion.div>
