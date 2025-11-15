@@ -94,8 +94,6 @@ Understanding grid frequency helps us appreciate the complex real-time balancing
     title: 'The Solar Revolution: How the UK Grid Handles Sunny Days',
     excerpt: 'Solar capacity in the UK has grown from virtually nothing to over 16GW. Discover how the grid manages this variable renewable source, forecasting challenges, and what records have been broken.',
     content: `
-# The Solar Revolution: How the UK Grid Handles Sunny Days
-
 The United Kingdom may not be famous for its sunshine, but solar power now plays a crucial role in the nation's energy transition. On peak summer days, the UK's solar fleet can supply more than 30% of the country's electricity demand—a major achievement for a nation at 51–55°N latitude ([National Grid ESO, 2024](https://www.nationalgrideso.com/)).
 
 ## The Growth of UK Solar Power
