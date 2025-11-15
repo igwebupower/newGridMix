@@ -317,6 +317,18 @@ export default function Dashboard() {
             </a>
           </p>
           <p className="text-xs text-gray-400 dark:text-gray-500">
+            BMRS data © Elexon Limited. Used under{' '}
+            <a
+              href="https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:text-blue-600 transition-colors underline"
+            >
+              licence
+            </a>
+            .
+          </p>
+          <p className="text-xs text-gray-400 dark:text-gray-500">
             Updates every 30 seconds
           </p>
           <div className="flex flex-wrap justify-center gap-4 text-xs text-gray-400 dark:text-gray-500">

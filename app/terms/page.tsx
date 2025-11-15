@@ -120,14 +120,39 @@ export default function TermsPage() {
               The Service and its original content (excluding data from third-party sources), features, and functionality are owned by GridMix and are protected by international copyright, trademark, and other intellectual property laws.
             </p>
 
-            <h3>5.2 Third-Party Data</h3>
+            <h3>5.2 Third-Party Data Licenses</h3>
             <p>
-              Data provided by Elexon BMRS and University of Sheffield Solar PVLive remains the property of those respective organizations and is subject to their terms of use.
+              Data provided by third-party sources remains the property of those respective organizations and is subject to their terms of use:
             </p>
+            <ul>
+              <li>
+                <strong>Elexon BMRS Data:</strong> Data from the Balancing Mechanism Reporting Service (BMRS) is used under the{' '}
+                <a
+                  href="https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                >
+                  Elexon BMRS Data Copyright Licence
+                </a>
+                . Elexon Limited owns the copyright and database rights in the BMRS data.
+              </li>
+              <li>
+                <strong>Sheffield Solar PVLive Data:</strong> Solar generation data is provided by the University of Sheffield&apos;s PVLive service and is subject to their terms of use.
+              </li>
+            </ul>
 
-            <h3>5.3 Attribution</h3>
+            <h3>5.3 Data Attribution Requirements</h3>
             <p>
-              When sharing or republishing data or insights from GridMix, please provide appropriate attribution to both GridMix and the original data sources.
+              In accordance with the Elexon BMRS Data Copyright Licence, we acknowledge that:
+            </p>
+            <ul>
+              <li>Balancing Mechanism Reporting Service data is © Elexon Limited</li>
+              <li>BMRS data is used under licence from Elexon Limited</li>
+              <li>GridMix is not affiliated with or endorsed by Elexon Limited</li>
+            </ul>
+            <p>
+              When sharing or republishing data or insights from GridMix, please provide appropriate attribution to both GridMix and the original data sources (Elexon BMRS and Sheffield Solar).
             </p>
 
             <h2>6. Disclaimer of Warranties</h2>

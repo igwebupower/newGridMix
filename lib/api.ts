@@ -780,11 +780,19 @@ export function calculateGridHealthScore(
   };
 }
 
-// Fetch current system price (MIP - Market Index Price)
+// Fetch current system price (Market Index Data - MID)
 export async function getCurrentSystemPrice(): Promise<SystemPriceData> {
   try {
+    // MID endpoint requires date range parameters
+    // Get data from last 3 hours to ensure we have recent data
+    const now = new Date();
+    const threeHoursAgo = new Date(now.getTime() - 3 * 60 * 60 * 1000);
+
+    const from = threeHoursAgo.toISOString();
+    const to = now.toISOString();
+
     const response = await fetch(
-      `${BMRS_API_BASE}/datasets/MID?format=json`,
+      `${BMRS_API_BASE}/datasets/MID?from=${from}&to=${to}&format=json`,
       {
         cache: 'no-store',
       }
@@ -803,12 +811,26 @@ export async function getCurrentSystemPrice(): Promise<SystemPriceData> {
       };
     }
 
-    // Get the most recent price
-    const latest = data.data[0];
+    // Filter for APXMIDP provider (N2EXMIDP is always 0)
+    // and get the most recent price
+    const apxData = data.data
+      .filter((item: any) => item.dataProvider === 'APXMIDP' && item.price > 0)
+      .sort((a: any, b: any) =>
+        new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+      );
+
+    if (apxData.length === 0) {
+      return {
+        price: 0,
+        datetime: new Date().toISOString(),
+      };
+    }
+
+    const latest = apxData[0];
 
     return {
       price: latest.price || 0,
-      datetime: latest.settlementDate,
+      datetime: latest.startTime,
     };
   } catch (error) {
     console.error('Error fetching system price:', error);

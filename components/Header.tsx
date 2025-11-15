@@ -23,30 +23,13 @@ export function Header({ lastUpdated }: HeaderProps) {
         <div className="flex justify-between items-center h-16 sm:h-20">
           {/* Logo */}
           <div className="flex items-center space-x-6">
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <svg
-                  className="w-6 h-6 sm:w-7 sm:h-7 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  GridMix
-                </h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
-                  UK National Grid Live
-                </p>
-              </div>
+            <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/Assets/gridmixlogogreen.png"
+                alt="GridMix Logo"
+                className="h-10 sm:h-12 w-auto"
+              />
             </Link>
 
             {/* Navigation */}

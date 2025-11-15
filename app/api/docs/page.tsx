@@ -3,6 +3,23 @@
 import { Header } from '@/components/Header';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import {
+  Rocket,
+  Radio,
+  Code2,
+  AlertTriangle,
+  Target,
+  BatteryCharging,
+  Home,
+  BarChart3,
+  DollarSign,
+  Leaf,
+  Zap,
+  ClipboardList,
+  Heart,
+  FileCode,
+  Box
+} from 'lucide-react';
 
 export default function APIDocsPage() {
   const [activeTab, setActiveTab] = useState('javascript');
@@ -386,7 +403,7 @@ func main() {
           className="glass p-8 rounded-2xl mb-8 border border-gray-200 dark:border-gray-700"
         >
           <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-            <span className="text-4xl">🚀</span>
+            <Rocket className="w-9 h-9 text-blue-600 dark:text-blue-400" />
             Quick Start
           </h2>
 
@@ -471,7 +488,7 @@ func main() {
           className="mb-8"
         >
           <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-            <span className="text-4xl">📡</span>
+            <Radio className="w-9 h-9 text-purple-600 dark:text-purple-400" />
             API Endpoints
           </h2>
 
@@ -625,16 +642,16 @@ func main() {
           className="glass p-8 rounded-2xl mb-8 border border-gray-200 dark:border-gray-700"
         >
           <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-            <span className="text-4xl">💻</span>
+            <Code2 className="w-9 h-9 text-green-600 dark:text-green-400" />
             Code Examples
           </h2>
 
           <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
             {[
-              { id: 'javascript', name: 'JavaScript', icon: '🟨' },
-              { id: 'python', name: 'Python', icon: '🐍' },
-              { id: 'curl', name: 'cURL', icon: '⚡' },
-              { id: 'go', name: 'Go', icon: '🔷' },
+              { id: 'javascript', name: 'JavaScript', icon: <FileCode className="w-4 h-4" /> },
+              { id: 'python', name: 'Python', icon: <FileCode className="w-4 h-4" /> },
+              { id: 'curl', name: 'cURL', icon: <Zap className="w-4 h-4" /> },
+              { id: 'go', name: 'Go', icon: <Box className="w-4 h-4" /> },
             ].map((lang) => (
               <button
                 key={lang.id}
@@ -645,7 +662,7 @@ func main() {
                     : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                 }`}
               >
-                <span>{lang.icon}</span>
+                {lang.icon}
                 {lang.name}
               </button>
             ))}
@@ -686,7 +703,7 @@ func main() {
           className="glass p-8 rounded-2xl mb-8 border border-gray-200 dark:border-gray-700"
         >
           <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-            <span className="text-4xl">⚠️</span>
+            <AlertTriangle className="w-9 h-9 text-orange-600 dark:text-orange-400" />
             Error Codes & Handling
           </h2>
 
@@ -733,68 +750,71 @@ func main() {
           className="glass p-8 rounded-2xl mb-8 border border-gray-200 dark:border-gray-700"
         >
           <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-            <span className="text-4xl">🎯</span>
+            <Target className="w-9 h-9 text-red-600 dark:text-red-400" />
             Real-World Use Cases
           </h2>
 
           <div className="grid md:grid-cols-2 gap-6">
             {[
               {
-                icon: '🔋',
+                icon: BatteryCharging,
                 title: 'EV Charging Optimization',
                 description: 'Charge your electric vehicle during low carbon periods',
                 color: 'blue',
                 example: "if (carbon < 100) startCharging()"
               },
               {
-                icon: '🏠',
+                icon: Home,
                 title: 'Smart Home Automation',
                 description: 'Run appliances when the grid is greenest',
                 color: 'green',
                 example: "if (renewable > 70%) runDishwasher()"
               },
               {
-                icon: '📊',
+                icon: BarChart3,
                 title: 'Energy Analytics',
                 description: 'Analyze trends and forecast renewable energy availability',
                 color: 'purple',
                 example: "analyzeRenewableTrends(data)"
               },
               {
-                icon: '💰',
+                icon: DollarSign,
                 title: 'Cost Optimization',
                 description: 'Reduce energy costs with dynamic pricing',
                 color: 'orange',
                 example: "if (carbon < threshold) useEnergy()"
               },
               {
-                icon: '🌱',
+                icon: Leaf,
                 title: 'Carbon Tracking',
                 description: 'Monitor and reduce your carbon footprint',
                 color: 'emerald',
                 example: "trackCarbonEmissions(data)"
               },
               {
-                icon: '⚡',
+                icon: Zap,
                 title: 'Grid Monitoring',
                 description: 'Real-time monitoring of UK electricity grid',
                 color: 'yellow',
                 example: "displayGridStatus(current)"
               },
-            ].map((useCase, i) => (
-              <div key={i} className={`border border-gray-200 dark:border-gray-700 p-6 rounded-xl hover:shadow-lg transition-shadow bg-gradient-to-br from-${useCase.color}-50/50 to-transparent dark:from-${useCase.color}-900/10`}>
-                <div className="text-4xl mb-3">{useCase.icon}</div>
-                <h3 className={`text-xl font-bold text-${useCase.color}-600 dark:text-${useCase.color}-400 mb-2`}>
-                  {useCase.title}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-3 text-sm">
-                  {useCase.description}
-                </p>
-                <code className="text-xs bg-gray-900 text-green-400 px-3 py-1.5 rounded block font-mono">
-                  {useCase.example}
-                </code>
-              </div>
-            ))}
+            ].map((useCase, i) => {
+              const IconComponent = useCase.icon;
+              return (
+                <div key={i} className={`border border-gray-200 dark:border-gray-700 p-6 rounded-xl hover:shadow-lg transition-shadow bg-gradient-to-br from-${useCase.color}-50/50 to-transparent dark:from-${useCase.color}-900/10`}>
+                  <IconComponent className={`w-10 h-10 mb-3 text-${useCase.color}-600 dark:text-${useCase.color}-400`} />
+                  <h3 className={`text-xl font-bold text-${useCase.color}-600 dark:text-${useCase.color}-400 mb-2`}>
+                    {useCase.title}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-3 text-sm">
+                    {useCase.description}
+                  </p>
+                  <code className="text-xs bg-gray-900 text-green-400 px-3 py-1.5 rounded block font-mono">
+                    {useCase.example}
+                  </code>
+                </div>
+              );
+            })}
           </div>
         </motion.div>
 
@@ -806,7 +826,7 @@ func main() {
           className="glass p-8 rounded-2xl mb-8 border border-gray-200 dark:border-gray-700"
         >
           <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-            <span className="text-4xl">📋</span>
+            <ClipboardList className="w-9 h-9 text-indigo-600 dark:text-indigo-400" />
             Fair Use Policy
           </h2>
 
@@ -886,8 +906,9 @@ func main() {
           transition={{ delay: 1.1 }}
           className="glass p-8 rounded-2xl text-center border border-gray-200 dark:border-gray-700"
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            Support GridMix ❤️
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center justify-center gap-3">
+            Support GridMix
+            <Heart className="w-8 h-8 text-pink-600 dark:text-pink-400 fill-pink-600 dark:fill-pink-400" />
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto">
             GridMix is free and open source. If you find it valuable, consider supporting
