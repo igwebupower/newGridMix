@@ -20,15 +20,16 @@ export function Header({ lastUpdated }: HeaderProps) {
       className="sticky top-0 z-50 glass border-b border-gray-200/20 dark:border-gray-800/20"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 sm:h-20">
+        <div className="flex justify-between items-center h-20 sm:h-24 lg:h-28">
           {/* Logo */}
           <div className="flex items-center space-x-6">
-            <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+            <Link href="/" className="flex items-center hover:opacity-90 transition-all">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/Assets/gridmixlogo.png"
                 alt="GridMix Logo"
-                className="h-10 sm:h-12 w-auto"
+                className="h-14 sm:h-16 lg:h-20 w-auto drop-shadow-sm"
+                style={{ filter: 'contrast(1.1)' }}
               />
             </Link>
 
