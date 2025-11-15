@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { formatDate, getCategoryLabel } from '@/lib/posts';
+import { formatDate, getCategoryLabel } from '@/lib/helpers';
 
 interface BlogPost {
   id: string;

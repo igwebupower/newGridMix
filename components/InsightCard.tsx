@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Insight, formatDate, getCategoryLabel, getCategoryColor } from '@/lib/posts';
+import { Insight } from '@/lib/types';
+import { formatDate, getCategoryLabel, getCategoryColor } from '@/lib/helpers';
 
 interface InsightCardProps {
   insight: Insight;

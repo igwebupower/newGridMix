@@ -4,7 +4,8 @@ import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
-import { Insight, formatDate, getCategoryLabel, getCategoryColor } from '@/lib/posts';
+import { Insight } from '@/lib/types';
+import { formatDate, getCategoryLabel, getCategoryColor } from '@/lib/helpers';
 import { MarkdownImage } from './BlogImage';
 
 interface InsightContentProps {

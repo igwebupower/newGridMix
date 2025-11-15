@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Header } from '@/components/Header';
 import { InsightCard } from '@/components/InsightCard';
-import { Insight } from '@/lib/posts';
+import { Insight } from '@/lib/types';
 
 interface InsightsPageClientProps {
   featuredInsights: Insight[];
