@@ -26,7 +26,7 @@ export function Header({ lastUpdated }: HeaderProps) {
             <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/Assets/gridmixlogogreen.png"
+                src="/Assets/gridmixlogo.png"
                 alt="GridMix Logo"
                 className="h-10 sm:h-12 w-auto"
               />
