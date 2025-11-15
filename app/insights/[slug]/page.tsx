@@ -1,5 +1,5 @@
 import { Header } from '@/components/Header';
-import { getInsightBySlug, getAllInsights, formatDate, getCategoryLabel, getCategoryColor } from '@/lib/insights';
+import { getInsightBySlug, getAllInsights, formatDate, getCategoryLabel, getCategoryColor } from '@/lib/posts';
 import Link from 'next/link';
 import { InsightContent } from '@/components/InsightContent';
 import { StructuredData, BreadcrumbStructuredData } from '@/components/StructuredData';

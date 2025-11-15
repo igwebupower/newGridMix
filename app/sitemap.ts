@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { getAllInsights } from '@/lib/insights';
+import { getAllInsights } from '@/lib/posts';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://gridmix.co.uk';

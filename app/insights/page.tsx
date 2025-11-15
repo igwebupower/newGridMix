@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Header } from '@/components/Header';
 import { InsightCard } from '@/components/InsightCard';
-import { getAllInsights, getFeaturedInsights } from '@/lib/insights';
+import { getAllInsights, getFeaturedInsights } from '@/lib/posts';
 
 export default function InsightsPage() {
   const featuredInsights = getFeaturedInsights();
