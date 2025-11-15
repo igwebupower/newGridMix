@@ -916,7 +916,7 @@ func main() {
           </p>
           <div className="flex justify-center gap-4 flex-wrap">
             <a
-              href="https://github.com/gridmix"
+              href="https://github.com/igwebupower/newGridMix"
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors inline-flex items-center gap-2 font-medium shadow-lg hover:shadow-xl"
