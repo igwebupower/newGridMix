@@ -197,6 +197,7 @@ export default function Dashboard() {
           gridHealth={gridHealth}
           netImportExport={netImportExport}
           storageOutput={storageOutput}
+          historicalData={historicalData}
         />
 
         {/* Energy Mix Section */}
