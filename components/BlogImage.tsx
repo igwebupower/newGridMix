@@ -47,6 +47,7 @@ export function BlogImage({
 
           {/* Image */}
           <div className="relative overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-shadow duration-300">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={src}
               alt={alt}
@@ -107,6 +108,7 @@ export function BlogImage({
               className="relative max-w-7xl max-h-full"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={src}
                 alt={alt}
