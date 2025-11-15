@@ -40,5 +40,8 @@ next-env.d.ts
 *.swo
 *~
 
+# Claude Code
+.claude/
+
 .vercel
 .env*.local

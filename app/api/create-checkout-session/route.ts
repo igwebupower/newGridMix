@@ -17,6 +17,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Maximum amount validation (£10,000 one-time, £1,000/month recurring)
+    const maxAmount = isRecurring ? 1000 : 10000;
+    if (amount > maxAmount) {
+      return NextResponse.json(
+        { error: `Maximum ${isRecurring ? 'monthly' : 'one-time'} donation is £${maxAmount}` },
+        { status: 400 }
+      );
+    }
+
+    // Validate amount is a reasonable number
+    if (!Number.isFinite(amount) || amount !== Math.floor(amount)) {
+      return NextResponse.json(
+        { error: 'Amount must be a whole number' },
+        { status: 400 }
+      );
+    }
+
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gridmix.co.uk';
 
     if (isRecurring) {
@@ -81,8 +98,10 @@ export async function POST(req: NextRequest) {
     }
   } catch (error: any) {
     console.error('Stripe error:', error);
+
+    // Don't expose internal error details to client
     return NextResponse.json(
-      { error: error.message || 'An error occurred' },
+      { error: 'Unable to create checkout session. Please try again.' },
       { status: 500 }
     );
   }
