@@ -360,19 +360,31 @@ Interconnectors enable:
 
 For a real-time view of electricity trade and interconnector flows, explore the [GridMix dashboard](/) powered by [BMRS](https://www.bmreports.com/)—a window into Britain's role in an interconnected energy future.
 
+<br/>
+<br/>
+<br/>
+
 ---
 
 ## References
 
-1. [National Grid ESO - Interconnectors](https://www.nationalgrideso.com/industry-information/balancing-services/interconnectors)
-2. [Elexon - Balancing Mechanism Reporting Service (BMRS)](https://www.bmreports.com/)
-3. [UK Government - Energy Security Strategy](https://www.gov.uk/government/publications/energy-security-strategy)
-4. [Climate Change Committee - Sixth Carbon Budget](https://www.theccc.org.uk/publication/sixth-carbon-budget/)
-5. [ENTSO-E - HVDC Technology](https://www.entsoe.eu/about/inside-entsoe/wgs/cim/hvdc/)
-6. [National Infrastructure Commission - Energy Infrastructure Assessment](https://nic.org.uk/studies-reports/energy/)
-7. [UK-EU Trade and Cooperation Agreement - Energy](https://www.gov.uk/government/publications/uk-eu-trade-and-cooperation-agreement-energy)
-8. [North Sea Wind Power Hub](https://northseawindpowerhub.eu/)
-9. [UK Capacity Market](https://www.emrdeliverybody.com/CM/Home.aspx)
+**National Grid ESO** (2024). *Interconnectors*. Available at: [https://www.nationalgrideso.com/industry-information/balancing-services/interconnectors](https://www.nationalgrideso.com/industry-information/balancing-services/interconnectors)
+
+**Elexon** (2024). *Balancing Mechanism Reporting Service (BMRS)*. Available at: [https://www.bmreports.com/](https://www.bmreports.com/)
+
+**UK Government** (2022). *Energy Security Strategy*. Department for Business, Energy & Industrial Strategy. Available at: [https://www.gov.uk/government/publications/energy-security-strategy](https://www.gov.uk/government/publications/energy-security-strategy)
+
+**Climate Change Committee** (2020). *The Sixth Carbon Budget: The UK's path to Net Zero*. Available at: [https://www.theccc.org.uk/publication/sixth-carbon-budget/](https://www.theccc.org.uk/publication/sixth-carbon-budget/)
+
+**ENTSO-E** (2024). *HVDC Technology and Interconnections*. European Network of Transmission System Operators for Electricity. Available at: [https://www.entsoe.eu/about/inside-entsoe/wgs/cim/hvdc/](https://www.entsoe.eu/about/inside-entsoe/wgs/cim/hvdc/)
+
+**National Infrastructure Commission** (2023). *Energy Infrastructure Assessment*. Available at: [https://nic.org.uk/studies-reports/energy/](https://nic.org.uk/studies-reports/energy/)
+
+**UK Government** (2020). *UK-EU Trade and Cooperation Agreement - Energy*. Available at: [https://www.gov.uk/government/publications/uk-eu-trade-and-cooperation-agreement-energy](https://www.gov.uk/government/publications/uk-eu-trade-and-cooperation-agreement-energy)
+
+**North Sea Wind Power Hub** (2024). *Project Overview*. Available at: [https://northseawindpowerhub.eu/](https://northseawindpowerhub.eu/)
+
+**EMR Delivery Body** (2024). *UK Capacity Market*. Available at: [https://www.emrdeliverybody.com/CM/Home.aspx](https://www.emrdeliverybody.com/CM/Home.aspx)
     `,
     author: 'GridMix Insights',
     date: '2024-11-12',
