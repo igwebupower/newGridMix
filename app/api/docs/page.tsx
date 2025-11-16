@@ -344,10 +344,10 @@ func main() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-12"
         >
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <h1 className="text-5xl font-bold text-gray-900 dark:text-gray-100">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mb-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-gray-100">
               API Documentation
             </h1>
             <div className="flex items-center gap-2">
@@ -355,19 +355,19 @@ func main() {
                 apiStatus === 'online' ? 'bg-green-500 animate-pulse' :
                 apiStatus === 'offline' ? 'bg-red-500' : 'bg-yellow-500'
               }`} />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                 {apiStatus === 'online' ? 'All Systems Operational' :
                  apiStatus === 'offline' ? 'API Offline' : 'Checking...'}
               </span>
             </div>
           </div>
 
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-6">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-6 px-4">
             Free, real-time UK National Grid data API. No authentication required.
             Simple JSON responses. Built for developers.
           </p>
 
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 px-4">
             <span className="inline-flex items-center px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-100 rounded-lg font-medium border border-green-200 dark:border-green-800">
               <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -400,14 +400,14 @@ func main() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="glass p-8 rounded-2xl mb-8 border border-gray-200 dark:border-gray-700"
+          className="glass p-4 sm:p-6 lg:p-8 rounded-2xl mb-6 sm:mb-8 border border-gray-200 dark:border-gray-700"
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-            <Rocket className="w-9 h-9 text-blue-600 dark:text-blue-400" />
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+            <Rocket className="w-7 h-7 sm:w-9 sm:h-9 text-blue-600 dark:text-blue-400" />
             Quick Start
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div>
               <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
                 <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -501,27 +501,27 @@ func main() {
                 transition={{ delay: 0.3 + index * 0.1 }}
                 className="glass rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
               >
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-4">
+                <div className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-bold rounded-md shadow-sm">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                        <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-bold rounded-md shadow-sm whitespace-nowrap">
                           {endpoint.method}
                         </span>
-                        <code className="text-lg font-mono text-gray-900 dark:text-gray-100 font-semibold">
+                        <code className="text-sm sm:text-base lg:text-lg font-mono text-gray-900 dark:text-gray-100 font-semibold break-all">
                           {endpoint.path}
                         </code>
-                        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
                           Cache: {endpoint.cacheTime}
                         </div>
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                         {endpoint.title}
                       </h3>
-                      <p className="text-gray-600 dark:text-gray-400">
+                      <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
                         {endpoint.description}
                       </p>
                     </div>
@@ -529,7 +529,7 @@ func main() {
                     <button
                       onClick={() => testEndpoint(endpoint.id, endpoint.path)}
                       disabled={loading[endpoint.id]}
-                      className="ml-4 px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-medium transition-all flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                     >
                       {loading[endpoint.id] ? (
                         <>
@@ -583,14 +583,14 @@ func main() {
 
                   {/* Example Response */}
                   <div>
-                    <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
+                    <h4 className="font-semibold text-sm sm:text-base text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                       Example Response
                     </h4>
                     <div className="relative">
-                      <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm font-mono max-h-96">
+                      <pre className="bg-gray-900 text-gray-100 p-3 sm:p-4 rounded-lg overflow-x-auto text-xs sm:text-sm font-mono max-h-96">
                         <code>{JSON.stringify(endpoint.response, null, 2)}</code>
                       </pre>
                       <button
@@ -639,14 +639,14 @@ func main() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
-          className="glass p-8 rounded-2xl mb-8 border border-gray-200 dark:border-gray-700"
+          className="glass p-4 sm:p-6 lg:p-8 rounded-2xl mb-6 sm:mb-8 border border-gray-200 dark:border-gray-700"
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-            <Code2 className="w-9 h-9 text-green-600 dark:text-green-400" />
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+            <Code2 className="w-7 h-7 sm:w-9 sm:h-9 text-green-600 dark:text-green-400" />
             Code Examples
           </h2>
 
-          <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+          <div className="flex gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2 scrollbar-hide">
             {[
               { id: 'javascript', name: 'JavaScript', icon: <FileCode className="w-4 h-4" /> },
               { id: 'python', name: 'Python', icon: <FileCode className="w-4 h-4" /> },
@@ -656,20 +656,21 @@ func main() {
               <button
                 key={lang.id}
                 onClick={() => setActiveTab(lang.id)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
+                className={`px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-all flex items-center gap-2 whitespace-nowrap ${
                   activeTab === lang.id
                     ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg scale-105'
                     : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                 }`}
               >
                 {lang.icon}
-                {lang.name}
+                <span className="hidden sm:inline">{lang.name}</span>
+                <span className="sm:hidden">{lang.id === 'javascript' ? 'JS' : lang.id === 'python' ? 'Py' : lang.name}</span>
               </button>
             ))}
           </div>
 
           <div className="relative">
-            <pre className="bg-gray-900 text-gray-100 p-6 rounded-xl overflow-x-auto font-mono text-sm leading-relaxed">
+            <pre className="bg-gray-900 text-gray-100 p-4 sm:p-6 rounded-xl overflow-x-auto font-mono text-xs sm:text-sm leading-relaxed">
               <code>{codeExamples[activeTab as keyof typeof codeExamples]}</code>
             </pre>
             <button
@@ -700,14 +701,14 @@ func main() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
-          className="glass p-8 rounded-2xl mb-8 border border-gray-200 dark:border-gray-700"
+          className="glass p-4 sm:p-6 lg:p-8 rounded-2xl mb-6 sm:mb-8 border border-gray-200 dark:border-gray-700"
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-            <AlertTriangle className="w-9 h-9 text-orange-600 dark:text-orange-400" />
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+            <AlertTriangle className="w-7 h-7 sm:w-9 sm:h-9 text-orange-600 dark:text-orange-400" />
             Error Codes & Handling
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             {[
               { code: 200, status: 'OK', description: 'Request successful', color: 'green' },
               { code: 400, status: 'Bad Request', description: 'Invalid parameters (e.g., hours out of range)', color: 'yellow' },
@@ -747,14 +748,14 @@ func main() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9 }}
-          className="glass p-8 rounded-2xl mb-8 border border-gray-200 dark:border-gray-700"
+          className="glass p-4 sm:p-6 lg:p-8 rounded-2xl mb-6 sm:mb-8 border border-gray-200 dark:border-gray-700"
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-            <Target className="w-9 h-9 text-red-600 dark:text-red-400" />
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+            <Target className="w-7 h-7 sm:w-9 sm:h-9 text-red-600 dark:text-red-400" />
             Real-World Use Cases
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {[
               {
                 icon: BatteryCharging,
@@ -823,20 +824,20 @@ func main() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.0 }}
-          className="glass p-8 rounded-2xl mb-8 border border-gray-200 dark:border-gray-700"
+          className="glass p-4 sm:p-6 lg:p-8 rounded-2xl mb-6 sm:mb-8 border border-gray-200 dark:border-gray-700"
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-            <ClipboardList className="w-9 h-9 text-indigo-600 dark:text-indigo-400" />
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+            <ClipboardList className="w-7 h-7 sm:w-9 sm:h-9 text-indigo-600 dark:text-indigo-400" />
             Fair Use Policy
           </h2>
 
-          <div className="space-y-6">
-            <p className="text-gray-600 dark:text-gray-400 text-lg">
+          <div className="space-y-4 sm:space-y-6">
+            <p className="text-sm sm:text-base lg:text-lg text-gray-600 dark:text-gray-400">
               GridMix API is <strong className="text-gray-900 dark:text-gray-100">100% free and unlimited</strong> for everyone.
               We trust our community to use it responsibly.
             </p>
 
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-3">
                 <h3 className="font-semibold text-green-600 dark:text-green-400 flex items-center gap-2 text-lg">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -904,17 +905,17 @@ func main() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1 }}
-          className="glass p-8 rounded-2xl text-center border border-gray-200 dark:border-gray-700"
+          className="glass p-6 sm:p-8 rounded-2xl text-center border border-gray-200 dark:border-gray-700"
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center justify-center gap-3">
-            Support GridMix
-            <Heart className="w-8 h-8 text-pink-600 dark:text-pink-400 fill-pink-600 dark:fill-pink-400" />
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+            <span>Support GridMix</span>
+            <Heart className="w-7 h-7 sm:w-8 sm:h-8 text-pink-600 dark:text-pink-400 fill-pink-600 dark:fill-pink-400" />
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto px-4">
             GridMix is free and open source. If you find it valuable, consider supporting
             the project to help keep it running for everyone.
           </p>
-          <div className="flex justify-center gap-4 flex-wrap">
+          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4">
             <a
               href="https://github.com/igwebupower/newGridMix"
               target="_blank"
