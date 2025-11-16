@@ -213,27 +213,18 @@ Interconnectors are [high-voltage direct current (HVDC)](https://www.nationalgri
 
 ### Key Connections
 
-**France:**
-- [**IFA**](https://www.nationalgrideso.com/industry-information/balancing-services/interconnectors/ifa-interconnector) (2 GW, since 1986)
-- [**IFA2**](https://www.nationalgrideso.com/industry-information/balancing-services/interconnectors/ifa2) (1 GW, since 2021)
-- [**ElecLink**](https://www.eleclinktunnel.com/) (1 GW, Channel Tunnel)
-
-**Belgium:**
-- [**Nemo Link**](https://www.nationalgrideso.com/industry-information/balancing-services/interconnectors/nemo-link) (1 GW)
-
-**Netherlands:**
-- [**BritNed**](https://www.nationalgrideso.com/industry-information/balancing-services/interconnectors/britned) (1 GW)
-
-**Ireland:**
-- [**East-West Interconnector**](https://www.eirgridgroup.com/the-grid/projects/east-west-interconnector/) (500 MW)
-- [**Moyle Interconnector**](https://www.mutual-energy.com/moyle-interconnector/) (500 MW)
-- [**Greenlink**](https://greenlinkinterconnector.eu/) (500 MW)
-
-**Norway:**
-- [**North Sea Link**](https://www.nationalgrideso.com/industry-information/balancing-services/interconnectors/north-sea-link) (1.4 GW, world's longest at 720 km)
-
-**Denmark:**
-- [**Viking Link**](https://www.nationalgrideso.com/industry-information/balancing-services/interconnectors/viking-link) (1.4 GW, since 2023)
+| Interconnector | Country | Capacity | Operational Since | Notes |
+|----------------|---------|----------|-------------------|-------|
+| [**IFA**](https://www.nationalgrideso.com/industry-information/balancing-services/interconnectors/ifa-interconnector) | France | 2 GW | 1986 | Interconnexion France-Angleterre |
+| [**IFA2**](https://www.nationalgrideso.com/industry-information/balancing-services/interconnectors/ifa2) | France | 1 GW | 2021 | - |
+| [**ElecLink**](https://www.eleclinktunnel.com/) | France | 1 GW | 2020 | Via Channel Tunnel |
+| [**Nemo Link**](https://www.nationalgrideso.com/industry-information/balancing-services/interconnectors/nemo-link) | Belgium | 1 GW | 2019 | - |
+| [**BritNed**](https://www.nationalgrideso.com/industry-information/balancing-services/interconnectors/britned) | Netherlands | 1 GW | 2011 | - |
+| [**East-West**](https://www.eirgridgroup.com/the-grid/projects/east-west-interconnector/) | Ireland | 500 MW | 2013 | To Republic of Ireland |
+| [**Moyle**](https://www.mutual-energy.com/moyle-interconnector/) | Ireland | 500 MW | 2002 | To Northern Ireland |
+| [**Greenlink**](https://greenlinkinterconnector.eu/) | Ireland | 500 MW | 2024 | - |
+| [**North Sea Link**](https://www.nationalgrideso.com/industry-information/balancing-services/interconnectors/north-sea-link) | Norway | 1.4 GW | 2021 | World's longest (720 km) |
+| [**Viking Link**](https://www.nationalgrideso.com/industry-information/balancing-services/interconnectors/viking-link) | Denmark | 1.4 GW | 2023 | - |
 
 ## Why Interconnectors Matter
 
