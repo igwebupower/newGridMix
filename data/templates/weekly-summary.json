@@ -1,0 +1,71 @@
+{
+  "type": "weekly_summary",
+  "title_pattern": "UK Grid Week in Review: {week_start} - {week_end}",
+  "category": "analysis",
+  "tags": ["weekly-review", "grid-performance", "carbon-intensity", "renewables"],
+  "target_length": 1500,
+  "tone": "informative, engaging, data-driven",
+  "sections": [
+    {
+      "heading": "Week at a Glance",
+      "purpose": "Quick summary of key metrics",
+      "data_points": [
+        "avg_carbon_intensity",
+        "peak_renewable_percentage",
+        "total_demand",
+        "notable_events"
+      ],
+      "format": "bullet_points"
+    },
+    {
+      "heading": "Carbon Intensity Trends",
+      "purpose": "Analyze carbon intensity patterns",
+      "data_points": [
+        "avg_carbon_intensity",
+        "lowest_carbon_record",
+        "comparison_to_previous_week"
+      ],
+      "format": "narrative_with_data"
+    },
+    {
+      "heading": "Renewable Generation Highlights",
+      "purpose": "Showcase renewable energy achievements",
+      "data_points": [
+        "peak_renewable",
+        "renewable_mix_breakdown",
+        "wind_solar_contribution"
+      ],
+      "format": "narrative_with_data"
+    },
+    {
+      "heading": "Notable Events",
+      "purpose": "Highlight any records or anomalies",
+      "data_points": [
+        "notable_events",
+        "records_broken"
+      ],
+      "format": "bullet_points_or_narrative"
+    },
+    {
+      "heading": "Looking Ahead",
+      "purpose": "Brief outlook for next week",
+      "data_points": [
+        "seasonal_trends",
+        "weather_impact"
+      ],
+      "format": "short_paragraph"
+    }
+  ],
+  "required_elements": {
+    "citations": true,
+    "data_sources": true,
+    "publish_date": true,
+    "author": "GridMix Insights Team"
+  },
+  "ai_instructions": {
+    "style": "Write in an accessible yet authoritative tone. Use specific numbers and percentages to support claims. Explain technical terms when first used. Make the content engaging for both energy professionals and interested general readers.",
+    "focus": "Highlight interesting trends, records, and their real-world significance. Connect data to broader energy transition themes when relevant.",
+    "avoid": "Excessive jargon, unsupported claims, repetitive phrasing, overly promotional language",
+    "structure": "Start with the most newsworthy information. Use subheadings effectively. Include smooth transitions between sections."
+  }
+}

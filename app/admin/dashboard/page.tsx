@@ -22,10 +22,12 @@ export default function AdminDashboard() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [draftCount, setDraftCount] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
     fetchPosts();
+    fetchDraftCount();
   }, []);
 
   const fetchPosts = async () => {
@@ -42,6 +44,18 @@ export default function AdminDashboard() {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchDraftCount = async () => {
+    try {
+      const res = await fetch('/api/admin/drafts');
+      const data = await res.json();
+      if (res.ok && data.counts) {
+        setDraftCount(data.counts.draft + data.counts.review + data.counts.approved);
+      }
+    } catch (err) {
+      console.error('Error fetching draft count:', err);
     }
   };
 
@@ -100,6 +114,17 @@ export default function AdminDashboard() {
                 View Site
               </Link>
               <Link
+                href="/admin/review"
+                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors relative"
+              >
+                Review Queue
+                {draftCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {draftCount}
+                  </span>
+                )}
+              </Link>
+              <Link
                 href="/admin/editor/new"
                 className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors shadow-lg hover:shadow-xl"
               >
@@ -136,7 +161,7 @@ export default function AdminDashboard() {
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
             <p className="text-sm text-gray-500 dark:text-gray-400">Drafts</p>
-            <p className="text-3xl font-bold text-orange-600 mt-2">0</p>
+            <p className="text-3xl font-bold text-orange-600 mt-2">{draftCount}</p>
           </div>
         </div>
 

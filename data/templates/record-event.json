@@ -1,0 +1,68 @@
+{
+  "type": "record_event",
+  "title_pattern": "{record_type}: {record_value}",
+  "category": "grid-tech",
+  "tags": ["record", "milestone", "grid-performance"],
+  "target_length": 800,
+  "tone": "newsworthy, factual, celebratory when appropriate",
+  "sections": [
+    {
+      "heading": "The Record",
+      "purpose": "Announce the record clearly",
+      "data_points": [
+        "record_type",
+        "record_value",
+        "timestamp",
+        "previous_record"
+      ],
+      "format": "headline_paragraph"
+    },
+    {
+      "heading": "What Made This Possible",
+      "purpose": "Explain contributing factors",
+      "data_points": [
+        "generation_mix",
+        "weather_conditions",
+        "grid_conditions"
+      ],
+      "format": "narrative"
+    },
+    {
+      "heading": "Why This Matters",
+      "purpose": "Put the record in context",
+      "data_points": [
+        "historical_comparison",
+        "trend_significance",
+        "climate_impact"
+      ],
+      "format": "narrative"
+    },
+    {
+      "heading": "The Bigger Picture",
+      "purpose": "Connect to energy transition",
+      "data_points": [
+        "progress_toward_net_zero",
+        "infrastructure_improvements"
+      ],
+      "format": "short_paragraph"
+    }
+  ],
+  "required_elements": {
+    "citations": true,
+    "data_sources": true,
+    "publish_date": true,
+    "author": "GridMix Insights Team"
+  },
+  "ai_instructions": {
+    "style": "Write with energy and clarity. Lead with the record itself. Use concrete numbers. Make it shareable and newsworthy.",
+    "focus": "The significance of the achievement and what enabled it. Avoid hyperbole but do celebrate genuine progress.",
+    "avoid": "Overstatement, speculation without data, political commentary",
+    "structure": "Inverted pyramid style - most important information first. Keep it concise and impactful."
+  },
+  "trigger_conditions": {
+    "carbon_intensity_low": "< 50 gCO2/kWh",
+    "renewable_percentage_high": "> 80%",
+    "demand_record": "new peak or trough",
+    "generation_record": "fuel type exceeds previous maximum"
+  }
+}
