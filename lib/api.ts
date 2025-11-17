@@ -506,7 +506,7 @@ export async function getCurrentSolarData(): Promise<SolarData> {
   try {
     // Directly fetch from Sheffield Solar API (server-side)
     const response = await fetch(
-      'https://api0.solar.sheffield.ac.uk/pvlive/v3/gsp/0?extra_fields=capacity_mwp',
+      `${PVLIVE_API_BASE}/gsp/0`,
       {
         cache: 'no-store',
         headers: {
@@ -558,7 +558,7 @@ export async function getTodaySolarCurve(): Promise<SolarIntradayData[]> {
     // Directly fetch from Sheffield Solar API (server-side)
     const today = new Date().toISOString().split('T')[0];
     const response = await fetch(
-      `https://api0.solar.sheffield.ac.uk/pvlive/v3/gsp/0?start=${today}T00:00:00&extra_fields=capacity_mwp`,
+      `${PVLIVE_API_BASE}/gsp/0?start=${today}T00:00:00`,
       {
         cache: 'no-store',
         headers: {
