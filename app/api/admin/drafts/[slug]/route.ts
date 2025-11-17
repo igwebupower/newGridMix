@@ -30,7 +30,7 @@ async function verifyAuth(req: NextRequest): Promise<boolean> {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   // Verify authentication
   if (!(await verifyAuth(req))) {
@@ -38,7 +38,8 @@ export async function GET(
   }
 
   try {
-    const post = await loadPost(params.slug);
+    const { slug } = await params;
+    const post = await loadPost(slug);
 
     if (!post) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
@@ -56,7 +57,7 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   // Verify authentication
   if (!(await verifyAuth(req))) {
@@ -64,6 +65,7 @@ export async function PATCH(
   }
 
   try {
+    const { slug } = await params;
     const body = await req.json();
     const { status, review_notes } = body;
 
@@ -76,7 +78,7 @@ export async function PATCH(
       );
     }
 
-    const updatedPost = await updatePostStatus(params.slug, status, review_notes);
+    const updatedPost = await updatePostStatus(slug, status, review_notes);
 
     if (!updatedPost) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
@@ -98,7 +100,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   // Verify authentication
   if (!(await verifyAuth(req))) {
@@ -106,7 +108,8 @@ export async function DELETE(
   }
 
   try {
-    const success = await deletePost(params.slug);
+    const { slug } = await params;
+    const success = await deletePost(slug);
 
     if (!success) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
