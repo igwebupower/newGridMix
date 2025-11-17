@@ -13,7 +13,7 @@ interface BlogPost {
   author: string;
   date: string;
   readTime: number;
-  category: string;
+  category: 'grid-tech' | 'renewables' | 'policy' | 'analysis' | 'innovation';
   tags: string[];
   featured: boolean;
   status?: 'draft' | 'review' | 'approved' | 'published';
