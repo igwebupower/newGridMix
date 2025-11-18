@@ -3,7 +3,7 @@
 
 import { NextResponse } from 'next/server';
 
-const PVLIVE_API_BASE = 'https://api0.solar.sheffield.ac.uk/pvlive/api/v4';
+const PVLIVE_API_BASE = 'https://api0.solar.sheffield.ac.uk/pvlive/v3';
 
 export async function GET() {
   try {
@@ -12,7 +12,7 @@ export async function GET() {
     const todayISO = today.toISOString().split('.')[0];
 
     const response = await fetch(
-      `${PVLIVE_API_BASE}/gsp/0?start=${todayISO}`,
+      `${PVLIVE_API_BASE}/gsp/0?start=${todayISO}&extra_fields=capacity_mwp`,
       {
         cache: 'no-store',
       }

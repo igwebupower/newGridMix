@@ -3,7 +3,7 @@
 // and Sheffield Solar PVLive for accurate solar data
 
 const BMRS_API_BASE = 'https://data.elexon.co.uk/bmrs/api/v1';
-const PVLIVE_API_BASE = 'https://api0.solar.sheffield.ac.uk/pvlive/api/v4';
+const PVLIVE_API_BASE = 'https://api0.solar.sheffield.ac.uk/pvlive/v3';
 
 // Types
 export interface GenerationMix {
@@ -288,6 +288,9 @@ function getIntensityIndex(intensity: number): string {
 }
 
 // Fetch current demand
+// NOTE: This function is not currently used because the INDDEM API returns
+// negative values and splits data by boundaries rather than providing total national demand.
+// Demand is instead calculated from generation data: Demand = Generation + Imports - Exports
 export async function getCurrentDemand(): Promise<number> {
   try {
     const response = await fetch(
@@ -323,8 +326,11 @@ export async function getCurrentDemand(): Promise<number> {
 export async function getGridStats(): Promise<Stats> {
   try {
     const gridData = await getCurrentGridData();
-    const demand = await getCurrentDemand();
     const mix = gridData.generationmix;
+
+    // Calculate demand from generation data
+    // Demand = Total Generation + Net Imports (imports - exports)
+    const demand = gridData.totalGeneration + gridData.totalImports - gridData.totalExports;
 
     // Calculate percentages
     const renewable_perc = mix
@@ -506,7 +512,7 @@ export async function getCurrentSolarData(): Promise<SolarData> {
   try {
     // Directly fetch from Sheffield Solar API (server-side)
     const response = await fetch(
-      `${PVLIVE_API_BASE}/gsp/0`,
+      `${PVLIVE_API_BASE}/gsp/0?extra_fields=capacity_mwp`,
       {
         cache: 'no-store',
         headers: {
@@ -558,7 +564,7 @@ export async function getTodaySolarCurve(): Promise<SolarIntradayData[]> {
     // Directly fetch from Sheffield Solar API (server-side)
     const today = new Date().toISOString().split('T')[0];
     const response = await fetch(
-      `${PVLIVE_API_BASE}/gsp/0?start=${today}T00:00:00`,
+      `${PVLIVE_API_BASE}/gsp/0?start=${today}T00:00:00&extra_fields=capacity_mwp`,
       {
         cache: 'no-store',
         headers: {
