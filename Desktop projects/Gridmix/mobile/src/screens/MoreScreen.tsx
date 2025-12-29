@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Linking, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
 import * as Application from 'expo-application';
 import { COLORS, SHADOWS, RADIUS } from '@/constants/colors';
 import { HapticButton } from '@/components/HapticButton';

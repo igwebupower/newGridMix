@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { FlatList, RefreshControl, StyleSheet, Text, View, Platform } from 'react-native';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { useCarbonForecast, useCleanestPeriods } from '@/hooks/useEnergyData';
 import { LoadingSpinner, ErrorMessage } from '@/components';

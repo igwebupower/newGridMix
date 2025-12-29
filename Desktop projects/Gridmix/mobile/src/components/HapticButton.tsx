@@ -3,10 +3,8 @@ import {
   TouchableOpacity,
   TouchableOpacityProps,
   Pressable,
-  PressableProps,
   ViewStyle,
   StyleSheet,
-  View,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -74,7 +72,7 @@ export function HapticButton({
     }
   };
 
-  const handlePress = (e: any) => {
+  const handlePress = (e: Parameters<NonNullable<TouchableOpacityProps['onPress']>>[0]) => {
     triggerHaptic();
     onPress?.(e);
   };

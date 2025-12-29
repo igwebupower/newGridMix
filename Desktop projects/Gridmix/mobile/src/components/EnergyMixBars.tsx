@@ -11,7 +11,7 @@ interface EnergyMixBarsProps {
   totalDemand: number;
 }
 
-const SOURCE_INFO: Record<string, { name: string; description: string; icon: string }> = {
+const SOURCE_INFO: Record<string, { name: string; description: string; icon: keyof typeof Ionicons.glyphMap }> = {
   wind: {
     name: 'Wind',
     description: 'Electricity from onshore and offshore wind turbines. The UK is a world leader in offshore wind, with major farms in the North Sea.',
@@ -130,7 +130,7 @@ export function EnergyMixBars({ energyMix, totalDemand }: EnergyMixBarsProps) {
                   <View style={styles.barLabel}>
                     <View style={[styles.sourceIcon, { backgroundColor: source.color + '20' }]}>
                       <Ionicons
-                        name={info?.icon as any}
+                        name={info?.icon ?? 'ellipse'}
                         size={14}
                         color={source.color}
                       />
@@ -189,7 +189,7 @@ export function EnergyMixBars({ energyMix, totalDemand }: EnergyMixBarsProps) {
                     <View style={styles.modalTitleRow}>
                       <View style={[styles.modalIcon, { backgroundColor: (selectedData?.color || COLORS.primary) + '20' }]}>
                         <Ionicons
-                          name={selectedInfo?.icon as any}
+                          name={selectedInfo?.icon ?? 'ellipse'}
                           size={24}
                           color={selectedData?.color}
                         />

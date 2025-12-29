@@ -12,8 +12,8 @@ interface ContextCardProps {
   temperature?: number;
 }
 
-function generateInsight(props: ContextCardProps): { icon: string; message: string } {
-  const { demand, demandChange, carbonIntensity, renewablePercent, windPercent } = props;
+function generateInsight(props: ContextCardProps): { icon: keyof typeof Ionicons.glyphMap; message: string } {
+  const { demandChange, carbonIntensity, renewablePercent, windPercent } = props;
 
   // High demand insight
   if (demandChange > 10) {
@@ -76,7 +76,7 @@ export function ContextCard(props: ContextCardProps) {
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
-        <Ionicons name={insight.icon as any} size={18} color={COLORS.primary} />
+        <Ionicons name={insight.icon} size={18} color={COLORS.primary} />
       </View>
       <Text style={styles.message}>{insight.message}</Text>
     </View>

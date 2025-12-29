@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Text, TextStyle, StyleSheet } from 'react-native';
 
 interface AnimatedNumberProps {
@@ -7,10 +7,9 @@ interface AnimatedNumberProps {
   decimalPlaces?: number;
   prefix?: string;
   suffix?: string;
-  duration?: number;
 }
 
-// Simple animated number using state - more compatible
+// Simple animated number display
 export function AnimatedNumber({
   value,
   style,
@@ -25,7 +24,7 @@ export function AnimatedNumber({
   );
 }
 
-// Simpler version that doesn't require animated props
+// Animated count-up effect
 interface CountUpProps {
   value: number;
   style?: TextStyle;
@@ -42,9 +41,10 @@ export function CountUp({
   suffix = '',
 }: CountUpProps) {
   const [displayValue, setDisplayValue] = React.useState(value);
+  const previousValueRef = useRef(value);
 
   useEffect(() => {
-    const startValue = displayValue;
+    const startValue = previousValueRef.current;
     const diff = value - startValue;
     const steps = 20;
     const stepDuration = 400 / steps;
@@ -60,6 +60,7 @@ export function CountUp({
       if (step >= steps) {
         clearInterval(timer);
         setDisplayValue(value);
+        previousValueRef.current = value;
       }
     }, stepDuration);
 

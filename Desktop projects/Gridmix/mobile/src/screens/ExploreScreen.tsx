@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, Platform } from 'react-native';
-import Animated, { FadeIn, FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, INTERCONNECTOR_COLORS, SHADOWS, RADIUS } from '@/constants/colors';
 import { useInterconnectors } from '@/hooks/useEnergyData';
