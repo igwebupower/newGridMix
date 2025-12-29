@@ -26,9 +26,8 @@ export function AboutScreen({ navigation: _navigation }: RootStackScreenProps<'A
         <Text style={styles.sectionTitle}>About</Text>
         <View style={styles.card}>
           <Text style={styles.paragraph}>
-            GridMix provides real-time data about the UK electricity grid, including carbon
-            intensity, energy mix, and forecasts. Our mission is to help people make informed
-            decisions about when to use electricity for the lowest environmental impact.
+            GridMix shows what's happening on the UK electricity grid in real time, from carbon
+            intensity and energy mix to interconnectors and live forecasts.
           </Text>
         </View>
       </View>
