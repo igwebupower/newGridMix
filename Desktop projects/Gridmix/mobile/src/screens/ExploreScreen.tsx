@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, Platform } from 'react-native';
+import Animated, { FadeIn, FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, INTERCONNECTOR_COLORS } from '@/constants/colors';
+import { COLORS, INTERCONNECTOR_COLORS, SHADOWS, RADIUS } from '@/constants/colors';
 import { useInterconnectors } from '@/hooks/useEnergyData';
 import { LoadingSpinner, ErrorMessage } from '@/components';
 import { COUNTRY_FLAGS } from '@/types/energy';
@@ -282,69 +283,72 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    paddingBottom: 32,
+    paddingBottom: Platform.OS === 'ios' ? 110 : 90,
   },
   header: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   headerTitle: {
     color: COLORS.text,
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   headerSubtitle: {
     color: COLORS.textSecondary,
-    fontSize: 14,
+    fontSize: 15,
   },
   netFlowCard: {
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: RADIUS.lg,
+    padding: 22,
     marginBottom: 24,
     borderWidth: 1,
+    ...SHADOWS.medium,
   },
   netFlowHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 18,
   },
   netFlowInfo: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: 14,
   },
   netFlowLabel: {
     color: COLORS.textSecondary,
     fontSize: 12,
-    fontWeight: '500',
+    fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   netFlowValue: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '700',
+    fontVariant: ['tabular-nums'],
   },
   netFlowDirection: {
     alignItems: 'flex-end',
   },
   netFlowDirectionText: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
   },
   netFlowStats: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingTop: 16,
+    paddingTop: 18,
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
   },
   netFlowStat: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
   },
   netFlowStatText: {
     color: COLORS.textSecondary,
-    fontSize: 13,
+    fontSize: 14,
+    fontWeight: '500',
   },
   section: {
     marginBottom: 24,
@@ -352,114 +356,119 @@ const styles = StyleSheet.create({
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
-    gap: 6,
+    marginBottom: 14,
+    gap: 8,
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   sectionCount: {
     color: COLORS.textMuted,
-    fontSize: 12,
+    fontSize: 13,
+    fontWeight: '500',
   },
   interconnectorCard: {
     backgroundColor: COLORS.surface,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 10,
+    borderRadius: RADIUS.lg,
+    padding: 18,
+    marginBottom: 12,
+    ...SHADOWS.small,
   },
   interconnectorHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 14,
   },
   countryFlag: {
-    fontSize: 28,
-    marginRight: 12,
+    fontSize: 32,
+    marginRight: 14,
   },
   countryInfo: {
     flex: 1,
   },
   countryName: {
     color: COLORS.text,
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 2,
+    fontSize: 17,
+    fontWeight: '700',
+    marginBottom: 4,
   },
   directionBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 2,
+    gap: 4,
   },
   directionText: {
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: 13,
+    fontWeight: '600',
   },
   flowValue: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '700',
+    fontVariant: ['tabular-nums'],
   },
   capacityBar: {
-    gap: 6,
+    gap: 8,
   },
   capacityBarBg: {
-    height: 6,
-    borderRadius: 3,
+    height: 8,
+    borderRadius: 4,
     overflow: 'hidden',
   },
   capacityBarFill: {
     height: '100%',
-    borderRadius: 3,
+    borderRadius: 4,
   },
   capacityText: {
     color: COLORS.textMuted,
-    fontSize: 11,
+    fontSize: 12,
+    fontWeight: '500',
   },
   legend: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 24,
-    paddingVertical: 16,
+    gap: 28,
+    paddingVertical: 20,
   },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
   },
   legendDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
   },
   legendText: {
     color: COLORS.textSecondary,
-    fontSize: 12,
+    fontSize: 13,
+    fontWeight: '500',
   },
   footer: {
     alignItems: 'center',
-    paddingVertical: 16,
-    gap: 4,
+    paddingVertical: 20,
+    gap: 6,
   },
   footerText: {
     color: COLORS.textMuted,
-    fontSize: 11,
+    fontSize: 12,
   },
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 64,
-    gap: 12,
+    paddingVertical: 80,
+    gap: 16,
   },
   emptyText: {
     color: COLORS.textSecondary,
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 17,
+    fontWeight: '600',
   },
   emptySubtext: {
     color: COLORS.textMuted,
-    fontSize: 13,
+    fontSize: 14,
   },
 });

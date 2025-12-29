@@ -1,9 +1,10 @@
 import React, { useCallback } from 'react';
-import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, Text, View, Platform } from 'react-native';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { useCarbonForecast, useCleanestPeriods } from '@/hooks/useEnergyData';
 import { LoadingSpinner, ErrorMessage } from '@/components';
-import { COLORS, getCarbonIntensityColor } from '@/constants/colors';
+import { COLORS, SHADOWS, RADIUS, getCarbonIntensityColor } from '@/constants/colors';
 import type { MainTabScreenProps } from '@/types/navigation';
 import type { CarbonForecastPeriod, CleanestPeriod } from '@/types/energy';
 
@@ -46,9 +47,15 @@ const ForecastItem = React.memo(function ForecastItem({ period }: ForecastItemPr
 
 function CleanestPeriodCard({ period }: { period: CleanestPeriod }) {
   return (
-    <View style={styles.cleanestCard} accessibilityRole="summary">
+    <Animated.View
+      entering={FadeInDown.duration(400)}
+      style={styles.cleanestCard}
+      accessibilityRole="summary"
+    >
       <View style={styles.cleanestHeader}>
-        <Ionicons name="sunny" size={24} color={COLORS.success} accessibilityElementsHidden />
+        <View style={styles.cleanestIconContainer}>
+          <Ionicons name="sunny" size={24} color={COLORS.success} accessibilityElementsHidden />
+        </View>
         <Text style={styles.cleanestTitle}>Greenest Time Today</Text>
       </View>
       <Text
@@ -68,7 +75,7 @@ function CleanestPeriodCard({ period }: { period: CleanestPeriod }) {
       <Text style={styles.cleanestIntensity}>
         {Math.round(period.avg_intensity)} gCO2/kWh average
       </Text>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -153,53 +160,66 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+    paddingBottom: Platform.OS === 'ios' ? 110 : 90,
   },
   cleanestCard: {
     backgroundColor: COLORS.success + '15',
-    borderRadius: 16,
+    borderRadius: RADIUS.lg,
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: COLORS.success + '30',
+    ...SHADOWS.medium,
   },
   cleanestHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 14,
+  },
+  cleanestIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: COLORS.success + '20',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
   },
   cleanestTitle: {
     color: COLORS.success,
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
+    fontSize: 17,
+    fontWeight: '700',
   },
   cleanestTime: {
     color: COLORS.text,
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '700',
-    marginBottom: 4,
+    marginBottom: 6,
+    fontVariant: ['tabular-nums'],
   },
   cleanestIntensity: {
     color: COLORS.textSecondary,
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: '500',
   },
   forecastHeader: {
     backgroundColor: COLORS.surface,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    borderTopLeftRadius: RADIUS.lg,
+    borderTopRightRadius: RADIUS.lg,
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 12,
+    paddingBottom: 14,
+    ...SHADOWS.small,
   },
   forecastTitle: {
     color: COLORS.text,
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '700',
     marginBottom: 4,
   },
   forecastSubtitle: {
     color: COLORS.textSecondary,
-    fontSize: 12,
+    fontSize: 13,
   },
   forecastItem: {
     flexDirection: 'row',
@@ -210,25 +230,28 @@ const styles = StyleSheet.create({
   },
   forecastTime: {
     color: COLORS.textSecondary,
-    fontSize: 12,
-    width: 50,
+    fontSize: 13,
+    width: 55,
+    fontVariant: ['tabular-nums'],
+    fontWeight: '500',
   },
   forecastBar: {
     flex: 1,
-    height: 20,
-    borderRadius: 4,
-    marginHorizontal: 8,
+    height: 22,
+    borderRadius: 6,
+    marginHorizontal: 10,
     overflow: 'hidden',
   },
   forecastBarFill: {
     height: '100%',
-    borderRadius: 4,
+    borderRadius: 6,
   },
   forecastValue: {
-    fontSize: 12,
-    fontWeight: '600',
-    width: 30,
+    fontSize: 13,
+    fontWeight: '700',
+    width: 36,
     textAlign: 'right',
+    fontVariant: ['tabular-nums'],
   },
   emptyState: {
     alignItems: 'center',
@@ -236,6 +259,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: COLORS.textMuted,
-    fontSize: 14,
+    fontSize: 15,
   },
 });

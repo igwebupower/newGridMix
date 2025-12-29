@@ -11,3 +11,8 @@ export { ContextCard } from './ContextCard';
 export { ForecastDots } from './ForecastDots';
 export { EnergyMixBars } from './EnergyMixBars';
 export { ShareButton } from './ShareButton';
+
+// Modern UX components
+export { Skeleton, SkeletonCard, SkeletonStats, SkeletonBars, DashboardSkeleton } from './Skeleton';
+export { AnimatedNumber, CountUp } from './AnimatedNumber';
+export { HapticButton, HapticCard } from './HapticButton';

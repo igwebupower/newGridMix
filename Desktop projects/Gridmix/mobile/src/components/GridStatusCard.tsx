@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '@/constants/colors';
+import { COLORS, SHADOWS, RADIUS } from '@/constants/colors';
+import { HapticCard } from './HapticButton';
 
 type GridStatus = 'normal' | 'tight' | 'critical';
 
@@ -58,84 +60,105 @@ export function GridStatusCard({ demand, supply, lastUpdated, onExplain }: GridS
   const config = getStatusConfig(status);
 
   return (
-    <TouchableOpacity
-      style={styles.container}
-      onPress={onExplain}
-      activeOpacity={onExplain ? 0.7 : 1}
-    >
-      <View style={styles.header}>
-        <View style={styles.titleRow}>
-          <Text style={styles.title}>UK GRID</Text>
-          {onExplain && (
-            <Ionicons name="information-circle-outline" size={18} color={COLORS.textMuted} />
-          )}
+    <Animated.View entering={FadeIn.duration(400)}>
+      <HapticCard
+        style={styles.container}
+        onPress={onExplain}
+        hapticType="selection"
+      >
+        <View style={styles.header}>
+          <View style={styles.titleRow}>
+            <View style={styles.liveIndicator}>
+              <View style={styles.liveDot} />
+            </View>
+            <Text style={styles.title}>UK GRID</Text>
+            {onExplain && (
+              <Ionicons name="chevron-forward" size={16} color={COLORS.textMuted} />
+            )}
+          </View>
+          <View style={[styles.statusBadge, { backgroundColor: config.color + '20' }]}>
+            <Ionicons name={config.icon} size={16} color={config.color} />
+            <Text style={[styles.statusLabel, { color: config.color }]}>{config.label}</Text>
+          </View>
         </View>
-        <View style={[styles.statusBadge, { backgroundColor: config.color + '20' }]}>
-          <Ionicons name={config.icon} size={16} color={config.color} />
-          <Text style={[styles.statusLabel, { color: config.color }]}>{config.label}</Text>
+
+        <Text style={styles.description}>{config.description}</Text>
+
+        <View style={styles.timestampRow}>
+          <Ionicons name="time-outline" size={12} color={COLORS.textMuted} />
+          <Text style={styles.timestamp}>Updated {formatTimeAgo(lastUpdated)}</Text>
         </View>
-      </View>
-
-      <Text style={styles.description}>{config.description}</Text>
-
-      <View style={styles.timestampRow}>
-        <Ionicons name="time-outline" size={12} color={COLORS.textMuted} />
-        <Text style={styles.timestamp}>Updated {formatTimeAgo(lastUpdated)}</Text>
-      </View>
-    </TouchableOpacity>
+      </HapticCard>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.surface,
-    borderRadius: 16,
+    borderRadius: RADIUS.lg,
     padding: 20,
     marginHorizontal: 16,
     marginVertical: 8,
+    ...SHADOWS.medium,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
+  },
+  liveIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.success + '30',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  liveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: COLORS.success,
   },
   title: {
     color: COLORS.text,
     fontSize: 14,
-    fontWeight: '600',
-    letterSpacing: 1,
+    fontWeight: '700',
+    letterSpacing: 1.2,
   },
   statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: RADIUS.full,
     gap: 6,
   },
   statusLabel: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
     letterSpacing: 0.5,
   },
   description: {
     color: COLORS.textSecondary,
-    fontSize: 14,
-    marginBottom: 12,
+    fontSize: 15,
+    marginBottom: 14,
+    lineHeight: 20,
   },
   timestampRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
   },
   timestamp: {
     color: COLORS.textMuted,
-    fontSize: 11,
+    fontSize: 12,
   },
 });

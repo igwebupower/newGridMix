@@ -1,8 +1,7 @@
 import React from 'react';
-import { ScrollView, RefreshControl, StyleSheet, View } from 'react-native';
+import { ScrollView, RefreshControl, StyleSheet, View, Platform } from 'react-native';
 import { useCurrentEnergy, useCarbonForecast } from '@/hooks/useEnergyData';
 import {
-  LoadingSpinner,
   ErrorMessage,
   GridStatusCard,
   QuickStatsRow,
@@ -10,6 +9,7 @@ import {
   EnergyMixBars,
   ForecastDots,
   ShareButton,
+  DashboardSkeleton,
 } from '@/components';
 import { COLORS } from '@/constants/colors';
 import type { MainTabScreenProps } from '@/types/navigation';
@@ -19,7 +19,7 @@ export function DashboardScreen({ navigation }: MainTabScreenProps<'Dashboard'>)
   const { data: forecastData } = useCarbonForecast();
 
   if (isLoading) {
-    return <LoadingSpinner message="Loading grid data..." />;
+    return <DashboardSkeleton />;
   }
 
   if (isError) {
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   content: {
-    paddingBottom: 32,
+    paddingBottom: Platform.OS === 'ios' ? 110 : 90,
   },
   headerRow: {
     position: 'relative',

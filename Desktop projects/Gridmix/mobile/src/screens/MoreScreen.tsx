@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Linking, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import * as Application from 'expo-application';
-import { COLORS } from '@/constants/colors';
+import { COLORS, SHADOWS, RADIUS } from '@/constants/colors';
+import { HapticButton } from '@/components/HapticButton';
 import type { MainTabScreenProps } from '@/types/navigation';
 
 interface MenuItemProps {
@@ -15,21 +17,23 @@ interface MenuItemProps {
 
 function MenuItem({ icon, title, subtitle, onPress, color = COLORS.text }: MenuItemProps) {
   return (
-    <TouchableOpacity
+    <HapticButton
       style={styles.menuItem}
       onPress={onPress}
+      hapticType="selection"
+      scaleOnPress={false}
       accessibilityRole="button"
       accessibilityLabel={subtitle ? `${title}, ${subtitle}` : title}
     >
-      <View style={styles.menuIcon}>
-        <Ionicons name={icon} size={22} color={color} />
+      <View style={[styles.menuIcon, { backgroundColor: color + '15' }]}>
+        <Ionicons name={icon} size={20} color={color} />
       </View>
       <View style={styles.menuContent}>
         <Text style={[styles.menuTitle, { color }]}>{title}</Text>
         {subtitle && <Text style={styles.menuSubtitle}>{subtitle}</Text>}
       </View>
-      <Ionicons name="chevron-forward" size={20} color={COLORS.textMuted} />
-    </TouchableOpacity>
+      <Ionicons name="chevron-forward" size={18} color={COLORS.textMuted} />
+    </HapticButton>
   );
 }
 
@@ -140,23 +144,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
+    paddingBottom: Platform.OS === 'ios' ? 110 : 90,
   },
   section: {
-    marginTop: 24,
+    marginTop: 28,
   },
   sectionTitle: {
     color: COLORS.textMuted,
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
     textTransform: 'uppercase',
+    letterSpacing: 0.5,
     marginHorizontal: 16,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   sectionContent: {
     backgroundColor: COLORS.surface,
     marginHorizontal: 16,
-    borderRadius: 12,
+    borderRadius: RADIUS.lg,
     overflow: 'hidden',
+    ...SHADOWS.small,
   },
   menuItem: {
     flexDirection: 'row',
@@ -164,39 +171,43 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
-    minHeight: 56,
+    minHeight: 60,
   },
   menuIcon: {
-    width: 32,
+    width: 36,
+    height: 36,
+    borderRadius: 10,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   menuContent: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: 14,
   },
   menuTitle: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   menuSubtitle: {
     color: COLORS.textSecondary,
     fontSize: 13,
-    marginTop: 2,
+    marginTop: 3,
   },
   footer: {
     alignItems: 'center',
-    padding: 24,
-    marginTop: 24,
-    marginBottom: 32,
+    padding: 28,
+    marginTop: 28,
+    marginBottom: 40,
   },
   version: {
     color: COLORS.textMuted,
-    fontSize: 12,
-    marginBottom: 4,
+    fontSize: 13,
+    fontWeight: '500',
+    marginBottom: 6,
   },
   copyright: {
     color: COLORS.textMuted,
-    fontSize: 11,
-    marginTop: 2,
+    fontSize: 12,
+    marginTop: 3,
   },
 });

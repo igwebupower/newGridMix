@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Modal, Pressable } from 'react-native';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '@/constants/colors';
+import * as Haptics from 'expo-haptics';
+import { COLORS, SHADOWS, RADIUS } from '@/constants/colors';
+import { HapticCard, HapticButton } from './HapticButton';
+import { CountUp } from './AnimatedNumber';
 
 interface ExplainableMetricProps {
   value: string | number;
@@ -38,14 +42,26 @@ export function ExplainableMetric({
     }
   };
 
+  const numericValue = typeof value === 'number' ? value : parseFloat(String(value));
+  const isNumeric = !isNaN(numericValue);
+
+  const handlePress = () => {
+    Haptics.selectionAsync();
+    setShowExplanation(true);
+  };
+
   return (
     <>
-      <TouchableOpacity
+      <HapticCard
         style={styles.container}
-        onPress={() => setShowExplanation(true)}
-        activeOpacity={0.7}
+        onPress={handlePress}
+        hapticType="selection"
       >
-        <Text style={[styles.value, { color }]}>{value}</Text>
+        {isNumeric ? (
+          <CountUp value={numericValue} style={{ ...styles.value, color }} />
+        ) : (
+          <Text style={[styles.value, { color }]}>{value}</Text>
+        )}
         {unit && <Text style={styles.unit}>{unit}</Text>}
         <Text style={styles.label}>{label}</Text>
         {comparison && (
@@ -54,13 +70,7 @@ export function ExplainableMetric({
             <Text style={styles.comparisonText}>{comparison.value}</Text>
           </View>
         )}
-        <Ionicons
-          name="information-circle-outline"
-          size={14}
-          color={COLORS.textMuted}
-          style={styles.infoIcon}
-        />
-      </TouchableOpacity>
+      </HapticCard>
 
       <Modal
         visible={showExplanation}
@@ -69,38 +79,44 @@ export function ExplainableMetric({
         onRequestClose={() => setShowExplanation(false)}
       >
         <Pressable style={styles.modalOverlay} onPress={() => setShowExplanation(false)}>
-          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{label}</Text>
-              <TouchableOpacity onPress={() => setShowExplanation(false)}>
-                <Ionicons name="close" size={24} color={COLORS.text} />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.modalValueRow}>
-              <Text style={[styles.modalValue, { color }]}>{value}</Text>
-              {unit && <Text style={styles.modalUnit}>{unit}</Text>}
-            </View>
-
-            <Text style={styles.modalExplanation}>{explanation}</Text>
-
-            {comparison && (
-              <View style={styles.comparisonCard}>
-                <View style={styles.comparisonHeader}>
-                  {getTrendIcon()}
-                  <Text style={styles.comparisonLabel}>{comparison.value} vs usual</Text>
-                </View>
-                <Text style={styles.comparisonContext}>{comparison.context}</Text>
+          <Animated.View
+            entering={FadeInDown.duration(300).springify()}
+            style={styles.modalContent}
+          >
+            <Pressable onPress={(e) => e.stopPropagation()}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>{label}</Text>
+                <HapticButton onPress={() => setShowExplanation(false)} hapticType="light">
+                  <Ionicons name="close-circle" size={28} color={COLORS.textMuted} />
+                </HapticButton>
               </View>
-            )}
 
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setShowExplanation(false)}
-            >
-              <Text style={styles.closeButtonText}>Got it</Text>
-            </TouchableOpacity>
-          </Pressable>
+              <View style={styles.modalValueRow}>
+                <Text style={[styles.modalValue, { color }]}>{value}</Text>
+                {unit && <Text style={styles.modalUnit}>{unit}</Text>}
+              </View>
+
+              <Text style={styles.modalExplanation}>{explanation}</Text>
+
+              {comparison && (
+                <View style={styles.comparisonCard}>
+                  <View style={styles.comparisonHeader}>
+                    {getTrendIcon()}
+                    <Text style={styles.comparisonLabel}>{comparison.value} vs usual</Text>
+                  </View>
+                  <Text style={styles.comparisonContext}>{comparison.context}</Text>
+                </View>
+              )}
+
+              <HapticButton
+                style={styles.closeButton}
+                onPress={() => setShowExplanation(false)}
+                hapticType="light"
+              >
+                <Text style={styles.closeButtonText}>Got it</Text>
+              </HapticButton>
+            </Pressable>
+          </Animated.View>
         </Pressable>
       </Modal>
     </>
@@ -111,115 +127,122 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.surface,
-    borderRadius: 12,
-    padding: 12,
+    borderRadius: RADIUS.lg,
+    padding: 16,
     alignItems: 'center',
-    position: 'relative',
+    ...SHADOWS.small,
   },
   value: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '700',
+    fontVariant: ['tabular-nums'],
   },
   unit: {
     color: COLORS.textMuted,
     fontSize: 10,
-    marginTop: 2,
+    marginTop: 4,
+    fontWeight: '500',
   },
   label: {
     color: COLORS.textSecondary,
-    fontSize: 11,
-    marginTop: 4,
+    fontSize: 12,
+    marginTop: 6,
+    fontWeight: '500',
   },
   comparisonRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 2,
-    marginTop: 4,
+    gap: 4,
+    marginTop: 6,
+    backgroundColor: COLORS.background,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: RADIUS.full,
   },
   comparisonText: {
     color: COLORS.textMuted,
     fontSize: 10,
-  },
-  infoIcon: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
+    fontWeight: '500',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
   },
   modalContent: {
     backgroundColor: COLORS.surface,
-    borderRadius: 20,
+    borderRadius: RADIUS.xl,
     padding: 24,
     width: '100%',
     maxWidth: 340,
+    ...SHADOWS.large,
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   modalTitle: {
     color: COLORS.text,
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: '700',
   },
   modalValueRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   modalValue: {
-    fontSize: 36,
+    fontSize: 42,
     fontWeight: '700',
+    fontVariant: ['tabular-nums'],
   },
   modalUnit: {
     color: COLORS.textSecondary,
-    fontSize: 16,
+    fontSize: 18,
     marginLeft: 8,
+    fontWeight: '500',
   },
   modalExplanation: {
     color: COLORS.textSecondary,
-    fontSize: 15,
-    lineHeight: 22,
-    marginBottom: 16,
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 20,
   },
   comparisonCard: {
     backgroundColor: COLORS.background,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16,
+    borderRadius: RADIUS.md,
+    padding: 16,
+    marginBottom: 20,
   },
   comparisonHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    marginBottom: 4,
+    gap: 8,
+    marginBottom: 6,
   },
   comparisonLabel: {
     color: COLORS.text,
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 15,
+    fontWeight: '600',
   },
   comparisonContext: {
     color: COLORS.textSecondary,
-    fontSize: 13,
+    fontSize: 14,
+    lineHeight: 20,
   },
   closeButton: {
     backgroundColor: COLORS.primary,
-    borderRadius: 12,
-    paddingVertical: 14,
+    borderRadius: RADIUS.md,
+    paddingVertical: 16,
     alignItems: 'center',
   },
   closeButtonText: {
     color: COLORS.text,
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
   },
 });

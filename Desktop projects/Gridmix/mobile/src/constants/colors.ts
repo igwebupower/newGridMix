@@ -33,12 +33,14 @@ export const COLORS = {
   // Primary
   primary: '#06B6D4',
   primaryDark: '#0891B2',
+  primaryLight: '#22D3EE',
 
   // Background
   background: '#0f172a',
   backgroundLight: '#1e293b',
   surface: '#1e293b',
   surfaceLight: '#334155',
+  surfaceElevated: '#273549',
 
   // Text
   text: '#F8FAFC',
@@ -47,13 +49,69 @@ export const COLORS = {
 
   // Status
   success: '#22C55E',
+  successLight: '#22C55E20',
   warning: '#F59E0B',
+  warningLight: '#F59E0B20',
   error: '#EF4444',
+  errorLight: '#EF444420',
   info: '#3B82F6',
+  infoLight: '#3B82F620',
 
   // Borders
   border: '#334155',
   borderLight: '#475569',
+} as const;
+
+// Modern shadow styles for iOS
+export const SHADOWS = {
+  small: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  medium: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  large: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  glow: (color: string) => ({
+    shadowColor: color,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 4,
+  }),
+} as const;
+
+// Modern border radius
+export const RADIUS = {
+  xs: 6,
+  sm: 10,
+  md: 14,
+  lg: 20,
+  xl: 28,
+  full: 9999,
+} as const;
+
+// Spacing scale
+export const SPACING = {
+  xs: 4,
+  sm: 8,
+  md: 16,
+  lg: 24,
+  xl: 32,
+  xxl: 48,
 } as const;
 
 // Carbon intensity thresholds (gCO2/kWh)

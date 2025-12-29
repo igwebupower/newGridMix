@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Modal, Pressable } from 'react-native';
+import Animated, { FadeIn, FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, ENERGY_COLORS } from '@/constants/colors';
+import { COLORS, ENERGY_COLORS, SHADOWS, RADIUS } from '@/constants/colors';
+import { HapticButton, HapticCard } from './HapticButton';
 import type { EnergyMix } from '@/types/energy';
 
 interface EnergyMixBarsProps {
@@ -81,15 +83,17 @@ export function EnergyMixBars({ energyMix, totalDemand }: EnergyMixBarsProps) {
 
   return (
     <>
-      <View style={styles.container}>
+      <Animated.View entering={FadeIn.duration(400).delay(200)} style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Generation Mix</Text>
-          <TouchableOpacity
+          <HapticButton
             style={styles.infoButton}
             onPress={() => setSelectedSource('_overview')}
+            hapticType="light"
+            scaleOnPress={false}
           >
-            <Ionicons name="information-circle-outline" size={18} color={COLORS.textMuted} />
-          </TouchableOpacity>
+            <Ionicons name="information-circle-outline" size={20} color={COLORS.textMuted} />
+          </HapticButton>
         </View>
 
         <View style={styles.summaryRow}>
@@ -110,41 +114,47 @@ export function EnergyMixBars({ energyMix, totalDemand }: EnergyMixBarsProps) {
         </View>
 
         <View style={styles.barsContainer}>
-          {sources.map((source) => {
+          {sources.map((source, index) => {
             const percent = totalDemand > 0 ? (source.value / totalDemand) * 100 : 0;
             const info = SOURCE_INFO[source.key];
             return (
-              <TouchableOpacity
+              <Animated.View
                 key={source.key}
-                style={styles.barRow}
-                onPress={() => setSelectedSource(source.key)}
-                activeOpacity={0.7}
+                entering={FadeInRight.duration(300).delay(100 * index)}
               >
-                <View style={styles.barLabel}>
-                  <Ionicons
-                    name={info?.icon as any}
-                    size={14}
-                    color={source.color}
-                  />
-                  <Text style={styles.barLabelText}>{info?.name || source.key}</Text>
-                </View>
-                <View style={styles.barTrack}>
-                  <View
-                    style={[
-                      styles.barFill,
-                      {
-                        width: `${Math.min(percent, 100)}%`,
-                        backgroundColor: source.color,
-                      },
-                    ]}
-                  />
-                </View>
-                <Text style={styles.barPercent}>{percent.toFixed(0)}%</Text>
-              </TouchableOpacity>
+                <HapticCard
+                  style={styles.barRow}
+                  onPress={() => setSelectedSource(source.key)}
+                  hapticType="selection"
+                >
+                  <View style={styles.barLabel}>
+                    <View style={[styles.sourceIcon, { backgroundColor: source.color + '20' }]}>
+                      <Ionicons
+                        name={info?.icon as any}
+                        size={14}
+                        color={source.color}
+                      />
+                    </View>
+                    <Text style={styles.barLabelText}>{info?.name || source.key}</Text>
+                  </View>
+                  <View style={styles.barTrack}>
+                    <View
+                      style={[
+                        styles.barFill,
+                        {
+                          width: `${Math.min(percent, 100)}%`,
+                          backgroundColor: source.color,
+                        },
+                      ]}
+                    />
+                  </View>
+                  <Text style={[styles.barPercent, { color: source.color }]}>{percent.toFixed(0)}%</Text>
+                </HapticCard>
+              </Animated.View>
             );
           })}
         </View>
-      </View>
+      </Animated.View>
 
       <Modal
         visible={selectedSource !== null}
@@ -153,57 +163,65 @@ export function EnergyMixBars({ energyMix, totalDemand }: EnergyMixBarsProps) {
         onRequestClose={() => setSelectedSource(null)}
       >
         <Pressable style={styles.modalOverlay} onPress={() => setSelectedSource(null)}>
-          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
-            {selectedSource === '_overview' ? (
-              <>
-                <View style={styles.modalHeader}>
-                  <Text style={styles.modalTitle}>Generation Mix</Text>
-                  <TouchableOpacity onPress={() => setSelectedSource(null)}>
-                    <Ionicons name="close" size={24} color={COLORS.text} />
-                  </TouchableOpacity>
-                </View>
-                <Text style={styles.modalDescription}>
-                  This shows how UK electricity is being generated right now. The mix changes constantly based on weather, demand, and plant availability.
-                </Text>
-                <Text style={styles.modalDescription}>
-                  Renewable sources (wind, solar, hydro) produce zero operational carbon. Nuclear is low-carbon but not classified as renewable. Gas provides flexible backup but is the main source of emissions.
-                </Text>
-              </>
-            ) : (
-              <>
-                <View style={styles.modalHeader}>
-                  <View style={styles.modalTitleRow}>
-                    <Ionicons
-                      name={selectedInfo?.icon as any}
-                      size={24}
-                      color={selectedData?.color}
-                    />
-                    <Text style={styles.modalTitle}>{selectedInfo?.name}</Text>
+          <Animated.View
+            entering={FadeInDown.duration(300).springify()}
+            style={styles.modalContent}
+          >
+            <Pressable onPress={(e) => e.stopPropagation()}>
+              {selectedSource === '_overview' ? (
+                <>
+                  <View style={styles.modalHeader}>
+                    <Text style={styles.modalTitle}>Generation Mix</Text>
+                    <HapticButton onPress={() => setSelectedSource(null)} hapticType="light">
+                      <Ionicons name="close-circle" size={28} color={COLORS.textMuted} />
+                    </HapticButton>
                   </View>
-                  <TouchableOpacity onPress={() => setSelectedSource(null)}>
-                    <Ionicons name="close" size={24} color={COLORS.text} />
-                  </TouchableOpacity>
-                </View>
-                {selectedData && (
-                  <View style={styles.modalStats}>
-                    <Text style={[styles.modalValue, { color: selectedData.color }]}>
-                      {((selectedData.value / totalDemand) * 100).toFixed(1)}%
-                    </Text>
-                    <Text style={styles.modalUnit}>
-                      {(selectedData.value / 1000).toFixed(2)} GW
-                    </Text>
+                  <Text style={styles.modalDescription}>
+                    This shows how UK electricity is being generated right now. The mix changes constantly based on weather, demand, and plant availability.
+                  </Text>
+                  <Text style={styles.modalDescription}>
+                    Renewable sources (wind, solar, hydro) produce zero operational carbon. Nuclear is low-carbon but not classified as renewable. Gas provides flexible backup but is the main source of emissions.
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <View style={styles.modalHeader}>
+                    <View style={styles.modalTitleRow}>
+                      <View style={[styles.modalIcon, { backgroundColor: (selectedData?.color || COLORS.primary) + '20' }]}>
+                        <Ionicons
+                          name={selectedInfo?.icon as any}
+                          size={24}
+                          color={selectedData?.color}
+                        />
+                      </View>
+                      <Text style={styles.modalTitle}>{selectedInfo?.name}</Text>
+                    </View>
+                    <HapticButton onPress={() => setSelectedSource(null)} hapticType="light">
+                      <Ionicons name="close-circle" size={28} color={COLORS.textMuted} />
+                    </HapticButton>
                   </View>
-                )}
-                <Text style={styles.modalDescription}>{selectedInfo?.description}</Text>
-              </>
-            )}
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setSelectedSource(null)}
-            >
-              <Text style={styles.closeButtonText}>Got it</Text>
-            </TouchableOpacity>
-          </Pressable>
+                  {selectedData && (
+                    <View style={styles.modalStats}>
+                      <Text style={[styles.modalValue, { color: selectedData.color }]}>
+                        {((selectedData.value / totalDemand) * 100).toFixed(1)}%
+                      </Text>
+                      <Text style={styles.modalUnit}>
+                        {(selectedData.value / 1000).toFixed(2)} GW
+                      </Text>
+                    </View>
+                  )}
+                  <Text style={styles.modalDescription}>{selectedInfo?.description}</Text>
+                </>
+              )}
+              <HapticButton
+                style={styles.closeButton}
+                onPress={() => setSelectedSource(null)}
+                hapticType="light"
+              >
+                <Text style={styles.closeButtonText}>Got it</Text>
+              </HapticButton>
+            </Pressable>
+          </Animated.View>
         </Pressable>
       </Modal>
     </>
@@ -213,21 +231,22 @@ export function EnergyMixBars({ energyMix, totalDemand }: EnergyMixBarsProps) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.surface,
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: RADIUS.lg,
+    padding: 20,
     marginHorizontal: 16,
     marginVertical: 8,
+    ...SHADOWS.medium,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   title: {
     color: COLORS.text,
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
   },
   infoButton: {
     padding: 4,
@@ -235,9 +254,9 @@ const styles = StyleSheet.create({
   summaryRow: {
     flexDirection: 'row',
     backgroundColor: COLORS.background,
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 16,
+    borderRadius: RADIUS.md,
+    padding: 14,
+    marginBottom: 20,
   },
   summaryItem: {
     flex: 1,
@@ -245,114 +264,135 @@ const styles = StyleSheet.create({
   },
   summaryValue: {
     color: COLORS.text,
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '700',
+    fontVariant: ['tabular-nums'],
   },
   summaryLabel: {
     color: COLORS.textMuted,
-    fontSize: 10,
-    marginTop: 2,
+    fontSize: 11,
+    marginTop: 4,
+    fontWeight: '500',
   },
   divider: {
     width: 1,
     backgroundColor: COLORS.border,
   },
   barsContainer: {
-    gap: 10,
+    gap: 8,
   },
   barRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingVertical: 6,
   },
   barLabel: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: 80,
-    gap: 6,
+    width: 90,
+    gap: 8,
+  },
+  sourceIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   barLabelText: {
     color: COLORS.textSecondary,
-    fontSize: 12,
+    fontSize: 13,
+    fontWeight: '500',
   },
   barTrack: {
     flex: 1,
-    height: 8,
+    height: 10,
     backgroundColor: COLORS.border,
-    borderRadius: 4,
-    marginHorizontal: 8,
+    borderRadius: 5,
+    marginHorizontal: 10,
     overflow: 'hidden',
   },
   barFill: {
     height: '100%',
-    borderRadius: 4,
+    borderRadius: 5,
   },
   barPercent: {
-    color: COLORS.text,
-    fontSize: 12,
-    fontWeight: '500',
-    width: 36,
+    fontSize: 14,
+    fontWeight: '700',
+    width: 40,
     textAlign: 'right',
+    fontVariant: ['tabular-nums'],
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
   },
   modalContent: {
     backgroundColor: COLORS.surface,
-    borderRadius: 20,
+    borderRadius: RADIUS.xl,
     padding: 24,
     width: '100%',
     maxWidth: 340,
+    ...SHADOWS.large,
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   modalTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 12,
+  },
+  modalIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalTitle: {
     color: COLORS.text,
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: '700',
   },
   modalStats: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    gap: 8,
-    marginBottom: 16,
+    gap: 10,
+    marginBottom: 20,
   },
   modalValue: {
-    fontSize: 32,
+    fontSize: 38,
     fontWeight: '700',
+    fontVariant: ['tabular-nums'],
   },
   modalUnit: {
     color: COLORS.textSecondary,
-    fontSize: 14,
+    fontSize: 16,
+    fontWeight: '500',
   },
   modalDescription: {
     color: COLORS.textSecondary,
-    fontSize: 15,
-    lineHeight: 22,
-    marginBottom: 12,
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 16,
   },
   closeButton: {
     backgroundColor: COLORS.primary,
-    borderRadius: 12,
-    paddingVertical: 14,
+    borderRadius: RADIUS.md,
+    paddingVertical: 16,
     alignItems: 'center',
     marginTop: 8,
   },
   closeButtonText: {
     color: COLORS.text,
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
   },
 });
