@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "GridMix",
+    "slug": "gridmix",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "gridmix",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f172a"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gridmix.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "UIBackgroundModes": ["fetch", "remote-notification"]
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#0f172a"
+      },
+      "package": "com.gridmix.app",
+      "versionCode": 1,
+      "permissions": ["RECEIVE_BOOT_COMPLETED", "VIBRATE"]
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#06B6D4",
+          "sounds": []
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "gridmix-uk-carbon-tracker"
+      },
+      "apiUrl": "https://gridmix.co.uk/api"
+    }
+  }
+}

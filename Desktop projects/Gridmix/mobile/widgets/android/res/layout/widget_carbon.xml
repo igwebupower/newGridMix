@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/widget_background"
+    android:gravity="center">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_bolt"
+            android:tint="#06B6D4" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GridMix"
+            android:textColor="#94A3B8"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginStart="4dp" />
+    </LinearLayout>
+
+    <!-- Carbon Intensity Value -->
+    <TextView
+        android:id="@+id/intensity_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="150"
+        android:textColor="#22C55E"
+        android:textSize="42sp"
+        android:fontFamily="sans-serif-bold" />
+
+    <!-- Unit -->
+    <TextView
+        android:id="@+id/intensity_unit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="gCO₂/kWh"
+        android:textColor="#64748B"
+        android:textSize="11sp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Intensity Label -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/intensity_badge_background"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="4dp">
+
+        <View
+            android:id="@+id/intensity_dot"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/circle_indicator" />
+
+        <TextView
+            android:id="@+id/intensity_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Low"
+            android:textColor="#22C55E"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginStart="6dp" />
+    </LinearLayout>
+
+</LinearLayout>
