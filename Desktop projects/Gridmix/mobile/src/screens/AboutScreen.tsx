@@ -26,7 +26,7 @@ export function AboutScreen({ navigation: _navigation }: RootStackScreenProps<'A
         <Text style={styles.sectionTitle}>About</Text>
         <View style={styles.card}>
           <Text style={styles.paragraph}>
-            GridMix shows what's happening on the UK electricity grid in real time, from carbon
+            GridMix shows what is happening on the UK electricity grid in real time, from carbon
             intensity and energy mix to interconnectors and live forecasts.
           </Text>
         </View>
