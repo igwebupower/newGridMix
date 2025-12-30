@@ -1,5 +1,6 @@
 // API Route: Proxy for Sheffield Solar Current Data
 // This route runs on the server side and bypasses CORS restrictions
+// Updated: v4 API endpoint - Dec 30 2025
 
 import { NextResponse } from 'next/server';
 
