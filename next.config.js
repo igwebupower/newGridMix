@@ -1,6 +1,11 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+
+  // Restrict file tracing to this project only (prevents picking up sibling projects)
+  outputFileTracingRoot: path.join(__dirname),
 
   // Optimize images for better performance and SEO
   images: {
