@@ -3,7 +3,7 @@
 // and Sheffield Solar PVLive for accurate solar data
 
 const BMRS_API_BASE = 'https://data.elexon.co.uk/bmrs/api/v1';
-const PVLIVE_API_BASE = 'https://api0.solar.sheffield.ac.uk/pvlive/v3';
+const PVLIVE_API_BASE = 'https://api0.solar.sheffield.ac.uk/pvlive/api/v4';
 
 // Types
 export interface GenerationMix {
