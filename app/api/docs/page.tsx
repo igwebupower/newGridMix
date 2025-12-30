@@ -93,8 +93,8 @@ export default function APIDocsPage() {
       response: {
         timestamp: '2025-11-14T14:45:32.898Z',
         generation_mw: 2847,
-        capacity_percent: 17.8,
-        installed_capacity_mw: 16000,
+        capacity_percent: 14.1,
+        installed_capacity_mw: 20217,
         data_source: 'Sheffield Solar PVLive'
       },
       cacheTime: '30 seconds',

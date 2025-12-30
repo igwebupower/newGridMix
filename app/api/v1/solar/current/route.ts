@@ -2,21 +2,53 @@
 // Provides current UK solar generation data
 
 import { NextResponse } from 'next/server';
-import { getCurrentSolarData } from '@/lib/api';
+
+// Force Node.js runtime
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+const PVLIVE_API_BASE = 'https://api0.solar.sheffield.ac.uk/pvlive/api/v4';
 
 export async function GET() {
   try {
-    const solarData = await getCurrentSolarData();
+    // Fetch directly from Sheffield Solar (server-side, no CORS issues)
+    const response = await fetch(`${PVLIVE_API_BASE}/gsp/0?extra_fields=capacity_mwp`, {
+      cache: 'no-store',
+      headers: {
+        'User-Agent': 'GridMix/1.0 (https://gridmix.co.uk)',
+        'Accept': 'application/json',
+      },
+    });
 
-    const response = {
-      timestamp: solarData.datetime,
-      generation_mw: Math.round(solarData.generation_mw),
-      capacity_percent: parseFloat(solarData.capacity_percent.toFixed(1)),
-      installed_capacity_mw: solarData.installed_capacity_mw || 16000,
+    if (!response.ok) {
+      throw new Error(`Sheffield Solar API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.data || data.data.length === 0) {
+      return NextResponse.json({
+        timestamp: new Date().toISOString(),
+        generation_mw: 0,
+        capacity_percent: 0,
+        installed_capacity_mw: 20000,
+        data_source: 'Sheffield Solar PVLive',
+      });
+    }
+
+    // Latest data point: [gsp_id, datetime, generation_mw, capacity_mwp]
+    const latest = data.data[0];
+    const generationMW = latest[2] || 0;
+    const installedCapacityMW = latest[3] || 20000;
+    const capacityPercent = (generationMW / installedCapacityMW) * 100;
+
+    return NextResponse.json({
+      timestamp: latest[1],
+      generation_mw: Math.round(generationMW),
+      capacity_percent: parseFloat(capacityPercent.toFixed(1)),
+      installed_capacity_mw: Math.round(installedCapacityMW),
       data_source: 'Sheffield Solar PVLive',
-    };
-
-    return NextResponse.json(response, {
+    }, {
       status: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
