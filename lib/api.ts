@@ -510,16 +510,10 @@ export function getIntensityLevel(intensity: number): {
 // Fetch current solar generation (national)
 export async function getCurrentSolarData(): Promise<SolarData> {
   try {
-    // Directly fetch from Sheffield Solar API (server-side)
-    const response = await fetch(
-      `${PVLIVE_API_BASE}/gsp/0?extra_fields=capacity_mwp`,
-      {
-        cache: 'no-store',
-        headers: {
-          'Accept': 'application/json',
-        },
-      }
-    );
+    // Use proxy route to bypass CORS restrictions
+    const response = await fetch('/api/solar/current', {
+      cache: 'no-store',
+    });
 
     if (!response.ok) {
       throw new Error('Failed to fetch solar data');
@@ -535,18 +529,18 @@ export async function getCurrentSolarData(): Promise<SolarData> {
       };
     }
 
-    // Latest data point: [gsp_id, datetime, generation_mw]
+    // Latest data point: [gsp_id, datetime, generation_mw, capacity_mwp]
     const latest = data.data[0];
 
-    // Estimate installed capacity (GB has ~15-16 GW of solar capacity as of 2024)
-    const estimatedCapacityMW = 16000;
-    const capacityPercent = (latest[2] / estimatedCapacityMW) * 100;
+    // Use actual capacity from API if available, otherwise estimate
+    const installedCapacityMW = latest[3] || 20000;
+    const capacityPercent = (latest[2] / installedCapacityMW) * 100;
 
     return {
       generation_mw: latest[2] || 0,
       datetime: latest[1],
       capacity_percent: Math.min(capacityPercent, 100),
-      installed_capacity_mw: estimatedCapacityMW,
+      installed_capacity_mw: installedCapacityMW,
     };
   } catch (error) {
     console.error('Error fetching solar data:', error);
@@ -561,17 +555,10 @@ export async function getCurrentSolarData(): Promise<SolarData> {
 // Fetch today's solar generation curve (intraday)
 export async function getTodaySolarCurve(): Promise<SolarIntradayData[]> {
   try {
-    // Directly fetch from Sheffield Solar API (server-side)
-    const today = new Date().toISOString().split('T')[0];
-    const response = await fetch(
-      `${PVLIVE_API_BASE}/gsp/0?start=${today}T00:00:00&extra_fields=capacity_mwp`,
-      {
-        cache: 'no-store',
-        headers: {
-          'Accept': 'application/json',
-        },
-      }
-    );
+    // Use proxy route to bypass CORS restrictions
+    const response = await fetch('/api/solar/today', {
+      cache: 'no-store',
+    });
 
     if (!response.ok) {
       throw new Error('Failed to fetch intraday solar data');
