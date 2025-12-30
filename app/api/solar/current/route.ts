@@ -4,6 +4,10 @@
 
 import { NextResponse } from 'next/server';
 
+// Force Node.js runtime (not Edge)
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 const PVLIVE_API_BASE = 'https://api0.solar.sheffield.ac.uk/pvlive/api/v4';
 
 export async function GET() {
