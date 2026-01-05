@@ -12,13 +12,18 @@
       "resizeMode": "contain",
       "backgroundColor": "#0f172a"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gridmix.app",
       "buildNumber": "1",
       "infoPlist": {
-        "UIBackgroundModes": ["fetch", "remote-notification"]
+        "UIBackgroundModes": [
+          "fetch",
+          "remote-notification"
+        ]
       }
     },
     "android": {
@@ -27,8 +32,12 @@
         "backgroundColor": "#0f172a"
       },
       "package": "com.gridmix.app",
-      "versionCode": 1,
-      "permissions": ["RECEIVE_BOOT_COMPLETED", "VIBRATE"]
+      "versionCode": 4,
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "com.google.android.gms.permission.AD_ID"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -46,7 +55,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "gridmix-uk-carbon-tracker"
+        "projectId": "d5099566-4e01-4336-a5ff-2001f1d67199"
       },
       "apiUrl": "https://gridmix.co.uk/api"
     }
