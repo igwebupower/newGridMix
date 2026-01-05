@@ -24,33 +24,28 @@ export const API_BASE_URL = __DEV__
   ? getDevApiUrl()
   : 'https://gridmix.co.uk/api';
 
-// API Endpoints
+// API Endpoints - Using v1 REST API
 export const API_ENDPOINTS = {
-  // Energy data
-  energyCurrent: '/energy/current',
-  energyHistory: '/energy/history',
-  energyTimeseries: '/energy/timeseries',
+  // v1 REST API endpoints
+  current: '/v1/current',
+  forecast: '/v1/forecast',
+  historical: '/v1/historical',
 
-  // Carbon forecast
-  carbonForecast: '/carbon-forecast',
-  carbonForecastCleanest: '/carbon-forecast/cleanest',
+  // Solar endpoints
+  solarCurrent: '/v1/solar/current',
+  solarIntraday: '/v1/solar/intraday',
 
-  // BMRS data
-  bmrsGridStatus: '/bmrs/grid-status',
-  bmrsFrequency: '/bmrs/frequency',
-  bmrsInterconnectors: '/bmrs/interconnectors',
+  // Legacy endpoints (for backwards compatibility)
+  energyCurrent: '/v1/current',
+  energyHistory: '/v1/historical',
+  carbonForecast: '/v1/forecast',
 
-  // Projects
-  repdProjects: '/repd/projects',
-  repdLiveGeneration: '/repd/live-generation',
-
-  // Push notifications
+  // Push notifications (to be implemented)
   notificationRegister: '/notifications/register',
   notificationPreferences: '/notifications/preferences',
 
   // Health
-  health: '/health',
-  dataSourcesStatus: '/data-sources/status',
+  health: '/v1',
 } as const;
 
 // Refresh intervals (in milliseconds)

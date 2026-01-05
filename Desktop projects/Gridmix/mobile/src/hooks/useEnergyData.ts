@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchCurrentEnergy, fetchEnergyHistory, fetchCarbonForecast, fetchCleanestPeriods, fetchProjects, fetchInterconnectors } from '@/services/api';
+import { fetchCurrentEnergy, fetchEnergyHistory, fetchCarbonForecast, fetchCleanestPeriods, fetchProjects, fetchInterconnectors, fetchSystemPrice, fetchFrequency } from '@/services/api';
 import { REFRESH_INTERVALS } from '@/constants/api';
 
 export function useCurrentEnergy() {
@@ -62,5 +62,25 @@ export function useInterconnectors() {
     refetchInterval: REFRESH_INTERVALS.current, // 5 minutes
     staleTime: REFRESH_INTERVALS.current / 2,   // 2.5 minutes
     gcTime: 1000 * 60 * 60, // Keep in cache for 1 hour for offline support
+  });
+}
+
+export function useSystemPrice() {
+  return useQuery({
+    queryKey: ['systemPrice'],
+    queryFn: fetchSystemPrice,
+    refetchInterval: REFRESH_INTERVALS.current, // 5 minutes
+    staleTime: REFRESH_INTERVALS.current / 2,
+    gcTime: 1000 * 60 * 60,
+  });
+}
+
+export function useFrequency() {
+  return useQuery({
+    queryKey: ['frequency'],
+    queryFn: fetchFrequency,
+    refetchInterval: 15000, // 15 seconds - frequency updates rapidly
+    staleTime: 10000,
+    gcTime: 1000 * 60 * 60,
   });
 }

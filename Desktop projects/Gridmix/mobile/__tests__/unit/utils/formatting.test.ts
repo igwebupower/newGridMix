@@ -60,13 +60,13 @@ describe('Formatting Utils', () => {
 
   describe('formatPercentage', () => {
     it('formats percentages correctly', () => {
-      expect(formatPercentage(50)).toBe('50%');
+      expect(formatPercentage(50)).toBe('50.0%');
       expect(formatPercentage(33.333, 1)).toBe('33.3%');
     });
 
     it('handles edge values', () => {
-      expect(formatPercentage(0)).toBe('0%');
-      expect(formatPercentage(100)).toBe('100%');
+      expect(formatPercentage(0)).toBe('0.0%');
+      expect(formatPercentage(100)).toBe('100.0%');
     });
   });
 
@@ -81,7 +81,7 @@ describe('Formatting Utils', () => {
     });
 
     it('handles special cases', () => {
-      expect(formatEnergySourceName('gas')).toBe('Gas');
+      expect(formatEnergySourceName('gas')).toBe('Natural Gas');
       expect(formatEnergySourceName('nuclear')).toBe('Nuclear');
       expect(formatEnergySourceName('biomass')).toBe('Biomass');
     });

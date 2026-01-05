@@ -6,8 +6,6 @@ interface AppSettings {
   darkMode: boolean;
   autoRefresh: boolean;
   reduceMotion: boolean;
-  measurementUnit: 'metric' | 'imperial';
-  region: 'gb' | 'england' | 'scotland' | 'wales';
 }
 
 interface AppState {
@@ -26,8 +24,6 @@ const DEFAULT_SETTINGS: AppSettings = {
   darkMode: true,
   autoRefresh: true,
   reduceMotion: false,
-  measurementUnit: 'metric',
-  region: 'gb',
 };
 
 export const useAppStore = create<AppState>()(

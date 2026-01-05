@@ -1,6 +1,7 @@
 import React from 'react';
-import { ScrollView, RefreshControl, StyleSheet, View, Platform } from 'react-native';
-import { useCurrentEnergy, useCarbonForecast } from '@/hooks/useEnergyData';
+import { ScrollView, RefreshControl, StyleSheet, View, Text, Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useCurrentEnergy, useCarbonForecast, useSystemPrice, useFrequency } from '@/hooks/useEnergyData';
 import {
   ErrorMessage,
   GridStatusCard,
@@ -17,6 +18,8 @@ import type { MainTabScreenProps } from '@/types/navigation';
 export function DashboardScreen({ navigation }: MainTabScreenProps<'Dashboard'>) {
   const { data, isLoading, isError, error, refetch, isRefetching } = useCurrentEnergy();
   const { data: forecastData } = useCarbonForecast();
+  const { data: systemPrice } = useSystemPrice();
+  const { data: frequencyData } = useFrequency();
 
   if (isLoading) {
     return <DashboardSkeleton />;
@@ -85,6 +88,44 @@ export function DashboardScreen({ navigation }: MainTabScreenProps<'Dashboard'>)
         />
       </View>
 
+      {/* Market & Grid Section */}
+      <View style={styles.marketSection}>
+        <Text style={styles.sectionTitle}>Market & Grid</Text>
+        <View style={styles.marketRow}>
+          {/* System Price */}
+          <View style={styles.marketCard}>
+            <View style={styles.marketIconContainer}>
+              <Ionicons name="cash-outline" size={20} color={COLORS.primary} />
+            </View>
+            <Text style={styles.marketLabel}>System Price</Text>
+            <Text style={[
+              styles.marketValue,
+              { color: systemPrice && systemPrice.price > 100 ? COLORS.error :
+                       systemPrice && systemPrice.price > 50 ? COLORS.warning : COLORS.success }
+            ]}>
+              £{systemPrice?.price.toFixed(2) ?? '--'}
+            </Text>
+            <Text style={styles.marketUnit}>/MWh</Text>
+          </View>
+
+          {/* Grid Frequency */}
+          <View style={styles.marketCard}>
+            <View style={styles.marketIconContainer}>
+              <Ionicons name="pulse-outline" size={20} color={COLORS.primary} />
+            </View>
+            <Text style={styles.marketLabel}>Frequency</Text>
+            <Text style={[
+              styles.marketValue,
+              { color: frequencyData && (frequencyData.hz < 49.9 || frequencyData.hz > 50.1)
+                ? COLORS.warning : COLORS.success }
+            ]}>
+              {frequencyData?.hz.toFixed(3) ?? '--'}
+            </Text>
+            <Text style={styles.marketUnit}>Hz</Text>
+          </View>
+        </View>
+      </View>
+
       <ContextCard
         demand={totalDemand}
         demandChange={demandChange}
@@ -124,5 +165,53 @@ const styles = StyleSheet.create({
   },
   section: {
     marginVertical: 8,
+  },
+  marketSection: {
+    marginHorizontal: 16,
+    marginVertical: 12,
+  },
+  sectionTitle: {
+    color: COLORS.textSecondary,
+    fontSize: 13,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 12,
+  },
+  marketRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  marketCard: {
+    flex: 1,
+    backgroundColor: COLORS.surface,
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+  },
+  marketIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.primary + '20',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  marketLabel: {
+    color: COLORS.textSecondary,
+    fontSize: 12,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  marketValue: {
+    fontSize: 24,
+    fontWeight: '700',
+    fontVariant: ['tabular-nums'],
+  },
+  marketUnit: {
+    color: COLORS.textMuted,
+    fontSize: 11,
+    marginTop: 2,
   },
 });

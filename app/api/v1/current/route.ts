@@ -2,15 +2,16 @@
 // Public endpoint providing current UK grid snapshot
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentGridData, getCurrentSolarData, getCurrentFrequency } from '@/lib/api';
+import { getCurrentGridData, getCurrentSolarData, getCurrentFrequency, getCurrentSystemPrice } from '@/lib/api';
 
 export async function GET(req: NextRequest) {
   try {
     // Fetch all current data in parallel
-    const [gridData, solarData, frequencyData] = await Promise.all([
+    const [gridData, solarData, frequencyData, systemPriceData] = await Promise.all([
       getCurrentGridData(),
       getCurrentSolarData(),
       getCurrentFrequency(),
+      getCurrentSystemPrice(),
     ]);
 
     // Format response according to API spec
@@ -50,6 +51,10 @@ export async function GET(req: NextRequest) {
         capacity_percent: parseFloat(solarData.capacity_percent.toFixed(1)),
         installed_capacity_mw: solarData.installed_capacity_mw || 16000,
       },
+      system_price: {
+        price_gbp_per_mwh: parseFloat(systemPriceData.price.toFixed(2)),
+        timestamp: systemPriceData.datetime,
+      },
     };
 
     // Return with CORS headers for public access
@@ -61,7 +66,7 @@ export async function GET(req: NextRequest) {
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
         'X-API-Version': 'v1',
-        'X-Data-Source': 'Elexon BMRS, Sheffield Solar PVLive',
+        'X-Data-Source': 'Elexon BMRS, Sheffield Solar PVLive, BMRS MID',
       },
     });
   } catch (error) {
