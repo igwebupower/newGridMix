@@ -5,34 +5,68 @@ import {
   Pressable,
   ViewStyle,
   StyleSheet,
+  StyleProp,
 } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
+  interpolateColor,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
+// Animation style presets
+export type AnimationStyle = 'spring' | 'bounce' | 'gentle';
+
+const ANIMATION_CONFIGS: Record<AnimationStyle, { damping: number; stiffness: number }> = {
+  spring: { damping: 15, stiffness: 400 },
+  bounce: { damping: 8, stiffness: 300 },
+  gentle: { damping: 20, stiffness: 200 },
+};
+
 interface HapticButtonProps extends TouchableOpacityProps {
   hapticType?: 'light' | 'medium' | 'heavy' | 'selection' | 'success' | 'warning' | 'error';
   scaleOnPress?: boolean;
+  scaleAmount?: number;
+  animationStyle?: AnimationStyle;
+  highlightColor?: string;
 }
 
 export function HapticButton({
   hapticType = 'light',
   scaleOnPress = true,
+  scaleAmount = 0.97,
+  animationStyle = 'spring',
+  highlightColor,
   onPress,
   style,
   children,
   ...props
 }: HapticButtonProps) {
   const scale = useSharedValue(1);
+  const pressed = useSharedValue(0);
+  const config = ANIMATION_CONFIGS[animationStyle];
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
+  const animatedStyle = useAnimatedStyle(() => {
+    const baseStyle: ViewStyle = {
+      transform: [{ scale: scale.value }],
+    };
+
+    if (highlightColor) {
+      return {
+        ...baseStyle,
+        backgroundColor: interpolateColor(
+          pressed.value,
+          [0, 1],
+          ['transparent', highlightColor + '20']
+        ),
+      };
+    }
+
+    return baseStyle;
+  });
 
   const triggerHaptic = () => {
     switch (hapticType) {
@@ -61,14 +95,16 @@ export function HapticButton({
   };
 
   const handlePressIn = () => {
+    pressed.value = withSpring(1, config);
     if (scaleOnPress) {
-      scale.value = withSpring(0.97, { damping: 15, stiffness: 400 });
+      scale.value = withSpring(scaleAmount, config);
     }
   };
 
   const handlePressOut = () => {
+    pressed.value = withSpring(0, config);
     if (scaleOnPress) {
-      scale.value = withSpring(1, { damping: 15, stiffness: 400 });
+      scale.value = withSpring(1, config);
     }
   };
 
@@ -93,9 +129,11 @@ export function HapticButton({
 
 interface HapticCardProps {
   hapticType?: 'light' | 'selection';
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   onPress?: () => void;
   children?: React.ReactNode;
+  animationStyle?: AnimationStyle;
+  scaleAmount?: number;
 }
 
 export function HapticCard({
@@ -103,19 +141,22 @@ export function HapticCard({
   onPress,
   style,
   children,
+  animationStyle = 'gentle',
+  scaleAmount = 0.98,
 }: HapticCardProps) {
   const scale = useSharedValue(1);
+  const config = ANIMATION_CONFIGS[animationStyle];
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
 
   const handlePressIn = () => {
-    scale.value = withSpring(0.98, { damping: 20, stiffness: 400 });
+    scale.value = withSpring(scaleAmount, config);
   };
 
   const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 20, stiffness: 400 });
+    scale.value = withSpring(1, config);
   };
 
   const handlePress = () => {

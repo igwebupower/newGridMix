@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Animated, { FadeIn } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SHADOWS, RADIUS } from '@/constants/colors';
+import { SHADOWS, RADIUS } from '@/constants/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { HapticCard } from './HapticButton';
 
 type GridStatus = 'normal' | 'tight' | 'critical';
@@ -21,25 +30,32 @@ function getGridStatus(demand: number, supply: number): GridStatus {
   return 'critical';
 }
 
+// Status colors (hardcoded since this is called outside hook context)
+const STATUS_COLORS = {
+  success: '#22C55E',
+  warning: '#F59E0B',
+  error: '#EF4444',
+};
+
 function getStatusConfig(status: GridStatus) {
   switch (status) {
     case 'normal':
       return {
-        color: COLORS.success,
+        color: STATUS_COLORS.success,
         icon: 'checkmark-circle' as const,
         label: 'NORMAL',
         description: 'Grid operating normally',
       };
     case 'tight':
       return {
-        color: '#F59E0B',
+        color: STATUS_COLORS.warning,
         icon: 'alert-circle' as const,
         label: 'TIGHT',
         description: 'Margins below normal',
       };
     case 'critical':
       return {
-        color: COLORS.error,
+        color: STATUS_COLORS.error,
         icon: 'warning' as const,
         label: 'CRITICAL',
         description: 'Grid under stress',
@@ -55,25 +71,61 @@ function formatTimeAgo(date: Date): string {
   return 'Over an hour ago';
 }
 
+// Animated pulsing dot component for live indicator
+function PulsingDot({ color }: { color: string }) {
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
+
+  useEffect(() => {
+    scale.value = withRepeat(
+      withSequence(
+        withTiming(1.4, { duration: 800, easing: Easing.out(Easing.ease) }),
+        withTiming(1, { duration: 800, easing: Easing.in(Easing.ease) })
+      ),
+      -1,
+      false
+    );
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(0.3, { duration: 800 }),
+        withTiming(1, { duration: 800 })
+      ),
+      -1,
+      false
+    );
+  }, [scale, opacity]);
+
+  const pulseStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+
+  return (
+    <View style={[styles.liveIndicator, { backgroundColor: color + '30' }]}>
+      <Animated.View style={[styles.liveDotOuter, { backgroundColor: color + '40' }, pulseStyle]} />
+      <View style={[styles.liveDotInner, { backgroundColor: color }]} />
+    </View>
+  );
+}
+
 export function GridStatusCard({ demand, supply, lastUpdated, onExplain }: GridStatusCardProps) {
+  const { colors } = useTheme();
   const status = getGridStatus(demand, supply);
   const config = getStatusConfig(status);
 
   return (
     <Animated.View entering={FadeIn.duration(400)}>
       <HapticCard
-        style={styles.container}
+        style={[styles.container, { backgroundColor: colors.surface }]}
         onPress={onExplain}
         hapticType="selection"
       >
         <View style={styles.header}>
           <View style={styles.titleRow}>
-            <View style={styles.liveIndicator}>
-              <View style={styles.liveDot} />
-            </View>
-            <Text style={styles.title}>UK GRID</Text>
+            <PulsingDot color={colors.success} />
+            <Text style={[styles.title, { color: colors.text }]}>UK GRID</Text>
             {onExplain && (
-              <Ionicons name="chevron-forward" size={16} color={COLORS.textMuted} />
+              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
             )}
           </View>
           <View style={[styles.statusBadge, { backgroundColor: config.color + '20' }]}>
@@ -82,11 +134,11 @@ export function GridStatusCard({ demand, supply, lastUpdated, onExplain }: GridS
           </View>
         </View>
 
-        <Text style={styles.description}>{config.description}</Text>
+        <Text style={[styles.description, { color: colors.textSecondary }]}>{config.description}</Text>
 
         <View style={styles.timestampRow}>
-          <Ionicons name="time-outline" size={12} color={COLORS.textMuted} />
-          <Text style={styles.timestamp}>Updated {formatTimeAgo(lastUpdated)}</Text>
+          <Ionicons name="time-outline" size={12} color={colors.textMuted} />
+          <Text style={[styles.timestamp, { color: colors.textMuted }]}>Updated {formatTimeAgo(lastUpdated)}</Text>
         </View>
       </HapticCard>
     </Animated.View>
@@ -95,7 +147,6 @@ export function GridStatusCard({ demand, supply, lastUpdated, onExplain }: GridS
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.surface,
     borderRadius: RADIUS.lg,
     padding: 20,
     marginHorizontal: 16,
@@ -114,21 +165,24 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   liveIndicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORS.success + '30',
+    width: 16,
+    height: 16,
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  liveDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: COLORS.success,
+  liveDotOuter: {
+    position: 'absolute',
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+  },
+  liveDotInner: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   title: {
-    color: COLORS.text,
     fontSize: 14,
     fontWeight: '700',
     letterSpacing: 1.2,
@@ -147,7 +201,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   description: {
-    color: COLORS.textSecondary,
     fontSize: 15,
     marginBottom: 14,
     lineHeight: 20,
@@ -158,7 +211,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   timestamp: {
-    color: COLORS.textMuted,
     fontSize: 12,
   },
 });

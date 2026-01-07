@@ -2,8 +2,10 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+type ThemePreference = 'system' | 'dark' | 'light';
+
 interface AppSettings {
-  darkMode: boolean;
+  themePreference: ThemePreference;
   autoRefresh: boolean;
   reduceMotion: boolean;
 }
@@ -21,7 +23,7 @@ interface AppState {
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
-  darkMode: true,
+  themePreference: 'system',
   autoRefresh: true,
   reduceMotion: false,
 };

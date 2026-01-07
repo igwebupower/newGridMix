@@ -32,7 +32,7 @@
         "backgroundColor": "#0f172a"
       },
       "package": "com.gridmix.app",
-      "versionCode": 8,
+      "versionCode": 13,
       "permissions": [
         "RECEIVE_BOOT_COMPLETED",
         "VIBRATE",

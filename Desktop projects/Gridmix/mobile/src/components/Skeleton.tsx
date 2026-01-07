@@ -1,13 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { View, StyleSheet, ViewStyle, DimensionValue } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withRepeat,
   withTiming,
-  interpolate,
+  Easing,
 } from 'react-native-reanimated';
-import { COLORS } from '@/constants/colors';
+import { RADIUS, GRADIENTS } from '@/constants/colors';
+import { useTheme } from '@/hooks/useTheme';
 
 interface SkeletonProps {
   width: DimensionValue;
@@ -17,29 +19,48 @@ interface SkeletonProps {
 }
 
 export function Skeleton({ width, height, borderRadius = 8, style }: SkeletonProps) {
-  const shimmer = useSharedValue(0);
+  const { colors, isDark } = useTheme();
+  const translateX = useSharedValue(-1);
+
+  // Calculate numeric width for animation (fallback to 200 for percentage widths)
+  const numericWidth = useMemo(() => {
+    if (typeof width === 'number') return width;
+    return 200; // Default for percentage widths
+  }, [width]);
 
   useEffect(() => {
-    shimmer.value = withRepeat(
-      withTiming(1, { duration: 1200 }),
+    translateX.value = withRepeat(
+      withTiming(1, {
+        duration: 1500,
+        easing: Easing.inOut(Easing.ease),
+      }),
       -1,
       false
     );
-  }, [shimmer]);
+  }, [translateX]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(shimmer.value, [0, 0.5, 1], [0.3, 0.6, 0.3]),
+  const shimmerStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value * numericWidth * 2 }],
   }));
 
+  const shimmerColors = isDark ? GRADIENTS.shimmer : GRADIENTS.shimmerLight;
+
   return (
-    <View style={[styles.skeleton, { width, height, borderRadius }, style]}>
-      <Animated.View
-        style={[
-          StyleSheet.absoluteFill,
-          { backgroundColor: COLORS.surfaceLight },
-          animatedStyle,
-        ]}
-      />
+    <View
+      style={[
+        styles.skeleton,
+        { width, height, borderRadius, backgroundColor: colors.surfaceLight },
+        style,
+      ]}
+    >
+      <Animated.View style={[styles.shimmerContainer, shimmerStyle]}>
+        <LinearGradient
+          colors={shimmerColors as unknown as string[]}
+          start={{ x: 0, y: 0.5 }}
+          end={{ x: 1, y: 0.5 }}
+          style={[styles.shimmerGradient, { width: numericWidth }]}
+        />
+      </Animated.View>
     </View>
   );
 }
@@ -49,8 +70,9 @@ interface SkeletonCardProps {
 }
 
 export function SkeletonCard({ style }: SkeletonCardProps) {
+  const { colors } = useTheme();
   return (
-    <View style={[styles.card, style]}>
+    <View style={[styles.card, { backgroundColor: colors.surface }, style]}>
       <View style={styles.cardHeader}>
         <Skeleton width={100} height={14} />
         <Skeleton width={80} height={28} borderRadius={14} />
@@ -64,10 +86,11 @@ export function SkeletonCard({ style }: SkeletonCardProps) {
 }
 
 export function SkeletonStats() {
+  const { colors } = useTheme();
   return (
     <View style={styles.statsRow}>
       {[1, 2, 3].map((i) => (
-        <View key={i} style={styles.statItem}>
+        <View key={i} style={[styles.statItem, { backgroundColor: colors.surface }]}>
           <Skeleton width={48} height={32} borderRadius={8} />
           <Skeleton width={56} height={10} style={styles.spacingTopSmall} />
         </View>
@@ -77,8 +100,9 @@ export function SkeletonStats() {
 }
 
 export function SkeletonBars() {
+  const { colors } = useTheme();
   return (
-    <View style={styles.barsCard}>
+    <View style={[styles.barsCard, { backgroundColor: colors.surface }]}>
       <Skeleton width={120} height={16} style={styles.spacingBottom} />
       {[1, 2, 3, 4, 5].map((i) => (
         <View key={i} style={styles.barRow}>
@@ -94,8 +118,9 @@ export function SkeletonBars() {
 }
 
 export function DashboardSkeleton() {
+  const { colors } = useTheme();
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <SkeletonCard />
       <SkeletonStats />
       <SkeletonCard style={styles.spacingTop} />
@@ -107,15 +132,20 @@ export function DashboardSkeleton() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
     paddingBottom: 32,
   },
   skeleton: {
-    backgroundColor: COLORS.surfaceLight,
+    overflow: 'hidden',
+  },
+  shimmerContainer: {
+    ...StyleSheet.absoluteFillObject,
+    flexDirection: 'row',
+  },
+  shimmerGradient: {
+    height: '100%',
   },
   card: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 20,
+    borderRadius: RADIUS.lg,
     padding: 20,
     marginHorizontal: 16,
     marginVertical: 8,
@@ -145,14 +175,12 @@ const styles = StyleSheet.create({
   },
   statItem: {
     flex: 1,
-    backgroundColor: COLORS.surface,
     borderRadius: 16,
     padding: 16,
     alignItems: 'center',
   },
   barsCard: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 20,
+    borderRadius: RADIUS.lg,
     padding: 20,
     marginHorizontal: 16,
     marginVertical: 8,

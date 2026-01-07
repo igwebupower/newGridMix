@@ -1,15 +1,17 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '@/constants/colors';
+import { useTheme } from '@/hooks/useTheme';
 import type { RootStackScreenProps } from '@/types/navigation';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const gridmixLogo = require('../../assets/images/gridmix-logo.png');
 
 export function AboutScreen({ navigation: _navigation }: RootStackScreenProps<'About'>) {
+  const { colors } = useTheme();
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
         <Image
           source={gridmixLogo}
@@ -17,15 +19,15 @@ export function AboutScreen({ navigation: _navigation }: RootStackScreenProps<'A
           resizeMode="contain"
           accessibilityLabel="GridMix logo"
         />
-        <Text style={styles.title}>GridMix</Text>
-        <Text style={styles.subtitle}>UK Carbon Intensity Tracker</Text>
-        <Text style={styles.version}>Version 1.0.0</Text>
+        <Text style={[styles.title, { color: colors.text }]}>GridMix</Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>UK Carbon Intensity Tracker</Text>
+        <Text style={[styles.version, { color: colors.textMuted }]}>Version 1.0.0</Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>About</Text>
-        <View style={styles.card}>
-          <Text style={styles.paragraph}>
+        <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>About</Text>
+        <View style={[styles.card, { backgroundColor: colors.surface }]}>
+          <Text style={[styles.paragraph, { color: colors.textSecondary }]}>
             GridMix shows what is happening on the UK electricity grid in real time, from carbon
             intensity and energy mix to interconnectors and live forecasts.
           </Text>
@@ -33,47 +35,36 @@ export function AboutScreen({ navigation: _navigation }: RootStackScreenProps<'A
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Data Sources</Text>
-        <View style={styles.card}>
+        <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>Data Sources</Text>
+        <View style={[styles.card, { backgroundColor: colors.surface }]}>
           <TouchableOpacity
-            style={styles.sourceItem}
-            onPress={() => Linking.openURL('https://carbonintensity.org.uk')}
-          >
-            <View style={styles.sourceInfo}>
-              <Text style={styles.sourceName}>Carbon Intensity API</Text>
-              <Text style={styles.sourceDesc}>National Grid ESO</Text>
-            </View>
-            <Ionicons name="open-outline" size={18} color={COLORS.textMuted} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.sourceItem}
+            style={[styles.sourceItem, { borderBottomColor: colors.border }]}
             onPress={() => Linking.openURL('https://www.elexon.co.uk/operations-settlement/bsc-central-services/bmrs/')}
           >
             <View style={styles.sourceInfo}>
-              <Text style={styles.sourceName}>BMRS</Text>
-              <Text style={styles.sourceDesc}>Elexon Balancing Mechanism</Text>
+              <Text style={[styles.sourceName, { color: colors.text }]}>Elexon BMRS</Text>
+              <Text style={[styles.sourceDesc, { color: colors.textSecondary }]}>Grid mix, frequency, demand, interconnectors</Text>
             </View>
-            <Ionicons name="open-outline" size={18} color={COLORS.textMuted} />
+            <Ionicons name="open-outline" size={18} color={colors.textMuted} />
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.sourceItem}
-            onPress={() => Linking.openURL('https://www.gov.uk/government/publications/renewable-energy-planning-database-monthly-extract')}
+            style={[styles.sourceItem, { borderBottomColor: colors.border }]}
+            onPress={() => Linking.openURL('https://www.solar.sheffield.ac.uk/pvlive/')}
           >
             <View style={styles.sourceInfo}>
-              <Text style={styles.sourceName}>REPD</Text>
-              <Text style={styles.sourceDesc}>Renewable Energy Planning Database</Text>
+              <Text style={[styles.sourceName, { color: colors.text }]}>Sheffield Solar PVLive</Text>
+              <Text style={[styles.sourceDesc, { color: colors.textSecondary }]}>Real-time solar generation data</Text>
             </View>
-            <Ionicons name="open-outline" size={18} color={COLORS.textMuted} />
+            <Ionicons name="open-outline" size={18} color={colors.textMuted} />
           </TouchableOpacity>
         </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Why It Matters</Text>
-        <View style={styles.card}>
-          <Text style={styles.paragraph}>
+        <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>Why It Matters</Text>
+        <View style={[styles.card, { backgroundColor: colors.surface }]}>
+          <Text style={[styles.paragraph, { color: colors.textSecondary }]}>
             The carbon intensity of electricity varies throughout the day based on the mix of
             generation sources. By shifting energy use to times when renewables are generating
             more power, you can reduce your carbon footprint without changing how much energy
@@ -83,11 +74,11 @@ export function AboutScreen({ navigation: _navigation }: RootStackScreenProps<'A
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>
+        <Text style={[styles.footerText, { color: colors.textMuted }]}>
           Made with 💚 for a greener future
         </Text>
         <TouchableOpacity onPress={() => Linking.openURL('https://gridmix.co.uk')}>
-          <Text style={styles.footerLink}>gridmix.co.uk</Text>
+          <Text style={[styles.footerLink, { color: colors.primary }]}>gridmix.co.uk</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -97,7 +88,6 @@ export function AboutScreen({ navigation: _navigation }: RootStackScreenProps<'A
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   header: {
     alignItems: 'center',
@@ -109,25 +99,21 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    color: COLORS.text,
     fontSize: 28,
     fontWeight: '700',
     marginBottom: 4,
   },
   subtitle: {
-    color: COLORS.textSecondary,
     fontSize: 16,
     marginBottom: 8,
   },
   version: {
-    color: COLORS.textMuted,
     fontSize: 12,
   },
   section: {
     marginBottom: 24,
   },
   sectionTitle: {
-    color: COLORS.textMuted,
     fontSize: 12,
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -135,13 +121,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   card: {
-    backgroundColor: COLORS.surface,
     marginHorizontal: 16,
     borderRadius: 12,
     padding: 16,
   },
   paragraph: {
-    color: COLORS.textSecondary,
     fontSize: 14,
     lineHeight: 22,
   },
@@ -150,18 +134,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
   },
   sourceInfo: {
     flex: 1,
   },
   sourceName: {
-    color: COLORS.text,
     fontSize: 16,
     fontWeight: '500',
   },
   sourceDesc: {
-    color: COLORS.textSecondary,
     fontSize: 13,
     marginTop: 2,
   },
@@ -170,12 +151,10 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   footerText: {
-    color: COLORS.textMuted,
     fontSize: 14,
     marginBottom: 8,
   },
   footerLink: {
-    color: COLORS.primary,
     fontSize: 14,
     fontWeight: '500',
   },

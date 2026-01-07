@@ -2,7 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Linking, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Application from 'expo-application';
-import { COLORS, SHADOWS, RADIUS } from '@/constants/colors';
+import { useTheme } from '@/hooks/useTheme';
+import { SHADOWS, RADIUS } from '@/constants/colors';
 import { HapticButton } from '@/components/HapticButton';
 import type { MainTabScreenProps } from '@/types/navigation';
 
@@ -12,26 +13,28 @@ interface MenuItemProps {
   subtitle?: string;
   onPress: () => void;
   color?: string;
+  colors: ReturnType<typeof useTheme>['colors'];
 }
 
-function MenuItem({ icon, title, subtitle, onPress, color = COLORS.text }: MenuItemProps) {
+function MenuItem({ icon, title, subtitle, onPress, color, colors }: MenuItemProps) {
+  const itemColor = color || colors.text;
   return (
     <HapticButton
-      style={styles.menuItem}
+      style={[styles.menuItem, { borderBottomColor: colors.border }]}
       onPress={onPress}
       hapticType="selection"
       scaleOnPress={false}
       accessibilityRole="button"
       accessibilityLabel={subtitle ? `${title}, ${subtitle}` : title}
     >
-      <View style={[styles.menuIcon, { backgroundColor: color + '15' }]}>
-        <Ionicons name={icon} size={20} color={color} />
+      <View style={[styles.menuIcon, { backgroundColor: itemColor + '15' }]}>
+        <Ionicons name={icon} size={20} color={itemColor} />
       </View>
       <View style={styles.menuContent}>
-        <Text style={[styles.menuTitle, { color }]}>{title}</Text>
-        {subtitle && <Text style={styles.menuSubtitle}>{subtitle}</Text>}
+        <Text style={[styles.menuTitle, { color: itemColor }]}>{title}</Text>
+        {subtitle && <Text style={[styles.menuSubtitle, { color: colors.textSecondary }]}>{subtitle}</Text>}
       </View>
-      <Ionicons name="chevron-forward" size={18} color={COLORS.textMuted} />
+      <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
     </HapticButton>
   );
 }
@@ -47,6 +50,7 @@ function getStoreUrl(): string {
 }
 
 export function MoreScreen({ navigation }: MainTabScreenProps<'More'>) {
+  const { colors } = useTheme();
   const appVersion = Application.nativeApplicationVersion || '1.0.0';
   const buildNumber = Application.nativeBuildVersion || '1';
 
@@ -57,7 +61,6 @@ export function MoreScreen({ navigation }: MainTabScreenProps<'More'>) {
     if (supported) {
       await Linking.openURL(storeUrl);
     } else {
-      // Fallback to website if store URL not available
       await Linking.openURL('https://gridmix.co.uk');
     }
   };
@@ -69,71 +72,78 @@ export function MoreScreen({ navigation }: MainTabScreenProps<'More'>) {
   };
 
   return (
-    <ScrollView style={styles.container} accessibilityLabel="More options menu">
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} accessibilityLabel="More options menu">
       <View style={styles.section}>
-        <Text style={styles.sectionTitle} accessibilityRole="header">Settings</Text>
-        <View style={styles.sectionContent}>
+        <Text style={[styles.sectionTitle, { color: colors.textMuted }]} accessibilityRole="header">Settings</Text>
+        <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
           <MenuItem
             icon="notifications-outline"
             title="Notifications"
             subtitle="Configure carbon alerts"
             onPress={() => navigation.navigate('Notifications')}
+            colors={colors}
           />
           <MenuItem
             icon="settings-outline"
             title="Settings"
             subtitle="App preferences"
             onPress={() => navigation.navigate('Settings')}
+            colors={colors}
           />
         </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle} accessibilityRole="header">Information</Text>
-        <View style={styles.sectionContent}>
+        <Text style={[styles.sectionTitle, { color: colors.textMuted }]} accessibilityRole="header">Information</Text>
+        <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
           <MenuItem
             icon="information-circle-outline"
             title="About GridMix"
             subtitle="Learn about our data sources"
             onPress={() => navigation.navigate('About')}
+            colors={colors}
           />
           <MenuItem
             icon="globe-outline"
             title="Visit Website"
             subtitle="gridmix.co.uk"
             onPress={() => Linking.openURL('https://gridmix.co.uk')}
+            colors={colors}
           />
         </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle} accessibilityRole="header">Support</Text>
-        <View style={styles.sectionContent}>
+        <Text style={[styles.sectionTitle, { color: colors.textMuted }]} accessibilityRole="header">Support</Text>
+        <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
           <MenuItem
             icon="star-outline"
             title="Rate the App"
             subtitle="Help us improve"
             onPress={handleRateApp}
-            color={COLORS.warning}
+            color={colors.warning}
+            colors={colors}
           />
           <MenuItem
             icon="chatbubble-outline"
             title="Send Feedback"
             subtitle="We'd love to hear from you"
             onPress={handleSendFeedback}
+            colors={colors}
           />
           <MenuItem
             icon="document-text-outline"
             title="Privacy Policy"
             onPress={() => Linking.openURL('https://gridmix.co.uk/privacy')}
+            colors={colors}
           />
         </View>
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.version}>GridMix v{appVersion} ({buildNumber})</Text>
-        <Text style={styles.copyright}>Data: National Grid ESO, Elexon BMRS</Text>
-        <Text style={styles.copyright}>Made with care for the planet</Text>
+        <Text style={[styles.version, { color: colors.textMuted }]}>GridMix v{appVersion} ({buildNumber})</Text>
+        <Text style={[styles.copyright, { color: colors.textMuted }]}>Data: National Grid ESO, Elexon BMRS</Text>
+        <Text style={[styles.copyright, { color: colors.textMuted }]}>Made with care for the planet</Text>
       </View>
     </ScrollView>
   );
@@ -142,14 +152,12 @@ export function MoreScreen({ navigation }: MainTabScreenProps<'More'>) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
     paddingBottom: Platform.OS === 'ios' ? 110 : 90,
   },
   section: {
     marginTop: 28,
   },
   sectionTitle: {
-    color: COLORS.textMuted,
     fontSize: 13,
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -158,7 +166,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   sectionContent: {
-    backgroundColor: COLORS.surface,
     marginHorizontal: 16,
     borderRadius: RADIUS.lg,
     overflow: 'hidden',
@@ -169,7 +176,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
     minHeight: 60,
   },
   menuIcon: {
@@ -188,7 +194,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   menuSubtitle: {
-    color: COLORS.textSecondary,
     fontSize: 13,
     marginTop: 3,
   },
@@ -199,13 +204,11 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   version: {
-    color: COLORS.textMuted,
     fontSize: 13,
     fontWeight: '500',
     marginBottom: 6,
   },
   copyright: {
-    color: COLORS.textMuted,
     fontSize: 12,
     marginTop: 3,
   },

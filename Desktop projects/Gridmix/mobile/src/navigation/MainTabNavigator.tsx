@@ -8,20 +8,23 @@ import { DashboardScreen } from '@/screens/DashboardScreen';
 import { ForecastScreen } from '@/screens/ForecastScreen';
 import { ExploreScreen } from '@/screens/ExploreScreen';
 import { MoreScreen } from '@/screens/MoreScreen';
-import { COLORS, SHADOWS } from '@/constants/colors';
+import { useTheme } from '@/hooks/useTheme';
+import { SHADOWS } from '@/constants/colors';
 import type { MainTabParamList } from '@/types/navigation';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-function TabBarBackground() {
-  return Platform.OS === 'ios' ? (
-    <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
-  ) : (
-    <View style={[StyleSheet.absoluteFill, { backgroundColor: COLORS.surface + 'F5' }]} />
-  );
-}
-
 export function MainTabNavigator() {
+  const { colors, isDark } = useTheme();
+
+  const TabBarBackground = () => {
+    return Platform.OS === 'ios' ? (
+      <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+    ) : (
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.surface + 'F5' }]} />
+    );
+  };
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -35,8 +38,8 @@ export function MainTabNavigator() {
           height: Platform.OS === 'ios' ? 88 : 68,
           ...SHADOWS.medium,
         },
-        tabBarActiveTintColor: COLORS.primary,
-        tabBarInactiveTintColor: COLORS.textMuted,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: '600',
@@ -46,10 +49,10 @@ export function MainTabNavigator() {
           marginTop: 4,
         },
         headerStyle: {
-          backgroundColor: COLORS.background,
+          backgroundColor: colors.background,
           ...SHADOWS.small,
         },
-        headerTintColor: COLORS.text,
+        headerTintColor: colors.text,
         headerTitleStyle: {
           fontWeight: '700',
           fontSize: 18,

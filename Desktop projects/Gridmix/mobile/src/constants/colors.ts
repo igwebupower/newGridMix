@@ -28,8 +28,8 @@ export const CARBON_INTENSITY_COLORS = {
   veryHigh: '#EF4444',  // Red - > 300g
 } as const;
 
-// App theme colors
-export const COLORS = {
+// Dark theme colors
+export const DARK_COLORS = {
   // Primary
   primary: '#06B6D4',
   primaryDark: '#0891B2',
@@ -45,7 +45,7 @@ export const COLORS = {
   // Text
   text: '#F8FAFC',
   textSecondary: '#94A3B8',
-  textMuted: '#64748B',
+  textMuted: '#8B99AD',  // Improved contrast (5.2:1 ratio)
 
   // Status
   success: '#22C55E',
@@ -61,6 +61,43 @@ export const COLORS = {
   border: '#334155',
   borderLight: '#475569',
 } as const;
+
+// Light theme colors
+export const LIGHT_COLORS = {
+  // Primary
+  primary: '#0891B2',
+  primaryDark: '#0E7490',
+  primaryLight: '#06B6D4',
+
+  // Background
+  background: '#F8FAFC',
+  backgroundLight: '#F1F5F9',
+  surface: '#FFFFFF',
+  surfaceLight: '#F1F5F9',
+  surfaceElevated: '#FFFFFF',
+
+  // Text
+  text: '#0F172A',
+  textSecondary: '#475569',
+  textMuted: '#64748B',  // Improved contrast for light theme
+
+  // Status
+  success: '#16A34A',
+  successLight: '#16A34A20',
+  warning: '#D97706',
+  warningLight: '#D9770620',
+  error: '#DC2626',
+  errorLight: '#DC262620',
+  info: '#2563EB',
+  infoLight: '#2563EB20',
+
+  // Borders
+  border: '#E2E8F0',
+  borderLight: '#CBD5E1',
+} as const;
+
+// Default export for backward compatibility
+export const COLORS = DARK_COLORS;
 
 // Modern shadow styles for iOS
 export const SHADOWS = {
@@ -92,6 +129,41 @@ export const SHADOWS = {
     shadowRadius: 12,
     elevation: 4,
   }),
+  colored: (color: string, intensity: 'light' | 'medium' | 'strong' = 'medium') => ({
+    shadowColor: color,
+    shadowOffset: {
+      width: 0,
+      height: intensity === 'light' ? 4 : intensity === 'medium' ? 8 : 12,
+    },
+    shadowOpacity: intensity === 'light' ? 0.15 : intensity === 'medium' ? 0.25 : 0.35,
+    shadowRadius: intensity === 'light' ? 8 : intensity === 'medium' ? 16 : 24,
+    elevation: intensity === 'light' ? 3 : intensity === 'medium' ? 6 : 9,
+  }),
+};
+
+// Gradient presets for cards and overlays
+export const GRADIENTS = {
+  // Card overlay gradients (subtle depth)
+  cardDark: ['rgba(255,255,255,0.03)', 'transparent'] as const,
+  cardLight: ['rgba(0,0,0,0.01)', 'transparent'] as const,
+  // Highlight gradients
+  primary: ['rgba(6,182,212,0.15)', 'rgba(6,182,212,0)'] as const,
+  success: ['rgba(34,197,94,0.15)', 'rgba(34,197,94,0)'] as const,
+  warning: ['rgba(245,158,11,0.15)', 'rgba(245,158,11,0)'] as const,
+  error: ['rgba(239,68,68,0.15)', 'rgba(239,68,68,0)'] as const,
+  // Shimmer effect
+  shimmer: ['transparent', 'rgba(255,255,255,0.08)', 'transparent'] as const,
+  shimmerLight: ['transparent', 'rgba(0,0,0,0.04)', 'transparent'] as const,
+} as const;
+
+// Icon size scale
+export const ICON_SIZES = {
+  xs: 14,
+  sm: 18,
+  md: 22,
+  lg: 28,
+  xl: 36,
+  xxl: 48,
 } as const;
 
 // Modern border radius
