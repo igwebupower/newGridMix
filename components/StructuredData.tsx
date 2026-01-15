@@ -54,7 +54,6 @@ export function StructuredData({ type, data }: StructuredDataProps) {
           },
           sameAs: [
             'https://twitter.com/gridmix',
-            'https://github.com/gridmix',
           ],
         };
 

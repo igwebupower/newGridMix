@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   },
   shareContainer: {
     position: 'absolute',
-    top: 16,
+    bottom: 16,
     right: 24,
     zIndex: 10,
   },

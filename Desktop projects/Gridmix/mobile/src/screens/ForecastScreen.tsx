@@ -46,17 +46,25 @@ const ForecastItem = React.memo(function ForecastItem({ period }: ForecastItemPr
 });
 
 function CleanestPeriodCard({ period }: { period: CleanestPeriod }) {
+  const intensityColor = getCarbonIntensityColor(period.avg_intensity);
+
   return (
     <Animated.View
       entering={FadeInDown.duration(400)}
-      style={styles.cleanestCard}
+      style={[
+        styles.cleanestCard,
+        {
+          backgroundColor: intensityColor + '15',
+          borderColor: intensityColor + '30',
+        },
+      ]}
       accessibilityRole="summary"
     >
       <View style={styles.cleanestHeader}>
-        <View style={styles.cleanestIconContainer}>
-          <Ionicons name="sunny" size={24} color={COLORS.success} accessibilityElementsHidden />
+        <View style={[styles.cleanestIconContainer, { backgroundColor: intensityColor + '20' }]}>
+          <Ionicons name="leaf" size={24} color={intensityColor} accessibilityElementsHidden />
         </View>
-        <Text style={styles.cleanestTitle}>Greenest Time Today</Text>
+        <Text style={[styles.cleanestTitle, { color: intensityColor }]}>Greenest Time Today</Text>
       </View>
       <Text
         style={styles.cleanestTime}
@@ -72,7 +80,7 @@ function CleanestPeriodCard({ period }: { period: CleanestPeriod }) {
           minute: '2-digit',
         })}
       </Text>
-      <Text style={styles.cleanestIntensity}>
+      <Text style={[styles.cleanestIntensity, { color: intensityColor }]}>
         {Math.round(period.avg_intensity)} gCO2/kWh average
       </Text>
     </Animated.View>
@@ -163,12 +171,10 @@ const styles = StyleSheet.create({
     paddingBottom: Platform.OS === 'ios' ? 110 : 90,
   },
   cleanestCard: {
-    backgroundColor: COLORS.success + '15',
     borderRadius: RADIUS.lg,
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: COLORS.success + '30',
     ...SHADOWS.medium,
   },
   cleanestHeader: {
@@ -180,13 +186,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: COLORS.success + '20',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
   cleanestTitle: {
-    color: COLORS.success,
     fontSize: 17,
     fontWeight: '700',
   },
