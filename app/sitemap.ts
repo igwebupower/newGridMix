@@ -30,6 +30,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...insightUrls,
     {
+      url: `${baseUrl}/api/docs`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    {
       url: `${baseUrl}/support`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
