@@ -49,16 +49,6 @@ export function Header({ lastUpdated }: HeaderProps) {
                 Dashboard
               </Link>
               <Link
-                href="/insights"
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  pathname?.startsWith('/insights')
-                    ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-                }`}
-              >
-                Insights
-              </Link>
-              <Link
                 href="/api/docs"
                 className={`px-4 py-2 rounded-lg font-medium transition-all ${
                   pathname?.startsWith('/api/docs')
@@ -130,17 +120,6 @@ export function Header({ lastUpdated }: HeaderProps) {
                 }`}
               >
                 Dashboard
-              </Link>
-              <Link
-                href="/insights"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-3 rounded-lg font-medium transition-all ${
-                  pathname?.startsWith('/insights')
-                    ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
-              >
-                Insights
               </Link>
               <Link
                 href="/api/docs"
