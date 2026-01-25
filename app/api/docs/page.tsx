@@ -80,6 +80,11 @@ export default function APIDocsPage() {
         },
         carbon_intensity: { actual: 111, forecast: 111, level: 'low' },
         frequency: { hz: 50.099, status: 'stable' },
+        interconnectors: [
+          { name: 'IFA', country: 'France', flow_mw: 1000, capacity_mw: 2000, direction: 'import' },
+        ],
+        solar: { generation_mw: 2847, capacity_percent: 14.1, installed_capacity_mw: 20217 },
+        system_price: { price_gbp_per_mwh: 45.50, timestamp: '2025-11-14T14:30:00Z' },
       },
       cacheTime: '30 seconds',
     },
@@ -118,7 +123,13 @@ export default function APIDocsPage() {
         data: [
           { timestamp: '2025-11-14T00:00:00Z', time: '00:00', generation_mw: 0 },
           { timestamp: '2025-11-14T12:30:00Z', time: '12:30', generation_mw: 4821 },
-        ]
+        ],
+        metadata: {
+          source: 'Sheffield Solar PVLive',
+          api_version: 'v1',
+          cache_duration: '5 minutes',
+          installed_capacity_mw: 20217
+        }
       },
       cacheTime: '5 minutes',
     },
