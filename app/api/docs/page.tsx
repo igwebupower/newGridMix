@@ -403,6 +403,12 @@ func main() {
               </svg>
               Updated Every 30s
             </span>
+            <span className="inline-flex items-center px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-100 rounded-lg font-medium border border-red-200 dark:border-red-800">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              60 req/min
+            </span>
           </div>
         </motion.div>
 
@@ -724,6 +730,7 @@ func main() {
               { code: 200, status: 'OK', description: 'Request successful', color: 'green' },
               { code: 400, status: 'Bad Request', description: 'Invalid parameters (e.g., hours out of range)', color: 'yellow' },
               { code: 404, status: 'Not Found', description: 'Endpoint or resource not found', color: 'orange' },
+              { code: 429, status: 'Too Many Requests', description: 'Rate limit exceeded (60 requests/minute)', color: 'red' },
               { code: 500, status: 'Internal Server Error', description: 'Something went wrong on our end', color: 'red' },
             ].map((error) => (
               <div key={error.code} className={`p-4 bg-${error.color}-50 dark:bg-${error.color}-900/20 border border-${error.color}-200 dark:border-${error.color}-800 rounded-lg`}>
@@ -883,7 +890,7 @@ func main() {
                 </h3>
                 <ul className="space-y-2 text-sm">
                   {[
-                    'Excessive request rates (>1/sec sustained)',
+                    'Exceeding 60 requests per minute (rate limited)',
                     'Scraping or bulk downloading',
                     'Using as primary data source without caching',
                     'Redistributing data commercially',
