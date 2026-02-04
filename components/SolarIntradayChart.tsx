@@ -110,10 +110,10 @@ export function SolarIntradayChart({ todayData, yesterdayData }: SolarIntradayCh
         >
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Capacity</p>
           <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">
-            {((peak.peak_mw / 16000) * 100).toFixed(1)}%
+            {((peak.peak_mw / 20200) * 100).toFixed(1)}%
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            of 16 GW installed
+            of ~20 GW installed
           </p>
         </motion.div>
       </div>

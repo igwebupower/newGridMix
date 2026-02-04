@@ -49,8 +49,36 @@ export async function GET(req: NextRequest) {
       solar: {
         generation_mw: Math.round(solarData.generation_mw),
         capacity_percent: parseFloat(solarData.capacity_percent.toFixed(1)),
-        installed_capacity_mw: solarData.installed_capacity_mw || 16000,
+        installed_capacity_mw: solarData.installed_capacity_mw || 20200,
       },
+      generation_mix_with_solar: (() => {
+        const bmrsTotal = gridData.totalGeneration;
+        const solarMw = solarData.generation_mw;
+        const totalWithSolar = bmrsTotal + solarMw;
+
+        // Recalculate percentages for existing fuels with solar included
+        const mixWithSolar = gridData.generationmix.map(item => ({
+          fuel: item.fuel,
+          mw: Math.round(item.mw),
+          percentage: parseFloat(((item.mw / totalWithSolar) * 100).toFixed(1)),
+        }));
+
+        // Add solar to the mix
+        mixWithSolar.push({
+          fuel: 'solar',
+          mw: Math.round(solarMw),
+          percentage: parseFloat(((solarMw / totalWithSolar) * 100).toFixed(1)),
+        });
+
+        // Sort by percentage descending
+        mixWithSolar.sort((a, b) => b.percentage - a.percentage);
+
+        return {
+          total_mw: Math.round(totalWithSolar),
+          mix: mixWithSolar,
+          note: 'Includes distributed solar from Sheffield Solar PVLive',
+        };
+      })(),
       system_price: {
         price_gbp_per_mwh: parseFloat(systemPriceData.price.toFixed(2)),
         timestamp: systemPriceData.datetime,
