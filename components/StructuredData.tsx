@@ -27,14 +27,6 @@ export function StructuredData({ type, data }: StructuredDataProps) {
               url: 'https://gridmix.co.uk/logo.png',
             },
           },
-          potentialAction: {
-            '@type': 'SearchAction',
-            target: {
-              '@type': 'EntryPoint',
-              urlTemplate: 'https://gridmix.co.uk/insights?search={search_term_string}',
-            },
-            'query-input': 'required name=search_term_string',
-          },
         };
 
       case 'organization':
@@ -83,7 +75,7 @@ export function StructuredData({ type, data }: StructuredDataProps) {
           },
           mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': `https://gridmix.co.uk/insights/${data.slug}`,
+            '@id': data.url || `https://gridmix.co.uk/${data.slug}`,
           },
           keywords: data.tags?.join(', '),
           articleSection: data.category,

@@ -28,18 +28,18 @@ export default function NotFound() {
       gradient: 'from-blue-500 to-blue-600',
     },
     {
-      href: '/insights',
-      title: 'Energy Insights',
-      description: 'Learn about UK energy trends',
-      icon: '📊',
-      gradient: 'from-purple-500 to-purple-600',
-    },
-    {
       href: '/api/docs',
       title: 'API Docs',
       description: 'Free REST API documentation',
       icon: '💻',
       gradient: 'from-green-500 to-green-600',
+    },
+    {
+      href: '/support',
+      title: 'Support',
+      description: 'Help keep GridMix running',
+      icon: '💚',
+      gradient: 'from-purple-500 to-purple-600',
     },
   ];
 

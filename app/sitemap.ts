@@ -1,19 +1,7 @@
 import { MetadataRoute } from 'next';
-import { getAllInsights } from '@/lib/posts';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://gridmix.co.uk';
-
-  // Get all insight articles
-  const insights = getAllInsights();
-
-  // Generate insight URLs
-  const insightUrls = insights.map((insight) => ({
-    url: `${baseUrl}/insights/${insight.id}`,
-    lastModified: insight.date,
-    changeFrequency: 'weekly' as const,
-    priority: 0.7,
-  }));
 
   return [
     {
@@ -22,13 +10,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'always',
       priority: 1,
     },
-    {
-      url: `${baseUrl}/insights`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.8,
-    },
-    ...insightUrls,
     {
       url: `${baseUrl}/api/docs`,
       lastModified: new Date(),
