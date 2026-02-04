@@ -7,6 +7,38 @@ import { rateLimit } from './lib/rate-limit';
 const RATE_LIMIT = 60;
 const RATE_WINDOW_MS = 60 * 1000;
 
+// Simple logging helper - logs appear in Vercel Functions logs
+function logApiRequest(
+  ip: string,
+  pathname: string,
+  status: number,
+  rateLimitRemaining: number,
+  userAgent?: string
+) {
+  const logData = {
+    timestamp: new Date().toISOString(),
+    type: 'API_REQUEST',
+    ip: ip.substring(0, 20), // Truncate for privacy
+    path: pathname,
+    status,
+    rateLimitRemaining,
+    userAgent: userAgent?.substring(0, 100) || 'unknown',
+  };
+  console.log(JSON.stringify(logData));
+}
+
+function logRateLimitViolation(ip: string, pathname: string, userAgent?: string) {
+  const logData = {
+    timestamp: new Date().toISOString(),
+    type: 'RATE_LIMIT_VIOLATION',
+    ip,
+    path: pathname,
+    userAgent: userAgent?.substring(0, 100) || 'unknown',
+    severity: 'warning',
+  };
+  console.warn(JSON.stringify(logData));
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -15,6 +47,7 @@ export async function middleware(request: NextRequest) {
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
       || request.headers.get('x-real-ip')
       || 'anonymous';
+    const userAgent = request.headers.get('user-agent') || undefined;
 
     const result = rateLimit(ip, RATE_LIMIT, RATE_WINDOW_MS);
 
@@ -26,6 +59,9 @@ export async function middleware(request: NextRequest) {
     };
 
     if (!result.success) {
+      // Log rate limit violation
+      logRateLimitViolation(ip, pathname, userAgent);
+
       return NextResponse.json(
         {
           error: 'Too Many Requests',
@@ -40,6 +76,11 @@ export async function middleware(request: NextRequest) {
           },
         }
       );
+    }
+
+    // Log successful API request (sample 10% to reduce noise)
+    if (Math.random() < 0.1) {
+      logApiRequest(ip, pathname, 200, result.remaining, userAgent);
     }
 
     // Continue with rate limit headers
