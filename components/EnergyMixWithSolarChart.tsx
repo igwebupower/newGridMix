@@ -94,11 +94,15 @@ export function EnergyMixWithSolarChart({ data, solarData }: EnergyMixWithSolarC
           />
         </PieChart>
       </ResponsiveContainer>
-      {solarMw > 0 && (
-        <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-2">
-          Includes {solarMw.toLocaleString()} MW solar from Sheffield Solar PVLive
-        </p>
-      )}
+      <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-2">
+        {solarMw > 0 ? (
+          <>Includes {solarMw.toLocaleString()} MW solar from Sheffield Solar PVLive</>
+        ) : solarData ? (
+          <>☀️ Solar: 0 MW (nighttime) — data from Sheffield Solar PVLive</>
+        ) : (
+          <>Solar data unavailable</>
+        )}
+      </p>
     </div>
   );
 }
