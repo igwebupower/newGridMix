@@ -83,7 +83,16 @@ export default function APIDocsPage() {
         interconnectors: [
           { name: 'IFA', country: 'France', flow_mw: 1000, capacity_mw: 2000, direction: 'import' },
         ],
-        solar: { generation_mw: 2847, capacity_percent: 14.1, installed_capacity_mw: 20217 },
+        solar: { generation_mw: 4596, capacity_percent: 22.8, installed_capacity_mw: 20200 },
+        generation_mix_with_solar: {
+          total_mw: 37789,
+          mix: [
+            { fuel: 'wind', mw: 16608, percentage: 44.0 },
+            { fuel: 'gas', mw: 8615, percentage: 22.8 },
+            { fuel: 'solar', mw: 4596, percentage: 12.2 },
+          ],
+          note: 'Includes distributed solar from Sheffield Solar PVLive'
+        },
         system_price: { price_gbp_per_mwh: 45.50, timestamp: '2025-11-14T14:30:00Z' },
       },
       cacheTime: '30 seconds',
@@ -96,10 +105,10 @@ export default function APIDocsPage() {
       description: 'Get the current UK solar generation in megawatts and as a percentage of installed capacity.',
       params: [],
       response: {
-        timestamp: '2025-11-14T14:45:32.898Z',
-        generation_mw: 2847,
-        capacity_percent: 14.1,
-        installed_capacity_mw: 20217,
+        timestamp: '2026-02-04T12:30:00Z',
+        generation_mw: 4596,
+        capacity_percent: 22.8,
+        installed_capacity_mw: 20200,
         data_source: 'Sheffield Solar PVLive'
       },
       cacheTime: '30 seconds',
@@ -112,23 +121,23 @@ export default function APIDocsPage() {
       description: "Get today's complete solar generation curve with statistics including peak generation, average output, and total energy produced.",
       params: [],
       response: {
-        date: '2025-11-14',
-        data_points: 96,
+        date: '2026-02-04',
+        data_points: 48,
         statistics: {
-          peak_mw: 4821,
-          peak_time: '2025-11-14T12:30:00Z',
-          average_mw: 1847,
-          total_gwh: 44.3
+          peak_mw: 4596,
+          peak_time: '2026-02-04T12:30:00Z',
+          average_mw: 1920,
+          total_gwh: 46.1
         },
         data: [
-          { timestamp: '2025-11-14T00:00:00Z', time: '00:00', generation_mw: 0 },
-          { timestamp: '2025-11-14T12:30:00Z', time: '12:30', generation_mw: 4821 },
+          { timestamp: '2026-02-04T00:00:00Z', time: '00:00', generation_mw: 0 },
+          { timestamp: '2026-02-04T12:30:00Z', time: '12:30', generation_mw: 4596 },
         ],
         metadata: {
           source: 'Sheffield Solar PVLive',
           api_version: 'v1',
           cache_duration: '5 minutes',
-          installed_capacity_mw: 20217
+          installed_capacity_mw: 20200
         }
       },
       cacheTime: '5 minutes',
