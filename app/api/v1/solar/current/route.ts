@@ -31,7 +31,7 @@ export async function GET() {
         timestamp: new Date().toISOString(),
         generation_mw: 0,
         capacity_percent: 0,
-        installed_capacity_mw: 20000,
+        installed_capacity_mw: 20200,
         data_source: 'Sheffield Solar PVLive',
       });
     }
@@ -39,7 +39,7 @@ export async function GET() {
     // Latest data point: [gsp_id, datetime, generation_mw, capacity_mwp]
     const latest = data.data[0];
     const generationMW = latest[2] || 0;
-    const installedCapacityMW = latest[3] || 20000;
+    const installedCapacityMW = latest[3] || 20200;
     const capacityPercent = (generationMW / installedCapacityMW) * 100;
 
     return NextResponse.json({

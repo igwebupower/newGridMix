@@ -533,7 +533,7 @@ export async function getCurrentSolarData(): Promise<SolarData> {
     const latest = data.data[0];
 
     // Use actual capacity from API if available, otherwise estimate
-    const installedCapacityMW = latest[3] || 20000;
+    const installedCapacityMW = latest[3] || 20200;
     const capacityPercent = (latest[2] / installedCapacityMW) * 100;
 
     return {

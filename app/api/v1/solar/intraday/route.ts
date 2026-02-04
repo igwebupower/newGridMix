@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get installed capacity from first data point
-    const installedCapacityMW = data.data[0][3] || 20000;
+    const installedCapacityMW = data.data[0][3] || 20200;
 
     // Convert to our format and reverse (API returns newest first)
     const solarCurve = data.data
