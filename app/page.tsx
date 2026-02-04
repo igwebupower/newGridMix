@@ -8,6 +8,7 @@ import { Card } from '@/components/Card';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import { LiveStatus } from '@/components/LiveStatus';
 import { EnergyMixChart } from '@/components/EnergyMixChart';
+import { EnergyMixWithSolarChart } from '@/components/EnergyMixWithSolarChart';
 import { IntensityChart } from '@/components/IntensityChart';
 import { SourceBreakdown } from '@/components/SourceBreakdown';
 import { InterconnectorFlows } from '@/components/InterconnectorFlows';
@@ -211,13 +212,22 @@ export default function Dashboard() {
           </Card>
 
           <Card
-            title="Source Breakdown"
-            subtitle="Detailed view of all sources"
-            delay={0.3}
+            title="Energy Mix (with Solar)"
+            subtitle="Includes distributed solar generation"
+            delay={0.25}
           >
-            <SourceBreakdown data={gridData.generationmix} />
+            <EnergyMixWithSolarChart data={gridData.generationmix} solarData={solarData} />
           </Card>
         </div>
+
+        {/* Source Breakdown */}
+        <Card
+          title="Source Breakdown"
+          subtitle="Detailed view of all sources"
+          delay={0.3}
+        >
+          <SourceBreakdown data={gridData.generationmix} />
+        </Card>
 
         {/* Solar Intraday Section */}
         <Card
