@@ -7,7 +7,7 @@ import { NextResponse } from 'next/server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const PVLIVE_API_BASE = 'https://api0.solar.sheffield.ac.uk/pvlive/api/v4';
+const PVLIVE_API_BASE = 'https://api.pvlive.uk/pvlive/api/v4';
 
 export async function GET() {
   try {
