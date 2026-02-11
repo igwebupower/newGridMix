@@ -1,0 +1,19 @@
+# API keys and secrets
+.env
+client_secrets.json
+.youtube_token.json
+
+# Output files (too large for git)
+output/
+assets/audio/*.mp3
+assets/audio/*.wav
+assets/video/*.mp4
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
