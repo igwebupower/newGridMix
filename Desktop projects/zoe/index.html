@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zoe Loves Math!</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --pink: #ff6b9d;
+    --purple: #c084fc;
+    --blue: #60a5fa;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --orange: #fb923c;
+    --red: #f87171;
+    --bg: #fdf4ff;
+    --card: #ffffff;
+    --text: #1e1b4b;
+    --text-light: #6b7280;
+    --correct: #22c55e;
+    --wrong: #ef4444;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(192, 132, 252, 0.12) 0%, transparent 50%),
+      radial-gradient(circle at 90% 80%, rgba(96, 165, 250, 0.12) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(255, 107, 157, 0.08) 0%, transparent 50%);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    overflow-x: hidden;
+  }
+
+  /* ---- Title ---- */
+  .title {
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 0.25rem;
+    background: linear-gradient(135deg, var(--pink), var(--purple), var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+    color: var(--text-light);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 500;
+  }
+
+  /* ---- Screens ---- */
+  .screen { display: none; width: 100%; max-width: 500px; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; }
+
+  /* ---- Menu screen ---- */
+  .menu-label {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+
+  .table-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem;
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .table-btn {
+    padding: 1.25rem 1rem;
+    border: 3px solid transparent;
+    border-radius: 1rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .table-btn:hover, .table-btn:focus-visible {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  }
+
+  .table-btn:active { transform: translateY(0) scale(0.98); }
+
+  .table-btn[data-table="2"]   { background: linear-gradient(135deg, #a78bfa, var(--purple)); }
+  .table-btn[data-table="5"]   { background: linear-gradient(135deg, #60a5fa, #38bdf8); }
+  .table-btn[data-table="10"]  { background: linear-gradient(135deg, var(--green), #34d399); }
+  .table-btn[data-table="mix"] { background: linear-gradient(135deg, var(--pink), var(--orange)); }
+
+  /* ---- Game screen ---- */
+  .game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-text {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-light);
+  }
+
+  .stars {
+    display: flex;
+    gap: 0.2rem;
+    font-size: 1.4rem;
+  }
+
+  .star { opacity: 0.2; transition: opacity 0.3s, transform 0.3s; }
+  .star.earned { opacity: 1; animation: popStar 0.4s ease; }
+
+  @keyframes popStar {
+    0%   { transform: scale(0.3) rotate(-20deg); opacity: 0; }
+    50%  { transform: scale(1.3) rotate(5deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  .progress-bar-track {
+    width: 100%;
+    height: 8px;
+    background: #e9d5ff;
+    border-radius: 99px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple), var(--pink));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  .question-card {
+    background: var(--card);
+    border-radius: 1.5rem;
+    padding: 2rem 1.5rem;
+    width: 100%;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .question-text {
+    font-size: clamp(2rem, 7vw, 3rem);
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: 1px;
+  }
+
+  .answers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .answer-btn {
+    padding: 1.1rem 0.5rem;
+    border: 3px solid #e2e8f0;
+    border-radius: 1rem;
+    background: var(--card);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    transition: transform 0.12s, border-color 0.12s, background 0.12s;
+  }
+
+  .answer-btn:hover:not(.disabled) {
+    border-color: var(--purple);
+    transform: scale(1.04);
+  }
+
+  .answer-btn:active:not(.disabled) { transform: scale(0.97); }
+
+  .answer-btn.correct {
+    background: var(--correct);
+    border-color: var(--correct);
+    color: #fff;
+    animation: pulseCorrect 0.4s ease;
+  }
+
+  .answer-btn.wrong {
+    background: var(--wrong);
+    border-color: var(--wrong);
+    color: #fff;
+    animation: shake 0.4s ease;
+  }
+
+  .answer-btn.reveal-correct {
+    background: var(--correct);
+    border-color: var(--correct);
+    color: #fff;
+  }
+
+  .answer-btn.disabled { cursor: default; opacity: 0.7; }
+
+  @keyframes pulseCorrect {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%  { transform: translateX(-6px); }
+    40%  { transform: translateX(6px); }
+    60%  { transform: translateX(-4px); }
+    80%  { transform: translateX(4px); }
+  }
+
+  .feedback {
+    min-height: 2.2rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-top: 1rem;
+    text-align: center;
+    transition: opacity 0.3s;
+  }
+
+  .feedback.correct-msg { color: var(--correct); }
+  .feedback.wrong-msg   { color: var(--wrong); }
+
+  /* ---- Results screen ---- */
+  .results-card {
+    background: var(--card);
+    border-radius: 1.5rem;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    text-align: center;
+  }
+
+  .results-stars {
+    font-size: 2.2rem;
+    margin-bottom: 0.75rem;
+    letter-spacing: 2px;
+  }
+
+  .results-score {
+    font-size: 2.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.25rem;
+  }
+
+  .results-label {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+
+  .results-message {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2rem;
+  }
+
+  .results-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    width: 100%;
+  }
+
+  .btn-primary {
+    padding: 1rem;
+    border: none;
+    border-radius: 1rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: #fff;
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    box-shadow: 0 4px 14px rgba(192, 132, 252, 0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(192, 132, 252, 0.45); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    padding: 0.85rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--card);
+    color: var(--text-light);
+    transition: border-color 0.15s;
+  }
+
+  .btn-secondary:hover { border-color: var(--purple); color: var(--text); }
+
+  /* ---- Confetti ---- */
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    top: -20px;
+    animation: confettiFall linear forwards;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  @keyframes confettiFall {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 400px) {
+    .answers-grid { gap: 0.5rem; }
+    .answer-btn { padding: 0.9rem 0.3rem; font-size: 1.3rem; }
+    .question-card { padding: 1.5rem 1rem; }
+    .results-card { padding: 2rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+  <h1 class="title">Zoe Loves Math!</h1>
+  <p class="subtitle">Multiplication Practice</p>
+
+  <!-- Menu screen -->
+  <div id="menu-screen" class="screen active">
+    <p class="menu-label">Pick a times table:</p>
+    <div class="table-grid">
+      <button class="table-btn" data-table="2" onclick="startGame(2)">2 &times;</button>
+      <button class="table-btn" data-table="5" onclick="startGame(5)">5 &times;</button>
+      <button class="table-btn" data-table="10" onclick="startGame(10)">10 &times;</button>
+      <button class="table-btn" data-table="mix" onclick="startGame('mix')">Mix!</button>
+    </div>
+  </div>
+
+  <!-- Game screen -->
+  <div id="game-screen" class="screen">
+    <div class="game-header">
+      <span class="progress-text" id="progress-text">1 / 10</span>
+      <div class="stars" id="stars"></div>
+    </div>
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progress-bar"></div>
+    </div>
+    <div class="question-card">
+      <p class="question-text" id="question-text">3 &times; 5 = ?</p>
+    </div>
+    <div class="answers-grid" id="answers-grid"></div>
+    <p class="feedback" id="feedback">&nbsp;</p>
+  </div>
+
+  <!-- Results screen -->
+  <div id="results-screen" class="screen">
+    <div class="results-card">
+      <div class="results-stars" id="results-stars"></div>
+      <div class="results-score" id="results-score">8 / 10</div>
+      <p class="results-label">questions correct</p>
+      <p class="results-message" id="results-message">Amazing work!</p>
+      <div class="results-btns">
+        <button class="btn-primary" id="btn-play-again">Play Again</button>
+        <button class="btn-secondary" onclick="showScreen('menu-screen')">Change Table</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const TOTAL_QUESTIONS = 10;
+  const TABLES = [2, 5, 10];
+
+  let currentTable = null;
+  let questions = [];
+  let currentQ = 0;
+  let score = 0;
+  let answered = false;
+
+  const correctMessages = [
+    "Yes! Brilliant!",
+    "Well done!",
+    "You got it!",
+    "Super star!",
+    "That's right!",
+    "Amazing!",
+    "Fantastic!",
+    "Perfect!",
+    "Great job!",
+    "Wonderful!"
+  ];
+
+  const wrongMessages = [
+    "Not quite!",
+    "Almost!",
+    "Good try!",
+    "Keep going!",
+    "Nearly there!",
+    "Try the next one!"
+  ];
+
+  const resultMessages = [
+    { min: 10, text: "Perfect score! You are a maths superstar!" },
+    { min: 8,  text: "Amazing work, Zoe!" },
+    { min: 6,  text: "Great job! Keep practising!" },
+    { min: 4,  text: "Good effort! You are getting better!" },
+    { min: 0,  text: "Nice try! Let's practise some more!" }
+  ];
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function generateQuestions(table) {
+    const pool = [];
+    if (table === 'mix') {
+      TABLES.forEach(t => {
+        for (let i = 1; i <= 12; i++) pool.push({ a: i, b: t });
+      });
+    } else {
+      for (let i = 1; i <= 12; i++) pool.push({ a: i, b: table });
+    }
+    shuffle(pool);
+    return pool.slice(0, TOTAL_QUESTIONS).map(q => {
+      const correct = q.a * q.b;
+      const wrongs = generateWrongAnswers(correct, q.b);
+      const options = shuffle([correct, ...wrongs]);
+      return { a: q.a, b: q.b, correct, options };
+    });
+  }
+
+  function generateWrongAnswers(correct, table) {
+    const wrongs = new Set();
+    // Plausible distractors: nearby multiples, off-by-one on the multiplier, etc.
+    const candidates = [
+      correct + table,
+      correct - table,
+      correct + table * 2,
+      correct - table * 2,
+      correct + 1,
+      correct - 1,
+      correct + 2,
+      correct - 2,
+      correct + 5,
+      correct - 5,
+      correct + 10,
+      correct - 10
+    ];
+
+    // Add plausible candidates first
+    shuffle(candidates);
+    for (const c of candidates) {
+      if (c > 0 && c !== correct && !wrongs.has(c)) {
+        wrongs.add(c);
+        if (wrongs.size === 3) break;
+      }
+    }
+
+    // Fallback: random nearby numbers
+    let offset = 1;
+    while (wrongs.size < 3) {
+      const c = correct + offset;
+      if (c > 0 && c !== correct && !wrongs.has(c)) wrongs.add(c);
+      offset = offset > 0 ? -offset : -offset + 1;
+    }
+
+    return [...wrongs];
+  }
+
+  function renderStars() {
+    const container = document.getElementById('stars');
+    let html = '';
+    for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+      html += `<span class="star ${i < score ? 'earned' : ''}">&#9733;</span>`;
+    }
+    container.innerHTML = html;
+  }
+
+  function renderQuestion() {
+    const q = questions[currentQ];
+    document.getElementById('progress-text').textContent = `${currentQ + 1} / ${TOTAL_QUESTIONS}`;
+    document.getElementById('progress-bar').style.width = `${((currentQ) / TOTAL_QUESTIONS) * 100}%`;
+    document.getElementById('question-text').innerHTML = `${q.a} &times; ${q.b} = ?`;
+    document.getElementById('feedback').innerHTML = '&nbsp;';
+
+    const grid = document.getElementById('answers-grid');
+    grid.innerHTML = '';
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'answer-btn';
+      btn.textContent = opt;
+      btn.addEventListener('click', () => handleAnswer(btn, opt, q.correct));
+      grid.appendChild(btn);
+    });
+
+    answered = false;
+  }
+
+  function handleAnswer(btn, selected, correct) {
+    if (answered) return;
+    answered = true;
+
+    const allBtns = document.querySelectorAll('.answer-btn');
+    allBtns.forEach(b => b.classList.add('disabled'));
+
+    const feedbackEl = document.getElementById('feedback');
+
+    if (selected === correct) {
+      btn.classList.add('correct');
+      score++;
+      renderStars();
+      feedbackEl.textContent = pick(correctMessages);
+      feedbackEl.className = 'feedback correct-msg';
+    } else {
+      btn.classList.add('wrong');
+      // Show correct answer
+      allBtns.forEach(b => {
+        if (parseInt(b.textContent) === correct) b.classList.add('reveal-correct');
+      });
+      feedbackEl.textContent = `${pick(wrongMessages)} It was ${correct}.`;
+      feedbackEl.className = 'feedback wrong-msg';
+    }
+
+    setTimeout(() => {
+      currentQ++;
+      if (currentQ < TOTAL_QUESTIONS) {
+        renderQuestion();
+      } else {
+        document.getElementById('progress-bar').style.width = '100%';
+        showResults();
+      }
+    }, 1400);
+  }
+
+  function showResults() {
+    // Stars display
+    let starsHtml = '';
+    for (let i = 0; i < score; i++) starsHtml += '&#9733;';
+    document.getElementById('results-stars').innerHTML = starsHtml;
+
+    document.getElementById('results-score').textContent = `${score} / ${TOTAL_QUESTIONS}`;
+
+    const msg = resultMessages.find(m => score >= m.min);
+    document.getElementById('results-message').textContent = msg.text;
+
+    showScreen('results-screen');
+
+    if (score >= 8) spawnConfetti();
+  }
+
+  function startGame(table) {
+    currentTable = table;
+    currentQ = 0;
+    score = 0;
+    questions = generateQuestions(table);
+    renderStars();
+    renderQuestion();
+    showScreen('game-screen');
+  }
+
+  // Play Again button
+  document.getElementById('btn-play-again').addEventListener('click', () => {
+    startGame(currentTable);
+  });
+
+  // Confetti effect for great scores
+  function spawnConfetti() {
+    const colors = ['#ff6b9d', '#c084fc', '#60a5fa', '#4ade80', '#fbbf24', '#fb923c'];
+    for (let i = 0; i < 60; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.background = pick(colors);
+      el.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+      el.style.animationDelay = (Math.random() * 0.8) + 's';
+      el.style.width = (6 + Math.random() * 8) + 'px';
+      el.style.height = (6 + Math.random() * 8) + 'px';
+      el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      document.body.appendChild(el);
+      el.addEventListener('animationend', () => el.remove());
+    }
+  }
+</script>
+
+</body>
+</html>
