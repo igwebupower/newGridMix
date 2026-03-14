@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Escape Room — Addition Challenge</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- START SCREEN -->
+    <div id="screen-start" class="screen active">
+      <div class="card start-card">
+        <div class="lock-icon">🔒</div>
+        <h1>Escape Room</h1>
+        <p class="subtitle">Solve addition puzzles to unlock each door and escape!</p>
+        <div class="level-grid" id="level-grid"></div>
+        <button class="btn btn-primary" id="btn-start">Start from Level 1</button>
+      </div>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="screen-game" class="screen">
+      <div class="game-layout">
+
+        <!-- Room -->
+        <div class="room" id="room">
+          <div class="room-header">
+            <div class="room-info">
+              <span id="room-name" class="room-name"></span>
+              <span id="level-badge" class="level-badge"></span>
+            </div>
+            <div class="hud">
+              <span class="hud-item">❤️ <span id="lives-count">3</span></span>
+              <span class="hud-item">⭐ <span id="score-count">0</span></span>
+              <span class="hud-item">⏱ <span id="timer-count">--</span></span>
+            </div>
+          </div>
+
+          <div class="room-scene" id="room-scene">
+            <!-- Puzzle items rendered here by JS -->
+          </div>
+
+          <div class="room-footer">
+            <button class="btn btn-ghost" id="btn-menu">Menu</button>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <span id="puzzle-counter" class="puzzle-counter"></span>
+          </div>
+        </div>
+
+        <!-- Puzzle panel -->
+        <div class="puzzle-panel" id="puzzle-panel">
+          <div class="puzzle-header">
+            <div class="lock-visual" id="lock-visual">
+              <div class="lock-body">
+                <div class="lock-shackle" id="lock-shackle"></div>
+                <div class="lock-face">
+                  <span id="lock-digits">???</span>
+                </div>
+              </div>
+            </div>
+            <h2 id="puzzle-title">Solve to unlock</h2>
+          </div>
+
+          <div class="puzzle-question" id="puzzle-question">
+            <!-- Question rendered by JS -->
+          </div>
+
+          <div class="answer-row">
+            <input
+              type="number"
+              id="answer-input"
+              class="answer-input"
+              placeholder="Your answer"
+              autocomplete="off"
+            />
+            <button class="btn btn-primary" id="btn-submit">Unlock</button>
+          </div>
+
+          <div id="feedback" class="feedback hidden"></div>
+
+          <div class="hint-row">
+            <button class="btn btn-ghost btn-sm" id="btn-hint">Get Hint</button>
+            <span id="hint-text" class="hint-text"></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- LEVEL COMPLETE SCREEN -->
+    <div id="screen-level-complete" class="screen">
+      <div class="card result-card">
+        <div class="result-icon" id="result-icon">🔓</div>
+        <h2 id="result-title">Door Unlocked!</h2>
+        <p id="result-msg"></p>
+        <div class="stats-row">
+          <div class="stat"><span id="stat-score">0</span><label>Score</label></div>
+          <div class="stat"><span id="stat-time">0s</span><label>Time</label></div>
+          <div class="stat"><span id="stat-stars">3</span><label>Stars</label></div>
+        </div>
+        <div class="star-display" id="star-display"></div>
+        <div class="btn-row">
+          <button class="btn btn-ghost" id="btn-replay">Retry</button>
+          <button class="btn btn-primary" id="btn-next">Next Level</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME OVER SCREEN -->
+    <div id="screen-gameover" class="screen">
+      <div class="card result-card">
+        <div class="result-icon">💀</div>
+        <h2>Trapped!</h2>
+        <p>You ran out of lives. Try again!</p>
+        <div class="btn-row">
+          <button class="btn btn-ghost" id="btn-gameover-menu">Menu</button>
+          <button class="btn btn-primary" id="btn-gameover-retry">Retry</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
