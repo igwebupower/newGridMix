@@ -13,6 +13,7 @@ import { IntensityChart } from '@/components/IntensityChart';
 import { SourceBreakdown } from '@/components/SourceBreakdown';
 import { InterconnectorFlows } from '@/components/InterconnectorFlows';
 import { SolarIntradayChart } from '@/components/SolarIntradayChart';
+import { Watt } from '@/components/Watt';
 import {
   getCurrentGridData,
   getGridStats,
@@ -165,6 +166,7 @@ export default function Dashboard() {
             </div>
           </Card>
         </main>
+        <Watt />
       </div>
     );
   }
@@ -176,6 +178,7 @@ export default function Dashboard() {
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <LoadingSkeleton />
         </main>
+        <Watt />
       </div>
     );
   }
@@ -365,6 +368,8 @@ export default function Dashboard() {
           </div>
         </footer>
       </main>
+
+      <Watt />
     </div>
   );
 }
