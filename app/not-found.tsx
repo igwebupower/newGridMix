@@ -38,7 +38,7 @@ export default function NotFound() {
       href: '/support',
       title: 'Support',
       description: 'Help keep GridMix running',
-      icon: '💚',
+      icon: '♥',
       gradient: 'from-purple-500 to-purple-600',
     },
   ];

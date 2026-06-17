@@ -90,7 +90,7 @@ export default function SupportPage() {
         >
           <div className="inline-block mb-6">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-4xl">
-              💚
+              ♥
             </div>
           </div>
           <h1 className="text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6">

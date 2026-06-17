@@ -231,10 +231,10 @@ export default function Dashboard() {
 
         {/* Solar Intraday Section */}
         <Card
-          title="☀️ Solar Generation Today"
+          title="Solar Generation Today"
           subtitle={
             solarData && solarData.generation_mw === 0
-              ? "🌙 Nighttime - No solar generation (see yesterday's curve for reference)"
+              ? "Nighttime — No solar generation (see yesterday's curve for reference)"
               : "Live solar output curve with yesterday comparison"
           }
           delay={0.4}
@@ -344,7 +344,7 @@ export default function Dashboard() {
           </p>
           <div className="flex flex-wrap justify-center gap-4 text-xs text-gray-400 dark:text-gray-500">
             <a href="/support" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-              💚 Support GridMix
+              Support GridMix
             </a>
             <span>•</span>
             <a href="/privacy" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">

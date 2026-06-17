@@ -98,7 +98,7 @@ export function EnergyMixWithSolarChart({ data, solarData }: EnergyMixWithSolarC
         {solarMw > 0 ? (
           <>Includes {solarMw.toLocaleString()} MW solar from Sheffield Solar PVLive</>
         ) : solarData ? (
-          <>☀️ Solar: 0 MW (nighttime) — data from Sheffield Solar PVLive</>
+          <>Solar: 0 MW (nighttime) — data from Sheffield Solar PVLive</>
         ) : (
           <>Solar data unavailable</>
         )}

@@ -115,7 +115,7 @@ export function InsightsPageClient({ featuredInsights, allInsights }: InsightsPa
           </p>
           <div className="flex flex-wrap justify-center gap-4 text-xs text-gray-400 dark:text-gray-500">
             <a href="/support" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-              💚 Support GridMix
+              Support GridMix
             </a>
             <span>•</span>
             <a href="/privacy" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
