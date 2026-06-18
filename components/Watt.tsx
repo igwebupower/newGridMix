@@ -10,6 +10,10 @@ interface WattMessage {
   source?: string;
 }
 
+function isConversationTurn(m: WattMessage): m is WattMessage & { role: 'user' | 'assistant' } {
+  return m.role === 'user' || m.role === 'assistant';
+}
+
 const SUGGESTED_QUESTIONS = [
   "What's powering the grid right now?",
   'Is now a good time to charge my EV?',
@@ -39,6 +43,11 @@ export function Watt() {
   async function ask(question: string) {
     if (!question.trim() || loading) return;
 
+    const history = messages
+      .filter(isConversationTurn)
+      .slice(-6)
+      .map((m) => ({ role: m.role, content: m.content }));
+
     setMessages((prev) => [...prev, { role: 'user', content: question }]);
     setInput('');
     setLoading(true);
@@ -47,7 +56,7 @@ export function Watt() {
       const res = await fetch('/api/watt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ question, history }),
       });
       const data = await res.json();
 

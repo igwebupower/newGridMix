@@ -4,7 +4,24 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit } from '@/lib/rate-limit';
-import { runWattConversation } from '@/lib/watt-conversation';
+import { runWattConversation, MAX_HISTORY_MESSAGES, type WattHistoryMessage } from '@/lib/watt-conversation';
+
+function parseHistory(raw: unknown): WattHistoryMessage[] {
+  if (!Array.isArray(raw)) return [];
+  const valid: WattHistoryMessage[] = [];
+  for (const entry of raw) {
+    if (
+      entry &&
+      (entry.role === 'user' || entry.role === 'assistant') &&
+      typeof entry.content === 'string' &&
+      entry.content.length > 0 &&
+      entry.content.length <= 1000
+    ) {
+      valid.push({ role: entry.role, content: entry.content });
+    }
+  }
+  return valid.slice(-MAX_HISTORY_MESSAGES);
+}
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -39,9 +56,11 @@ export async function POST(req: NextRequest) {
   }
 
   let question: string;
+  let history: WattHistoryMessage[];
   try {
     const body = await req.json();
     question = typeof body?.question === 'string' ? body.question.trim() : '';
+    history = parseHistory(body?.history);
   } catch {
     return NextResponse.json(
       { error: 'invalid_request', message: 'Malformed request body.' },
@@ -73,7 +92,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const answer = await runWattConversation(question, apiKey);
+    const answer = await runWattConversation(question, apiKey, history);
     return NextResponse.json(
       { answer },
       {

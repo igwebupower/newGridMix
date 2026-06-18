@@ -46,7 +46,7 @@ export async function GET() {
         path: '/api/v1/watt',
         method: 'POST',
         description: 'Ask Watt a natural-language question about live or historical UK grid data. Every answer cites its data source.',
-        parameters: 'JSON body: { "question": "..." }',
+        parameters: 'JSON body: { "question": "...", "history"?: [{ "role": "user"|"assistant", "content": "..." }] }. history is optional, capped at the last 6 messages, and lets you build follow-up questions.',
         rate_limit: 'Free - 30 requests/day per IP',
       },
     },
