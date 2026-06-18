@@ -42,8 +42,11 @@ function logRateLimitViolation(ip: string, pathname: string, userAgent?: string)
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Rate limit API v1 endpoints
-  if (pathname.startsWith('/api/v1')) {
+  // Rate limit API v1 endpoints. /api/v1/watt is excluded: it calls a paid
+  // LLM per request and already enforces its own stricter per-day cap in the
+  // route handler, so it must not share the generic 'api' namespace bucket
+  // or have its rate-limit headers overwritten by this generic limiter.
+  if (pathname.startsWith('/api/v1') && pathname !== '/api/v1/watt') {
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
       || request.headers.get('x-real-ip')
       || 'anonymous';
