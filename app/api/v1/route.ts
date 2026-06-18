@@ -42,6 +42,13 @@ export async function GET() {
         parameters: 'hours (optional, default: 48), limit (optional, default: 100)',
         rate_limit: 'Free - unlimited usage',
       },
+      watt: {
+        path: '/api/v1/watt',
+        method: 'POST',
+        description: 'Ask Watt a natural-language question about live or historical UK grid data. Every answer cites its data source.',
+        parameters: 'JSON body: { "question": "..." }',
+        rate_limit: 'Free - 30 requests/day per IP',
+      },
     },
     data_sources: [
       {

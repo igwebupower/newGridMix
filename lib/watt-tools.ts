@@ -3,6 +3,8 @@
 // with a source + timestamp so every answer can be cited. Watt must never
 // answer from model knowledge alone; if no tool covers a question, it refuses.
 
+import fs from 'fs';
+import path from 'path';
 import {
   getCurrentGridData,
   getGridStats,
@@ -12,8 +14,79 @@ import {
   getCurrentSystemPrice,
   calculateGridHealthScore,
 } from './api';
+import type {
+  HistoricalElectricityDataset,
+  MonthlyElectricityData,
+  AnnualElectricitySummary,
+} from './historical-types';
 
 const PVLIVE_API_BASE = 'https://api.pvlive.uk/pvlive/api/v4';
+const HISTORICAL_DATA_PATH = path.join(
+  process.cwd(),
+  'data',
+  'historical',
+  'uk-electricity-2000-2026.json'
+);
+
+type RecordMetric =
+  | 'renewable_pct'
+  | 'wind_pct'
+  | 'solar_pct'
+  | 'nuclear_pct'
+  | 'gas_pct'
+  | 'coal_pct'
+  | 'carbon_intensity_gco2kwh'
+  | 'grid_health_index'
+  | 'price'
+  | 'demand';
+
+let cachedDataset: HistoricalElectricityDataset | null | undefined;
+
+// Loaded once per server instance and reused — this file only changes when
+// the monthly report pipeline regenerates it, not per-request.
+function loadHistoricalDataset(): HistoricalElectricityDataset | null {
+  if (cachedDataset !== undefined) return cachedDataset;
+  try {
+    const raw = fs.readFileSync(HISTORICAL_DATA_PATH, 'utf-8');
+    cachedDataset = JSON.parse(raw) as HistoricalElectricityDataset;
+  } catch (error) {
+    console.error('Watt: failed to load historical dataset', error);
+    cachedDataset = null;
+  }
+  return cachedDataset;
+}
+
+function getAnnualMetric(entry: AnnualElectricitySummary, metric: RecordMetric): number | null {
+  switch (metric) {
+    case 'renewable_pct': return entry.renewable_pct;
+    case 'wind_pct': return entry.wind_pct;
+    case 'solar_pct': return entry.solar_pct;
+    case 'nuclear_pct': return entry.nuclear_pct;
+    case 'gas_pct': return entry.gas_pct;
+    case 'coal_pct': return entry.coal_pct;
+    case 'carbon_intensity_gco2kwh': return entry.carbon_intensity_gco2kwh;
+    case 'grid_health_index': return entry.grid_health_index;
+    case 'price': return entry.avg_price_gbp_mwh;
+    case 'demand': return entry.peak_demand_gw;
+    default: return null;
+  }
+}
+
+function getMonthlyMetric(entry: MonthlyElectricityData, metric: RecordMetric): number | null {
+  switch (metric) {
+    case 'renewable_pct': return entry.generation.renewable_pct;
+    case 'wind_pct': return entry.generation.wind_pct;
+    case 'solar_pct': return entry.generation.solar_pct;
+    case 'nuclear_pct': return entry.generation.nuclear_pct;
+    case 'gas_pct': return entry.generation.gas_pct;
+    case 'coal_pct': return entry.generation.coal_pct;
+    case 'carbon_intensity_gco2kwh': return entry.carbon_intensity_gco2kwh;
+    case 'grid_health_index': return entry.grid_health_index;
+    case 'price': return entry.price.avg_gbp_mwh;
+    case 'demand': return entry.demand.peak_gw;
+    default: return null;
+  }
+}
 
 export interface WattToolResult {
   data: unknown;
@@ -315,6 +388,155 @@ export const wattTools: WattTool[] = [
       const intensity = grid.intensity.actual || grid.intensity.forecast;
       const score = calculateGridHealthScore(freq.frequency, intensity, stats.renewable_perc);
       return { data: score, source: 'GridMix composite score (Elexon BMRS)', timestamp: grid.to };
+    },
+  },
+  {
+    definition: {
+      type: 'function',
+      function: {
+        name: 'get_historical_year',
+        description:
+          'Get the annual summary (renewable %, prices, demand, carbon intensity) for a single calendar year. Dataset covers 2000-2025. Use for "what was the grid like in <year>" style questions.',
+        parameters: {
+          type: 'object',
+          properties: {
+            year: { type: 'integer', description: 'Calendar year, e.g. 2015.' },
+          },
+          required: ['year'],
+        },
+      },
+    },
+    execute: async (args) => {
+      const dataset = loadHistoricalDataset();
+      if (!dataset) {
+        return {
+          data: { error: 'Historical archive is unavailable right now.' },
+          source: 'GridMix historical archive',
+          timestamp: new Date().toISOString(),
+        };
+      }
+      const year = typeof args.year === 'number' ? args.year : parseInt(String(args.year), 10);
+      const entry = dataset.annual_summary.find((e) => e.year === year);
+      return {
+        data: entry || { error: `No annual data for ${year}. Dataset covers ${dataset.metadata.period.start} to ${dataset.metadata.period.end}.` },
+        source: 'GridMix historical archive (GOV.UK / NESO / DESNZ Energy Trends)',
+        timestamp: new Date().toISOString(),
+      };
+    },
+  },
+  {
+    definition: {
+      type: 'function',
+      function: {
+        name: 'get_historical_month',
+        description:
+          'Get the monthly snapshot (renewable %, prices, demand, carbon intensity) for a specific year and month. Dataset covers 2000-01 through 2025. Use for "what was it like in March 2015" style questions.',
+        parameters: {
+          type: 'object',
+          properties: {
+            year: { type: 'integer', description: 'Calendar year, e.g. 2015.' },
+            month: { type: 'integer', description: 'Month number, 1-12.' },
+          },
+          required: ['year', 'month'],
+        },
+      },
+    },
+    execute: async (args) => {
+      const dataset = loadHistoricalDataset();
+      if (!dataset) {
+        return {
+          data: { error: 'Historical archive is unavailable right now.' },
+          source: 'GridMix historical archive',
+          timestamp: new Date().toISOString(),
+        };
+      }
+      const year = typeof args.year === 'number' ? args.year : parseInt(String(args.year), 10);
+      const month = Math.min(12, Math.max(1, typeof args.month === 'number' ? args.month : parseInt(String(args.month), 10)));
+      const entry = dataset.monthly_data.find((e) => e.year === year && e.month === month);
+      return {
+        data: entry || { error: `No monthly data for ${year}-${month}. Dataset covers ${dataset.metadata.period.start} to ${dataset.metadata.period.end}.` },
+        source: 'GridMix historical archive (GOV.UK / NESO / DESNZ Energy Trends)',
+        timestamp: new Date().toISOString(),
+      };
+    },
+  },
+  {
+    definition: {
+      type: 'function',
+      function: {
+        name: 'get_historical_record',
+        description:
+          'Find the highest or lowest value of a metric across GridMix\'s historical archive (2000-2025). Use for "when was renewable share highest ever" or "what was the lowest carbon intensity on record" style questions.',
+        parameters: {
+          type: 'object',
+          properties: {
+            metric: {
+              type: 'string',
+              enum: ['renewable_pct', 'wind_pct', 'solar_pct', 'nuclear_pct', 'gas_pct', 'coal_pct', 'carbon_intensity_gco2kwh', 'grid_health_index', 'price', 'demand'],
+              description: 'Which metric to find a record for. Defaults to renewable_pct.',
+            },
+            direction: {
+              type: 'string',
+              enum: ['highest', 'lowest'],
+              description: 'Find the highest or lowest value. Defaults to highest.',
+            },
+            scope: {
+              type: 'string',
+              enum: ['monthly', 'annual'],
+              description: 'Search month-by-month (more precise) or year-by-year (smoother trend). Defaults to monthly.',
+            },
+          },
+          required: [],
+        },
+      },
+    },
+    execute: async (args) => {
+      const dataset = loadHistoricalDataset();
+      if (!dataset) {
+        return {
+          data: { error: 'Historical archive is unavailable right now.' },
+          source: 'GridMix historical archive',
+          timestamp: new Date().toISOString(),
+        };
+      }
+
+      const metric = (args.metric as RecordMetric) || 'renewable_pct';
+      const direction = args.direction === 'lowest' ? 'lowest' : 'highest';
+      const scope = args.scope === 'annual' ? 'annual' : 'monthly';
+
+      let best: { period: string; value: number; data_quality?: string } | null = null;
+
+      if (scope === 'annual') {
+        for (const entry of dataset.annual_summary) {
+          const value = getAnnualMetric(entry, metric);
+          if (value === null || value === undefined) continue;
+          if (!best || (direction === 'highest' ? value > best.value : value < best.value)) {
+            best = { period: String(entry.year), value };
+          }
+        }
+      } else {
+        for (const entry of dataset.monthly_data) {
+          const value = getMonthlyMetric(entry, metric);
+          if (value === null || value === undefined) continue;
+          if (!best || (direction === 'highest' ? value > best.value : value < best.value)) {
+            best = { period: `${entry.year}-${String(entry.month).padStart(2, '0')}`, value, data_quality: entry.data_quality };
+          }
+        }
+      }
+
+      if (!best) {
+        return {
+          data: { error: `No data available for ${metric}.` },
+          source: 'GridMix historical archive',
+          timestamp: new Date().toISOString(),
+        };
+      }
+
+      return {
+        data: { metric, direction, scope, ...best },
+        source: 'GridMix historical archive (GOV.UK / NESO / DESNZ Energy Trends)',
+        timestamp: new Date().toISOString(),
+      };
     },
   },
 ];

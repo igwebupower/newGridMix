@@ -34,12 +34,13 @@ export interface RateLimitResult {
 export function rateLimit(
   ip: string,
   limit: number = 60,
-  windowMs: number = 60 * 1000
+  windowMs: number = 60 * 1000,
+  namespace: string = 'api'
 ): RateLimitResult {
   cleanup();
 
   const now = Date.now();
-  const key = `api:${ip}`;
+  const key = `${namespace}:${ip}`;
   const entry = rateLimitMap.get(key);
 
   // If no entry or window expired, create new entry
