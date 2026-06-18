@@ -8,9 +8,19 @@ interface MetricGroupProps {
   icon?: ReactNode;
   children: ReactNode;
   delay?: number;
+  columns?: 1 | 2 | 3 | 4;
 }
 
-export function MetricGroup({ title, icon, children, delay = 0 }: MetricGroupProps) {
+// Tailwind needs static class names, so the column count maps to a fixed
+// set of breakpoint classes rather than being interpolated.
+const GRID_COLS: Record<number, string> = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-1 sm:grid-cols-2',
+  3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+  4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
+};
+
+export function MetricGroup({ title, icon, children, delay = 0, columns = 4 }: MetricGroupProps) {
   return (
     <motion.div
       initial={{ y: 20, opacity: 0 }}
@@ -32,7 +42,7 @@ export function MetricGroup({ title, icon, children, delay = 0 }: MetricGroupPro
       </div>
 
       {/* Group Content */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className={`grid gap-4 ${GRID_COLS[columns]}`}>
         {children}
       </div>
     </motion.div>
