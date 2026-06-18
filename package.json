@@ -12,6 +12,7 @@
     "generate-report": "npx tsx scripts/generate-monthly-report.ts"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@portabletext/react": "^3.0.0",
     "@sanity/client": "^6.15.0",
     "@sanity/image-url": "^1.0.2",

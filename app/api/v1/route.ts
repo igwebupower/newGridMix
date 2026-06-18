@@ -49,6 +49,13 @@ export async function GET() {
         parameters: 'JSON body: { "question": "...", "history"?: [{ "role": "user"|"assistant", "content": "..." }] }. history is optional, capped at the last 6 messages, and lets you build follow-up questions.',
         rate_limit: 'Free - 30 requests/day per IP',
       },
+      mcp: {
+        path: '/api/mcp',
+        method: 'POST',
+        description: 'Model Context Protocol (MCP) server exposing the same grid-data tools Watt uses (live mix, solar, frequency, price, carbon intensity, historical archive). Connect Claude, Claude Desktop, or any MCP-compatible client directly to this URL to query GridMix data as native tool calls.',
+        parameters: 'MCP Streamable HTTP transport (stateless). Standard MCP methods: initialize, tools/list, tools/call.',
+        rate_limit: 'Free - 500 requests/day per IP',
+      },
     },
     data_sources: [
       {
