@@ -112,7 +112,7 @@ export function Watt() {
               {messages.length === 0 && (
                 <div className="space-y-2">
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Ask me anything about live or recent UK grid data — I'll always cite where the answer comes from.
+                    Ask me anything about live or recent UK grid data — I&apos;ll always cite where the answer comes from.
                   </p>
                   {SUGGESTED_QUESTIONS.map((q) => (
                     <button
