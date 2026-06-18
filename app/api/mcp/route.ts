@@ -62,6 +62,7 @@ function createServer(): Server {
       const result = await tool.execute((request.params.arguments as Record<string, unknown>) || {});
       return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
     } catch (error) {
+      console.error(`MCP tool execution failed (${request.params.name}):`, error);
       return {
         content: [{ type: 'text' as const, text: error instanceof Error ? error.message : 'Tool execution failed' }],
         isError: true,
