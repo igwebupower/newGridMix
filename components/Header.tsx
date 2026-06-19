@@ -31,7 +31,7 @@ export function Header({ lastUpdated }: HeaderProps) {
               <img
                 src="/Assets/gridmix-logo.svg"
                 alt="GridMix Logo"
-                className="h-14 sm:h-16 lg:h-20 w-auto"
+                className="h-10 sm:h-12 lg:h-14 w-auto"
               />
             </Link>
 
