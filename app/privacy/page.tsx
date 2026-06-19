@@ -106,6 +106,11 @@ export default function PrivacyPage() {
               We do not share your personal information with these data providers. We only retrieve publicly available energy generation data.
             </p>
 
+            <h3>4.1 Watt AI Assistant</h3>
+            <p>
+              If you ask a question to Watt (our AI assistant, available on the dashboard and via our public API and MCP server), the text of your question and recent conversation history is sent to <strong>OpenAI</strong> to generate an answer. Do not include personal or sensitive information in your questions. OpenAI processes this data under its own privacy policy and is not authorized by us to use it to train its models.
+            </p>
+
             <h2>5. Data Retention</h2>
             <p>
               We retain automatically collected information (such as analytics data) for as long as necessary to fulfill the purposes outlined in this privacy policy, unless a longer retention period is required by law.

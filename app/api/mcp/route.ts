@@ -39,8 +39,16 @@ function getClientIp(req: Request): string {
   return req.headers.get('x-real-ip') || 'unknown';
 }
 
+const DISCLAIMER =
+  'GridMix data is informational/educational only — not warranted for accuracy and not intended for trading, ' +
+  'critical infrastructure, emergency response, or regulatory compliance use. Source data: Elexon BMRS ' +
+  '(© Elexon Limited) and University of Sheffield Solar PVLive. Full terms: https://gridmix.co.uk/terms';
+
 function createServer(): Server {
-  const server = new Server({ name: 'gridmix', version: '1.0.0' }, { capabilities: { tools: {} } });
+  const server = new Server(
+    { name: 'gridmix', version: '1.0.0' },
+    { capabilities: { tools: {} }, instructions: DISCLAIMER }
+  );
 
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: wattTools.map((t) => ({

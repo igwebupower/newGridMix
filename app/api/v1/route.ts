@@ -79,6 +79,14 @@ export async function GET() {
       documentation: 'https://gridmix.co.uk/api/docs',
       github: 'https://github.com/gridmix',
     },
+    legal: {
+      disclaimer:
+        'GridMix data is informational/educational only — not warranted for accuracy and not intended for ' +
+        'trading, critical infrastructure, emergency response, or regulatory compliance use.',
+      data_attribution: 'Elexon BMRS data is © Elexon Limited, used under licence. Solar data from University of Sheffield Solar PVLive.',
+      terms: 'https://gridmix.co.uk/terms',
+      privacy: 'https://gridmix.co.uk/privacy',
+    },
   };
 
   return NextResponse.json(apiInfo, {

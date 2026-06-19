@@ -106,12 +106,15 @@ export default function TermsPage() {
             <ul>
               <li>Attempt to gain unauthorized access to any part of the Service</li>
               <li>Interfere with or disrupt the Service or servers</li>
-              <li>Use automated systems to scrape or download large amounts of data</li>
+              <li>Use automated systems to scrape or download large amounts of data from the dashboard website itself, outside of the documented API and MCP server described below</li>
               <li>Reverse engineer or attempt to extract source code</li>
               <li>Use the Service for any illegal or unauthorized purpose</li>
               <li>Impersonate GridMix or misrepresent your relationship with us</li>
               <li>Transmit viruses, malware, or harmful code</li>
             </ul>
+            <p>
+              This restriction does not apply to use of the documented public REST API (<code>/api/v1</code>) or MCP server (<code>/api/mcp</code>) within their published rate limits — automated, programmatic access through those interfaces is the intended and supported way to use GridMix data. See our <a href="https://gridmix.co.uk/api/docs" className="text-blue-600 dark:text-blue-400 hover:underline">API documentation</a> for details.
+            </p>
 
             <h2>5. Intellectual Property Rights</h2>
 
