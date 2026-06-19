@@ -29,10 +29,9 @@ export function Header({ lastUpdated }: HeaderProps) {
             <Link href="/" className="flex items-center hover:opacity-90 transition-all">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/Assets/gridmixlogo.png"
+                src="/Assets/gridmix-logo.svg"
                 alt="GridMix Logo"
-                className="h-14 sm:h-16 lg:h-20 w-auto drop-shadow-sm"
-                style={{ filter: 'contrast(1.1)' }}
+                className="h-14 sm:h-16 lg:h-20 w-auto"
               />
             </Link>
 
