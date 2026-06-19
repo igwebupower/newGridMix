@@ -38,16 +38,6 @@ export function Header({ lastUpdated }: HeaderProps) {
             {/* Navigation */}
             <nav className="hidden md:flex items-center space-x-1">
               <Link
-                href="/"
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  pathname === '/'
-                    ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-                }`}
-              >
-                Dashboard
-              </Link>
-              <Link
                 href="/api/docs"
                 className={`px-4 py-2 rounded-lg font-medium transition-all ${
                   pathname?.startsWith('/api/docs')
@@ -109,17 +99,6 @@ export function Header({ lastUpdated }: HeaderProps) {
             className="md:hidden border-t border-gray-200/20 dark:border-gray-800/20 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg"
           >
             <nav className="max-w-7xl mx-auto px-4 py-4 space-y-2">
-              <Link
-                href="/"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-3 rounded-lg font-medium transition-all ${
-                  pathname === '/'
-                    ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
-              >
-                Dashboard
-              </Link>
               <Link
                 href="/api/docs"
                 onClick={() => setMobileMenuOpen(false)}

@@ -5,17 +5,17 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
+        allow: ['/', '/api/docs'],
         disallow: ['/api/', '/_next/'],
       },
       {
         userAgent: 'Googlebot',
-        allow: '/',
+        allow: ['/', '/api/docs'],
         disallow: ['/api/', '/_next/'],
       },
       {
         userAgent: 'Bingbot',
-        allow: '/',
+        allow: ['/', '/api/docs'],
         disallow: ['/api/', '/_next/'],
       },
     ],
