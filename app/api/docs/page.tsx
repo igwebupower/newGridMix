@@ -701,7 +701,7 @@ func main() {
                 <li>In Claude.ai or Claude Desktop, go to <strong className="text-gray-800 dark:text-gray-200">Settings → Connectors</strong></li>
                 <li>Choose <strong className="text-gray-800 dark:text-gray-200">Add custom connector</strong></li>
                 <li>Paste the endpoint URL above and save</li>
-                <li>Ask a question — Claude will call GridMix's tools directly</li>
+                <li>Ask a question — Claude will call GridMix&apos;s tools directly</li>
               </ol>
             </div>
           </div>
