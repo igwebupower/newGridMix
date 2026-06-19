@@ -45,7 +45,7 @@ export function Header({ lastUpdated }: HeaderProps) {
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                 }`}
               >
-                API
+                Developers
               </Link>
             </nav>
           </div>
@@ -108,7 +108,7 @@ export function Header({ lastUpdated }: HeaderProps) {
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
               >
-                API
+                Developers
               </Link>
               <Link
                 href="/support"
