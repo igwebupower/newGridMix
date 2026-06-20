@@ -41,13 +41,13 @@ function getClientIp(req: Request): string {
   return req.headers.get('x-real-ip') || 'unknown';
 }
 
-async function resolveIdentity(req: Request): Promise<{ key: string; limit: number }> {
+async function resolveIdentity(req: Request): Promise<{ key: string; limit: number; authenticated: boolean }> {
   const bearer = req.headers.get('authorization')?.match(/^Bearer\s+(.+)$/i)?.[1];
   if (bearer) {
     const verified = await verifyApiKey(bearer);
-    if (verified) return { key: `key:${verified.email}`, limit: AUTHENTICATED_DAILY_LIMIT };
+    if (verified) return { key: `key:${verified.email}`, limit: AUTHENTICATED_DAILY_LIMIT, authenticated: true };
   }
-  return { key: `ip:${getClientIp(req)}`, limit: ANONYMOUS_DAILY_LIMIT };
+  return { key: `ip:${getClientIp(req)}`, limit: ANONYMOUS_DAILY_LIMIT, authenticated: false };
 }
 
 const DISCLAIMER =
@@ -95,20 +95,16 @@ function createServer(): Server {
 }
 
 export async function POST(req: Request) {
-  const { key: identity, limit: dailyLimit } = await resolveIdentity(req);
+  const { key: identity, limit: dailyLimit, authenticated } = await resolveIdentity(req);
   const limit = rateLimit(identity, dailyLimit, 24 * 60 * 60 * 1000, 'mcp');
 
   if (!limit.success) {
+    const message = authenticated
+      ? `Rate limit exceeded: ${dailyLimit} requests/day for this API key. Try again tomorrow.`
+      : `Rate limit exceeded: ${dailyLimit} requests/day. Get a free API key at ` +
+        'https://gridmix.co.uk/api/docs to raise this from 20 to 500 requests/day.';
     return new Response(
-      JSON.stringify({
-        jsonrpc: '2.0',
-        error: {
-          code: -32000,
-          message: `Rate limit exceeded: ${dailyLimit} requests/day. Get a free API key at ` +
-            'https://gridmix.co.uk/api/docs to raise this from 20 to 500 requests/day.',
-        },
-        id: null,
-      }),
+      JSON.stringify({ jsonrpc: '2.0', error: { code: -32000, message }, id: null }),
       { status: 429, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
     );
   }
