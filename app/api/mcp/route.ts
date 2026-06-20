@@ -10,12 +10,14 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
 import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { rateLimit } from '@/lib/rate-limit';
+import { verifyApiKey } from '@/lib/api-keys';
 import { wattTools } from '@/lib/watt-tools';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const DAILY_LIMIT = 500;
+const ANONYMOUS_DAILY_LIMIT = 20;
+const AUTHENTICATED_DAILY_LIMIT = 500;
 
 // MCP clients are normally server-to-server (Claude Desktop, Claude.ai
 // connectors) and unaffected by CORS, but browser-based tooling like the
@@ -39,10 +41,21 @@ function getClientIp(req: Request): string {
   return req.headers.get('x-real-ip') || 'unknown';
 }
 
+async function resolveIdentity(req: Request): Promise<{ key: string; limit: number }> {
+  const bearer = req.headers.get('authorization')?.match(/^Bearer\s+(.+)$/i)?.[1];
+  if (bearer) {
+    const verified = await verifyApiKey(bearer);
+    if (verified) return { key: `key:${verified.email}`, limit: AUTHENTICATED_DAILY_LIMIT };
+  }
+  return { key: `ip:${getClientIp(req)}`, limit: ANONYMOUS_DAILY_LIMIT };
+}
+
 const DISCLAIMER =
   'GridMix data is informational/educational only — not warranted for accuracy and not intended for trading, ' +
   'critical infrastructure, emergency response, or regulatory compliance use. Source data: Elexon BMRS ' +
-  '(© Elexon Limited) and University of Sheffield Solar PVLive. Full terms: https://gridmix.co.uk/terms';
+  '(© Elexon Limited) and University of Sheffield Solar PVLive. Full terms: https://gridmix.co.uk/terms. ' +
+  'Anonymous use is limited to 20 requests/day; a free API key (no signup, just an email — POST /api/v1/keys) ' +
+  'raises this to 500/day.';
 
 function createServer(): Server {
   const server = new Server(
@@ -82,14 +95,18 @@ function createServer(): Server {
 }
 
 export async function POST(req: Request) {
-  const ip = getClientIp(req);
-  const limit = rateLimit(ip, DAILY_LIMIT, 24 * 60 * 60 * 1000, 'mcp');
+  const { key: identity, limit: dailyLimit } = await resolveIdentity(req);
+  const limit = rateLimit(identity, dailyLimit, 24 * 60 * 60 * 1000, 'mcp');
 
   if (!limit.success) {
     return new Response(
       JSON.stringify({
         jsonrpc: '2.0',
-        error: { code: -32000, message: `Rate limit exceeded: ${DAILY_LIMIT} requests/day per IP.` },
+        error: {
+          code: -32000,
+          message: `Rate limit exceeded: ${dailyLimit} requests/day. Get a free API key at ` +
+            'https://gridmix.co.uk/api/docs to raise this from 20 to 500 requests/day.',
+        },
         id: null,
       }),
       { status: 429, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }

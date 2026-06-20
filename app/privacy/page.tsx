@@ -59,6 +59,9 @@ export default function PrivacyPage() {
               <li>Message content</li>
               <li>Any other information you choose to provide</li>
             </ul>
+            <p>
+              If you request a free API key for our MCP server, we ask for an email address. We do not store it in a database — it is embedded directly in the signed key returned to you, which only we can verify and only you hold. We never see or retain that email again unless you separately contact us with it.
+            </p>
 
             <h3>2.2 Automatically Collected Information</h3>
             <p>

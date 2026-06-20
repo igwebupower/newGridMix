@@ -52,6 +52,33 @@ export default function APIDocsPage() {
   const [testResults, setTestResults] = useState<{ [key: string]: any }>({});
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
   const [apiStatus, setApiStatus] = useState<'checking' | 'online' | 'offline'>('checking');
+  const [keyEmail, setKeyEmail] = useState('');
+  const [issuedKey, setIssuedKey] = useState<string | null>(null);
+  const [keyError, setKeyError] = useState<string | null>(null);
+  const [keyLoading, setKeyLoading] = useState(false);
+
+  const handleRequestKey = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setKeyError(null);
+    setKeyLoading(true);
+    try {
+      const res = await fetch('/api/v1/keys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: keyEmail }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setKeyError(data.error || 'Something went wrong. Please try again.');
+      } else {
+        setIssuedKey(data.api_key);
+      }
+    } catch {
+      setKeyError('Network error. Please try again.');
+    } finally {
+      setKeyLoading(false);
+    }
+  };
 
   // Check API status on load
   useEffect(() => {
@@ -422,7 +449,8 @@ func main() {
 
           <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto px-4">
             Free, real-time UK National Grid data — REST endpoints, a natural-language assistant,
-            and an MCP server for AI clients. No authentication, no signup, no API key.
+            and an MCP server for AI clients. No signup required to get started; a free API key
+            raises the MCP rate limit if you need it.
           </p>
         </motion.div>
 
@@ -716,10 +744,69 @@ func main() {
             ))}
           </div>
 
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Rate limit: 500 requests/day per IP. (The REST GET endpoints above
-            are unlimited; Watt&apos;s natural-language endpoint is capped at 30/day per IP.)
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+            Rate limit: 20 requests/day per IP with no key, or 500/day with a free API key.
+            (The REST GET endpoints above are unlimited; Watt&apos;s natural-language endpoint is capped at 30/day per IP.)
           </p>
+
+          <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Get a Free API Key</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              No account, no verification — just an email address. Raises your MCP rate limit from 20 to 500 requests/day.
+            </p>
+
+            {issuedKey ? (
+              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                <p className="text-sm text-green-800 dark:text-green-200 mb-2">
+                  Save this now — we don&apos;t store it and can&apos;t show it again.
+                </p>
+                <div className="relative">
+                  <code className="block bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-xs break-all">
+                    {issuedKey}
+                  </code>
+                  <button
+                    onClick={() => copyToClipboard(issuedKey, 'mcp-key')}
+                    className="absolute top-2 right-2 p-2 bg-gray-800 hover:bg-gray-700 rounded text-gray-400 hover:text-white transition-colors"
+                    title="Copy to clipboard"
+                  >
+                    {copiedCode === 'mcp-key' ? (
+                      <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+                  Use it as <code>Authorization: Bearer &lt;api_key&gt;</code> when calling <code>/api/mcp</code>.
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleRequestKey} className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="email"
+                  required
+                  value={keyEmail}
+                  onChange={(e) => setKeyEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+                <button
+                  type="submit"
+                  disabled={keyLoading}
+                  className="px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white text-sm font-medium transition-colors"
+                >
+                  {keyLoading ? 'Requesting…' : 'Get API Key'}
+                </button>
+              </form>
+            )}
+            {keyError && (
+              <p className="text-sm text-red-600 dark:text-red-400 mt-2">{keyError}</p>
+            )}
+          </div>
         </motion.div>
 
         {/* Code Examples */}
@@ -799,7 +886,7 @@ func main() {
               { code: 200, status: 'OK', description: 'Request successful', color: 'green' as const },
               { code: 400, status: 'Bad Request', description: 'Invalid parameters (e.g., hours out of range)', color: 'yellow' as const },
               { code: 404, status: 'Not Found', description: 'Endpoint or resource not found', color: 'orange' as const },
-              { code: 429, status: 'Too Many Requests', description: 'Rate limit exceeded on /api/v1/watt (30/day) or /api/mcp (500/day) per IP', color: 'red' as const },
+              { code: 429, status: 'Too Many Requests', description: 'Rate limit exceeded on /api/v1/watt (30/day per IP) or /api/mcp (20/day per IP, 500/day with a free API key)', color: 'red' as const },
               { code: 500, status: 'Internal Server Error', description: 'Something went wrong on our end', color: 'red' as const },
             ].map((error) => (
               <div key={error.code} className={`p-4 rounded-lg border ${ERROR_CARD_CLASSES[error.color]}`}>
@@ -912,9 +999,10 @@ func main() {
 
           <div className="space-y-4 sm:space-y-6">
             <p className="text-sm sm:text-base lg:text-lg text-gray-600 dark:text-gray-400">
-              GridMix API is <strong className="text-gray-900 dark:text-gray-100">100% free</strong> for everyone, with
-              no signup and no API key. The REST GET endpoints are unlimited; Watt and the MCP server
-              carry daily per-IP caps to keep things fast for everyone. We trust our community to use it responsibly.
+              GridMix API is <strong className="text-gray-900 dark:text-gray-100">100% free</strong> for everyone.
+              The REST GET endpoints are unlimited with no signup at all; Watt and the MCP server
+              carry daily per-IP caps to keep things fast for everyone. The MCP server&apos;s cap can be raised
+              with a free API key (just an email, no verification). We trust our community to use it responsibly.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -928,7 +1016,7 @@ func main() {
                     'Use appropriate query parameters',
                     'Handle errors gracefully',
                     'Free for personal and commercial use',
-                    'No API key or signup required',
+                    'No signup needed for REST endpoints; free API key for higher MCP limits',
                   ].map((item, i) => (
                     <li key={i} className="text-gray-600 dark:text-gray-400">
                       {item}
@@ -943,7 +1031,7 @@ func main() {
                 </h3>
                 <ul className="space-y-2 text-sm">
                   {[
-                    'Exceeding 30 requests/day on Watt or 500/day on the MCP server',
+                    'Exceeding 30 requests/day on Watt or your MCP server limit (20/day, 500/day with a key)',
                     'Scraping or bulk downloading',
                     'Using as primary data source without caching',
                     'Redistributing data commercially',

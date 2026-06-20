@@ -54,7 +54,14 @@ export async function GET() {
         method: 'POST',
         description: 'Model Context Protocol (MCP) server exposing the same grid-data tools Watt uses (live mix, solar, frequency, price, carbon intensity, historical archive). Connect Claude, Claude Desktop, or any MCP-compatible client directly to this URL to query GridMix data as native tool calls.',
         parameters: 'MCP Streamable HTTP transport (stateless). Standard MCP methods: initialize, tools/list, tools/call.',
-        rate_limit: 'Free - 500 requests/day per IP',
+        rate_limit: 'Free - 20 requests/day per IP, or 500/day with a free API key (see /api/v1/keys)',
+      },
+      keys: {
+        path: '/api/v1/keys',
+        method: 'POST',
+        description: 'Request a free API key to raise the MCP server rate limit from 20 to 500 requests/day. No account, no verification — just an email address.',
+        parameters: 'JSON body: { "email": "you@example.com" }',
+        rate_limit: 'Free - 5 requests/day per IP',
       },
     },
     data_sources: [
@@ -70,9 +77,9 @@ export async function GET() {
       },
     ],
     authentication: {
-      type: 'None - Free and Open',
+      type: 'None required - optional free API key for higher MCP limits',
       required: false,
-      note: 'No API key required. Fair use policy applies - please cache responses appropriately.',
+      note: 'REST GET endpoints are unlimited with no key. The MCP server works without a key (20 req/day) or with a free key from /api/v1/keys (500 req/day). Fair use policy applies - please cache responses appropriately.',
     },
     support: {
       email: 'hello@gridmix.co.uk',
