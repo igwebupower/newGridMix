@@ -1,7 +1,7 @@
 // TEMPORARY diagnostic — safe to delete after debugging trace ingestion.
 // Reveals what the DEPLOYED runtime sees: whether ENPROMPTA_API_KEY is present,
-// its length + SHA-256 fingerprint (NOT the key itself), the installed SDK
-// version, and the result of one un-swallowed traces.record() call.
+// its length + SHA-256 fingerprint (NOT the key itself), and the result of one
+// un-swallowed traces.record() call.
 import { NextResponse } from 'next/server';
 import { Enprompta } from '@enprompta/sdk';
 import crypto from 'crypto';
@@ -16,13 +16,6 @@ export async function GET() {
     keyPrefix: key.slice(0, 3),
     keyHash8: key ? crypto.createHash('sha256').update(key).digest('hex').slice(0, 8) : null,
   };
-
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    info.sdkVersion = require('@enprompta/sdk/package.json').version;
-  } catch {
-    info.sdkVersion = 'unresolved';
-  }
 
   try {
     const enprompta = new Enprompta({ apiKey: key });
