@@ -12,7 +12,7 @@
     "generate-report": "npx tsx scripts/generate-monthly-report.ts"
   },
   "dependencies": {
-    "@enprompta/sdk": "^1.0.3",
+    "@enprompta/sdk": "^1.1.0",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@portabletext/react": "^3.0.0",
     "@sanity/client": "^6.15.0",

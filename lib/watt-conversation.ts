@@ -3,7 +3,18 @@
 // Keeping this in one place means a prompt or tool-loop change only has to
 // happen once for both surfaces to pick it up.
 
+import { randomUUID } from 'crypto';
+import OpenAI from 'openai';
+import { Enprompta } from '@enprompta/sdk';
 import { wattTools } from './watt-tools';
+
+// Enprompta client. We use the manual span-tree builder (enprompta.trace())
+// rather than the flat tracedOpenAI() wrapper: WATT is a tool-calling agent, so
+// the right shape is one root AGENT span per question with child LLM spans (each
+// model turn) and child TOOL spans (each tool execution), grouped by a session.
+// This also sidesteps the Next.js bundler module-identity issue that global
+// auto-instrumentation hits — trace()/span() are plain method calls, bundler-proof.
+const enprompta = new Enprompta({ apiKey: process.env.ENPROMPTA_API_KEY! });
 
 export const MAX_TOOL_TURNS = 4;
 export const MAX_HISTORY_MESSAGES = 6;
@@ -39,7 +50,8 @@ interface OpenAIMessage {
 export async function runWattConversation(
   question: string,
   apiKey: string,
-  history: WattHistoryMessage[] = []
+  history: WattHistoryMessage[] = [],
+  sessionId: string = randomUUID()
 ): Promise<string> {
   const trimmedHistory = history.slice(-MAX_HISTORY_MESSAGES);
 
@@ -50,62 +62,105 @@ export async function runWattConversation(
   ];
 
   const tools = wattTools.map((t) => t.definition);
+  const openai = new OpenAI({ apiKey });
 
-  for (let turn = 0; turn < MAX_TOOL_TURNS; turn++) {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
+  // One root AGENT span per question; each model turn becomes a child LLM span
+  // and each tool execution a child TOOL span, grouped under `sessionId` so a
+  // multi-turn chat reads as a single session in the dashboard.
+  const trace = enprompta.trace({
+    name: 'watt-conversation',
+    type: 'AGENT',
+    sessionId,
+    input: question,
+  });
+
+  let answer =
+    'Watt is taking too long to find an answer — try a simpler or more specific question.';
+
+  try {
+    for (let turn = 0; turn < MAX_TOOL_TURNS; turn++) {
+      const llmSpan = trace.span({
+        type: 'LLM',
+        name: `model-turn-${turn}`,
+        provider: 'openai',
         model: 'gpt-4o-mini',
-        messages,
-        tools,
-        tool_choice: 'auto',
-        temperature: 0.2,
-      }),
-    });
+        input: messages,
+      });
 
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`OpenAI API error ${response.status}: ${text}`);
-    }
-
-    const completion = await response.json();
-    const message: OpenAIMessage = completion.choices[0].message;
-
-    if (!message.tool_calls || message.tool_calls.length === 0) {
-      return message.content?.trim() || "I couldn't work that out — try rephrasing your question.";
-    }
-
-    messages.push(message);
-
-    for (const toolCall of message.tool_calls) {
-      const tool = wattTools.find((t) => t.definition.function.name === toolCall.function.name);
-      let resultContent: string;
-
-      if (!tool) {
-        resultContent = JSON.stringify({ error: `Unknown tool: ${toolCall.function.name}` });
-      } else {
-        try {
-          const args = toolCall.function.arguments ? JSON.parse(toolCall.function.arguments) : {};
-          const result = await tool.execute(args);
-          resultContent = JSON.stringify(result);
-        } catch (error) {
-          resultContent = JSON.stringify({
-            error: error instanceof Error ? error.message : 'Tool execution failed',
-          });
-        }
+      let message: OpenAIMessage;
+      try {
+        const completion = await openai.chat.completions.create({
+          model: 'gpt-4o-mini',
+          messages: messages as never,
+          tools: tools as never,
+          tool_choice: 'auto',
+          temperature: 0.2,
+        });
+        message = completion.choices[0].message as unknown as OpenAIMessage;
+        llmSpan.end({
+          output: message.content ?? message.tool_calls ?? '',
+          inputTokens: completion.usage?.prompt_tokens,
+          outputTokens: completion.usage?.completion_tokens,
+        });
+      } catch (error) {
+        llmSpan.end({
+          status: 'ERROR',
+          errorMessage: error instanceof Error ? error.message : String(error),
+        });
+        throw error;
       }
 
-      messages.push({
-        role: 'tool',
-        tool_call_id: toolCall.id,
-        content: resultContent,
-      });
-    }
-  }
+      if (!message.tool_calls || message.tool_calls.length === 0) {
+        answer =
+          message.content?.trim() ||
+          "I couldn't work that out — try rephrasing your question.";
+        return answer;
+      }
 
-  return 'Watt is taking too long to find an answer — try a simpler or more specific question.';
+      messages.push(message);
+
+      for (const toolCall of message.tool_calls) {
+        const toolSpan = trace.span({
+          type: 'TOOL',
+          name: toolCall.function.name,
+          input: toolCall.function.arguments,
+        });
+        const tool = wattTools.find(
+          (t) => t.definition.function.name === toolCall.function.name
+        );
+        let resultContent: string;
+
+        if (!tool) {
+          resultContent = JSON.stringify({ error: `Unknown tool: ${toolCall.function.name}` });
+          toolSpan.end({ status: 'ERROR', output: resultContent });
+        } else {
+          try {
+            const args = toolCall.function.arguments ? JSON.parse(toolCall.function.arguments) : {};
+            const result = await tool.execute(args);
+            resultContent = JSON.stringify(result);
+            toolSpan.end({ output: resultContent });
+          } catch (error) {
+            resultContent = JSON.stringify({
+              error: error instanceof Error ? error.message : 'Tool execution failed',
+            });
+            toolSpan.end({
+              status: 'ERROR',
+              errorMessage: error instanceof Error ? error.message : 'Tool execution failed',
+              output: resultContent,
+            });
+          }
+        }
+
+        messages.push({
+          role: 'tool',
+          tool_call_id: toolCall.id,
+          content: resultContent,
+        });
+      }
+    }
+
+    return answer;
+  } finally {
+    await trace.end({ output: answer });
+  }
 }
