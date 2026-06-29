@@ -48,3 +48,12 @@ next-env.d.ts
 
 # Automated Reporting - Data Snapshots (dynamically generated)
 data/snapshots/
+
+# --- Signing secrets / credentials (NEVER commit) ---
+*.keystore
+**/keystore.properties
+**/credentials.json
+
+# --- Local scratch / junk ---
+tmpclaude-*
+"process.exit(0)))"
