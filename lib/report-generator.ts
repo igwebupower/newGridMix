@@ -2,8 +2,20 @@
 // Generates draft reports from data snapshots using OpenAI GPT-4
 
 import { DataSnapshot, Insight } from './types';
+import { Enprompta } from '@enprompta/sdk';
 import fs from 'fs/promises';
 import path from 'path';
+
+// Enprompta client for tracing report-generation LLM calls. Same manual-record
+// approach as lib/watt-conversation.ts: Next's bundler breaks global init()
+// auto-instrumentation, and callOpenAI() talks to OpenAI over fetch() (not the
+// openai SDK) so tracedOpenAI() can't wrap it either. traces.record() is a plain
+// method call — bundler-proof — and is fail-silent, so an unset key just means
+// no trace, never a thrown error in the report pipeline.
+const enprompta = new Enprompta({ apiKey: process.env.ENPROMPTA_API_KEY! });
+
+const REPORT_SYSTEM_PROMPT =
+  'You are an expert energy analyst and technical writer specializing in UK electricity grid data. You write clear, accurate, data-driven content that is both informative and engaging. You always cite sources and use specific data to support your analysis.';
 
 interface ReportTemplate {
   type: string;
@@ -97,43 +109,93 @@ Generate the complete article now in markdown format:`;
 /**
  * Call OpenAI API to generate content
  */
-async function callOpenAI(prompt: string): Promise<string> {
+async function callOpenAI(prompt: string, reportType: string): Promise<string> {
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey) {
     throw new Error('OPENAI_API_KEY not configured');
   }
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are an expert energy analyst and technical writer specializing in UK electricity grid data. You write clear, accurate, data-driven content that is both informative and engaging. You always cite sources and use specific data to support your analysis.',
-        },
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-      temperature: 0.7,
-      max_tokens: 2500,
-    }),
-  });
+  const model = 'gpt-4o-mini';
+  const temperature = 0.7;
+  const maxTokens = 2500;
+  const startedAt = Date.now();
+  const metadata = { reportType, source: 'report-generator' };
+
+  let response: Response;
+  try {
+    response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: 'system', content: REPORT_SYSTEM_PROMPT },
+          { role: 'user', content: prompt },
+        ],
+        temperature,
+        max_tokens: maxTokens,
+      }),
+    });
+  } catch (error) {
+    // Network-level failure before we ever got a response.
+    await enprompta.traces.record({
+      provider: 'openai',
+      model,
+      input: prompt,
+      output: '',
+      systemPrompt: REPORT_SYSTEM_PROMPT,
+      temperature,
+      maxTokens,
+      latencyMs: Date.now() - startedAt,
+      status: 'ERROR',
+      errorMessage: error instanceof Error ? error.message : String(error),
+      metadata,
+    });
+    throw error;
+  }
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(`OpenAI API error: ${JSON.stringify(error)}`);
+    const message = `OpenAI API error: ${JSON.stringify(error)}`;
+    await enprompta.traces.record({
+      provider: 'openai',
+      model,
+      input: prompt,
+      output: '',
+      systemPrompt: REPORT_SYSTEM_PROMPT,
+      temperature,
+      maxTokens,
+      latencyMs: Date.now() - startedAt,
+      status: 'ERROR',
+      errorMessage: message,
+      metadata,
+    });
+    throw new Error(message);
   }
 
   const data = await response.json();
-  return data.choices[0].message.content;
+  const content: string = data.choices[0].message.content;
+
+  await enprompta.traces.record({
+    provider: 'openai',
+    model,
+    input: prompt,
+    output: content,
+    systemPrompt: REPORT_SYSTEM_PROMPT,
+    temperature,
+    maxTokens,
+    inputTokens: data.usage?.prompt_tokens,
+    outputTokens: data.usage?.completion_tokens,
+    latencyMs: Date.now() - startedAt,
+    finishReason: data.choices[0].finish_reason,
+    metadata,
+  });
+
+  return content;
 }
 
 /**
@@ -224,7 +286,7 @@ export async function generateWeeklyReport(snapshot: DataSnapshot): Promise<Insi
   const prompt = buildPrompt(snapshot, template);
 
   console.log('Calling OpenAI API...');
-  const content = await callOpenAI(prompt);
+  const content = await callOpenAI(prompt, 'weekly-summary');
 
   console.log('Formatting report...');
   const title = generateTitle(template, snapshot);
@@ -306,7 +368,7 @@ Include specific data points and cite sources (Elexon BMRS, Sheffield Solar).
 Write in markdown format with proper headings.
 Use British English spelling.`;
 
-  const content = await callOpenAI(prompt);
+  const content = await callOpenAI(prompt, 'record-event');
 
   const title = recordType === 'carbon_low'
     ? `UK Grid Achieves Record Low Carbon Intensity: ${recordValue}g CO2/kWh`

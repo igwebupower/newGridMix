@@ -161,6 +161,9 @@ export async function runWattConversation(
 
     return answer;
   } finally {
-    await trace.end({ output: answer });
+    // Set provider/model on the root span too, so the session reads
+    // 'openai / gpt-4o-mini' instead of 'unknown / unknown' in the flat trace
+    // list (child LLM spans carry these, but the root AGENT span otherwise won't).
+    await trace.end({ output: answer, provider: 'openai', model: 'gpt-4o-mini' });
   }
 }
