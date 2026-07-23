@@ -4,6 +4,8 @@
 
 const BMRS_API_BASE = 'https://data.elexon.co.uk/bmrs/api/v1';
 const PVLIVE_API_BASE = 'https://api.pvlive.uk/pvlive/api/v4';
+// NESO / National Grid's published GB carbon intensity forecast. Unauthenticated.
+const CARBON_INTENSITY_API_BASE = 'https://api.carbonintensity.org.uk';
 
 // Types
 export interface GenerationMix {
@@ -438,9 +440,60 @@ function groupBySettlementPeriod(data: any[]): any[] {
   }).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
 }
 
-// Fetch forecast
+// Fetch forecast — genuinely forward-looking, unlike the BMRS FUELHH feed which
+// only ever reports settled (past) periods. NESO's Carbon Intensity API is the
+// official published GB forecast and needs no key. `actual` stays null until a
+// period settles, so callers must read `forecast` for anything still ahead.
 export async function getIntensityForecast(hours: number = 24): Promise<HistoricalData[]> {
-  return getHistoricalGeneration(hours);
+  try {
+    // The API only offers fixed 24h/48h forward windows; take the smallest one
+    // that covers the request and trim, rather than over-reporting the horizon.
+    const window = hours <= 24 ? 'fw24h' : 'fw48h';
+    // Endpoint requires YYYY-MM-DDThh:mmZ — seconds/millis are rejected as 400.
+    const from = new Date().toISOString().slice(0, 16) + 'Z';
+
+    const response = await fetch(
+      `${CARBON_INTENSITY_API_BASE}/intensity/${from}/${window}`,
+      {
+        cache: 'no-store',
+        headers: { Accept: 'application/json' },
+      }
+    );
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const data = await response.json();
+    if (!Array.isArray(data?.data)) {
+      return [];
+    }
+
+    const cutoff = Date.now() + hours * 60 * 60 * 1000;
+
+    return data.data
+      .filter((p: { to: string }) => new Date(p.to).getTime() <= cutoff)
+      .map((p: {
+        from: string;
+        to: string;
+        intensity: { forecast: number; actual: number | null; index?: string };
+      }) => ({
+        from: p.from,
+        to: p.to,
+        intensity: {
+          forecast: p.intensity.forecast,
+          // HistoricalData.actual is non-nullable and every consumer reads it as
+          // `actual ?? forecast`, so mirror the forecast for periods that haven't
+          // settled yet. Callers that must not present a projection as measured
+          // fact should key off `to > now` rather than trusting this field.
+          actual: p.intensity.actual ?? p.intensity.forecast,
+          index: p.intensity.index,
+        },
+      }));
+  } catch (error) {
+    console.error('Error fetching intensity forecast:', error);
+    return [];
+  }
 }
 
 // Fetch historical intensity data

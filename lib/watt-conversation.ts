@@ -24,7 +24,10 @@ export const WATT_SYSTEM_PROMPT = `You are Watt, GridMix's assistant for questio
 Rules:
 - Answer ONLY using data returned by your tools. Never rely on general knowledge, training data, or guesses about grid conditions — they change every few minutes and stale knowledge would mislead the user.
 - Call at least one tool before answering any question about grid data, prices, solar, frequency, carbon intensity, or historical UK electricity trends — including follow-up questions. Never reuse a figure from earlier in the conversation without calling a tool again to re-check it; the only thing earlier turns are good for is resolving what the user means (e.g. which fuel, which day), not supplying the actual numbers.
+- For background or conceptual questions that live data can't settle ("what is grid frequency", "why do prices follow gas"), use search_articles and, if a result fits, get_article — then answer from that article and cite it. Do not explain such concepts from your own knowledge.
+- When you answer from an article, end the Source line with the article title and its URL so the user can read more.
 - If none of your tools can answer the question, say so plainly in one sentence and suggest what GridMix can answer instead. Do not speculate.
+- find_cleanest_window returns a forecast, not a measurement. Say "forecast" or "expected" when you use it, never state it as fact.
 - If a historical archive tool result has data_quality of "estimated", "partial", or "interpolated", say so briefly rather than stating the figure as certain.
 - Keep answers short and conversational: 1-3 sentences of prose.
 - Always end your answer with a line starting exactly "Source:" naming the data source(s) and a human-readable timestamp or period from the tool result(s) you used. If you didn't call a tool, omit the Source line.
@@ -33,6 +36,27 @@ Rules:
 export interface WattHistoryMessage {
   role: 'user' | 'assistant';
   content: string;
+}
+
+export interface RunWattOptions {
+  history?: WattHistoryMessage[];
+  /**
+   * Stable per-chat id. Every question in one conversation must pass the SAME
+   * value so Enprompta groups the whole chat under one session instead of
+   * filing each question as an unrelated trace. Defaults to a fresh id, which
+   * is only correct for genuinely one-shot calls.
+   */
+  sessionId?: string;
+  /** Which Watt surface asked — shows up as trace metadata for filtering. */
+  surface?: 'widget' | 'public-api';
+}
+
+/** Session ids are echoed back to clients and sent to Enprompta, so keep them boring. */
+export function sanitizeSessionId(raw: unknown): string | null {
+  if (typeof raw !== 'string') return null;
+  const trimmed = raw.trim();
+  if (!/^[A-Za-z0-9_-]{8,64}$/.test(trimmed)) return null;
+  return trimmed;
 }
 
 interface OpenAIToolCall {
@@ -50,10 +74,16 @@ interface OpenAIMessage {
 export async function runWattConversation(
   question: string,
   apiKey: string,
-  history: WattHistoryMessage[] = [],
-  sessionId: string = randomUUID()
+  options: RunWattOptions = {}
 ): Promise<string> {
+  const {
+    history = [],
+    sessionId = randomUUID(),
+    surface = 'widget',
+  } = options;
   const trimmedHistory = history.slice(-MAX_HISTORY_MESSAGES);
+  // Nth question in this chat — history holds both sides, so count user turns.
+  const turnNumber = trimmedHistory.filter((m) => m.role === 'user').length + 1;
 
   const messages: OpenAIMessage[] = [
     { role: 'system', content: WATT_SYSTEM_PROMPT },
@@ -66,12 +96,19 @@ export async function runWattConversation(
 
   // One root AGENT span per question; each model turn becomes a child LLM span
   // and each tool execution a child TOOL span, grouped under `sessionId` so a
-  // multi-turn chat reads as a single session in the dashboard.
+  // multi-turn chat reads as a single session in the dashboard. The turn number
+  // is in the span name as well as metadata so the session view reads in order
+  // even before you open a trace.
   const trace = enprompta.trace({
-    name: 'watt-conversation',
+    name: `watt-turn-${turnNumber}`,
     type: 'AGENT',
     sessionId,
     input: question,
+    metadata: {
+      turn: turnNumber,
+      surface,
+      historyMessages: trimmedHistory.length,
+    },
   });
 
   let answer =
@@ -79,9 +116,15 @@ export async function runWattConversation(
 
   try {
     for (let turn = 0; turn < MAX_TOOL_TURNS; turn++) {
+      // On the last allowed turn we withhold the tools so the model has to
+      // answer from what it already gathered. Without this, a model that spends
+      // every turn calling tools falls out of the loop with no answer at all —
+      // which gets likelier the more tools Watt has to choose between.
+      const isFinalTurn = turn === MAX_TOOL_TURNS - 1;
+
       const llmSpan = trace.span({
         type: 'LLM',
-        name: `model-turn-${turn}`,
+        name: isFinalTurn ? `model-turn-${turn}-final` : `model-turn-${turn}`,
         provider: 'openai',
         model: 'gpt-4o-mini',
         input: messages,
@@ -92,8 +135,7 @@ export async function runWattConversation(
         const completion = await openai.chat.completions.create({
           model: 'gpt-4o-mini',
           messages: messages as never,
-          tools: tools as never,
-          tool_choice: 'auto',
+          ...(isFinalTurn ? {} : { tools: tools as never, tool_choice: 'auto' }),
           temperature: 0.2,
         });
         message = completion.choices[0].message as unknown as OpenAIMessage;
@@ -140,12 +182,11 @@ export async function runWattConversation(
             resultContent = JSON.stringify(result);
             toolSpan.end({ output: resultContent });
           } catch (error) {
-            resultContent = JSON.stringify({
-              error: error instanceof Error ? error.message : 'Tool execution failed',
-            });
+            const errorMessage = error instanceof Error ? error.message : 'Tool execution failed';
+            resultContent = JSON.stringify({ error: errorMessage });
             toolSpan.end({
               status: 'ERROR',
-              errorMessage: error instanceof Error ? error.message : 'Tool execution failed',
+              errorMessage,
               output: resultContent,
             });
           }

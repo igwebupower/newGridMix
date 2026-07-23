@@ -14,6 +14,7 @@ import {
   getCurrentSystemPrice,
   calculateGridHealthScore,
 } from './api';
+import { getAllInsights, getInsightBySlug } from './posts';
 import type {
   HistoricalElectricityDataset,
   MonthlyElectricityData,
@@ -149,6 +150,160 @@ function summarizeIntensity(points: Array<{ from: string; intensity: { actual?: 
     max_time: max.from,
     count: withValue.length,
   };
+}
+
+// Forecast points are half-hourly settlement periods, so a "window" is just a
+// run of consecutive slots. Slides a fixed-width window across the forecast and
+// returns the run with the lowest mean intensity — the actual answer to "when
+// should I run my dishwasher / charge the car", which callers previously had to
+// guess at from a min/max summary.
+function findCleanestWindow(
+  points: Array<{ from: string; to: string; intensity: { forecast: number; actual: number } }>,
+  durationHours: number
+) {
+  const slotsNeeded = Math.max(1, Math.round(durationHours * 2));
+  const now = Date.now();
+
+  // Only consider windows that haven't started yet; recommending a slot that
+  // began an hour ago is worse than saying nothing.
+  const upcoming = points
+    .filter((p) => new Date(p.to).getTime() > now)
+    .filter((p) => typeof p.intensity.forecast === 'number' && !Number.isNaN(p.intensity.forecast));
+
+  if (upcoming.length < slotsNeeded) return null;
+
+  let best: { startIndex: number; mean: number } | null = null;
+  let sum = 0;
+
+  for (let i = 0; i < upcoming.length; i++) {
+    sum += upcoming[i].intensity.forecast;
+    if (i >= slotsNeeded) sum -= upcoming[i - slotsNeeded].intensity.forecast;
+    if (i >= slotsNeeded - 1) {
+      const mean = sum / slotsNeeded;
+      if (!best || mean < best.mean) best = { startIndex: i - slotsNeeded + 1, mean };
+    }
+  }
+
+  if (!best) return null;
+
+  const startSlot = upcoming[best.startIndex];
+  const endSlot = upcoming[best.startIndex + slotsNeeded - 1];
+  const horizonMean =
+    upcoming.reduce((acc, p) => acc + p.intensity.forecast, 0) / upcoming.length;
+
+  return {
+    starts_at: startSlot.from,
+    ends_at: endSlot.to,
+    duration_hours: slotsNeeded / 2,
+    avg_intensity_gco2kwh: Math.round(best.mean),
+    horizon_avg_gco2kwh: Math.round(horizonMean),
+    // Signed so the model can say "23% cleaner than average" without doing arithmetic.
+    pct_cleaner_than_average:
+      horizonMean > 0 ? Math.round(((horizonMean - best.mean) / horizonMean) * 100) : 0,
+    basis: 'forecast',
+    slots_considered: upcoming.length,
+  };
+}
+
+// Without this, "best recipe for lasagne" matches every article: "for" clears
+// the length filter and appears in nearly every title and excerpt, which counts
+// as a strong hit and drags unrelated posts into the results.
+const SEARCH_STOPWORDS = new Set([
+  'the', 'and', 'for', 'are', 'was', 'but', 'not', 'you', 'all', 'can', 'has',
+  'have', 'with', 'that', 'this', 'from', 'what', 'why', 'how', 'does', 'did',
+  'will', 'its', 'their', 'there', 'when', 'who', 'out', 'get', 'got', 'any',
+  'use', 'about', 'into', 'than', 'then', 'they', 'them', 'been', 'being',
+  'much', 'many', 'more', 'most', 'some', 'such', 'over', 'under', 'between',
+  'best', 'good', 'tell', 'give', 'know', 'like', 'want', 'need', 'make',
+]);
+
+function tokenizeQuery(query: string): string[] {
+  return query
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((t) => t.length > 2 && !SEARCH_STOPWORDS.has(t));
+}
+
+interface ArticleMatch {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  date: string;
+  url: string;
+  score: number;
+}
+
+// Deliberately dumb keyword scoring — the corpus is a handful of posts, so a
+// title hit beating a body hit is all the ranking this needs.
+function scoreArticles(query: string): ArticleMatch[] {
+  const terms = tokenizeQuery(query);
+
+  if (terms.length === 0) return [];
+
+  return getAllInsights()
+    .map((post) => {
+      const title = (post.title || '').toLowerCase();
+      const tags = (post.tags || []).join(' ').toLowerCase();
+      const excerpt = (post.excerpt || '').toLowerCase();
+      const content = (post.content || '').toLowerCase();
+
+      let score = 0;
+      let matchedTerms = 0;
+      let strongHit = false;
+
+      for (const term of terms) {
+        let termScore = 0;
+        if (title.includes(term)) { termScore += 5; strongHit = true; }
+        if (tags.includes(term)) { termScore += 3; strongHit = true; }
+        if (excerpt.includes(term)) { termScore += 2; strongHit = true; }
+        if (content.includes(term)) termScore += 1;
+        if (termScore > 0) matchedTerms++;
+        score += termScore;
+      }
+
+      return {
+        slug: post.slug,
+        title: post.title,
+        excerpt: post.excerpt,
+        category: post.category,
+        date: post.date,
+        url: `https://gridmix.co.uk/insights/${post.slug}`,
+        score,
+        matchedTerms,
+        strongHit,
+      };
+    })
+    // A single passing mention in the body is not a match — "nuclear fusion
+    // tokamak" would otherwise return an article about gas prices because the
+    // word "nuclear" appears in it once. Demand a title/tag/excerpt hit, or
+    // that most of the query's terms turned up somewhere.
+    .filter((m) => m.strongHit || m.matchedTerms >= Math.ceil(terms.length / 2))
+    .filter((m) => m.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map(({ matchedTerms: _m, strongHit: _s, ...rest }) => rest);
+}
+
+// Posts run to ~13k characters. Watt answers in 1-3 sentences, so returning a
+// whole article would cost a lot of context to say very little — return the
+// passage around the best keyword hit instead.
+function extractRelevantPassage(content: string, query: string, maxChars = 1800): string {
+  if (content.length <= maxChars) return content;
+
+  const terms = tokenizeQuery(query);
+  const haystack = content.toLowerCase();
+
+  let hit = -1;
+  for (const term of terms) {
+    const index = haystack.indexOf(term);
+    if (index !== -1 && (hit === -1 || index < hit)) hit = index;
+  }
+
+  if (hit === -1) return content.slice(0, maxChars) + '…';
+
+  const start = Math.max(0, hit - Math.floor(maxChars / 3));
+  const passage = content.slice(start, start + maxChars);
+  return (start > 0 ? '…' : '') + passage + (start + maxChars < content.length ? '…' : '');
 }
 
 function clampHours(value: unknown, fallback: number): number {
@@ -536,6 +691,145 @@ export const wattTools: WattTool[] = [
         data: { metric, direction, scope, ...best },
         source: 'GridMix historical archive (GOV.UK / NESO / DESNZ Energy Trends)',
         timestamp: new Date().toISOString(),
+      };
+    },
+  },
+  {
+    definition: {
+      type: 'function',
+      function: {
+        name: 'find_cleanest_window',
+        description:
+          'Find the upcoming time window with the lowest average carbon intensity, for "when should I charge my EV / run the washing machine / is now a good time" questions. Returns the start and end time of the best window and how much cleaner it is than the average over the period looked at. These are forecast values, not measurements.',
+        parameters: {
+          type: 'object',
+          properties: {
+            duration_hours: {
+              type: 'number',
+              description: 'How long the appliance/charge needs to run, in hours (0.5-12). Defaults to 2.',
+            },
+            within_hours: {
+              type: 'integer',
+              description: 'How far ahead to look for the window (1-48). Defaults to 24.',
+            },
+          },
+          required: [],
+        },
+      },
+    },
+    execute: async (args) => {
+      const rawDuration = typeof args.duration_hours === 'number'
+        ? args.duration_hours
+        : parseFloat(String(args.duration_hours));
+      const durationHours = Number.isFinite(rawDuration)
+        ? Math.min(12, Math.max(0.5, rawDuration))
+        : 2;
+      const withinHours = Math.min(48, clampHours(args.within_hours, 24));
+
+      const forecast = await getIntensityForecast(withinHours);
+      const window = findCleanestWindow(forecast, durationHours);
+
+      if (!window) {
+        return {
+          data: {
+            error: `No forecast available covering a ${durationHours}-hour window in the next ${withinHours} hours.`,
+          },
+          source: 'NESO Carbon Intensity forecast',
+          timestamp: new Date().toISOString(),
+        };
+      }
+
+      return {
+        data: { searched_ahead_hours: withinHours, ...window },
+        source: 'NESO Carbon Intensity forecast (api.carbonintensity.org.uk)',
+        timestamp: new Date().toISOString(),
+      };
+    },
+  },
+  {
+    definition: {
+      type: 'function',
+      function: {
+        name: 'search_articles',
+        description:
+          "Search GridMix's own published explainer and analysis articles. Use this for background/conceptual questions that live data can't answer — what grid frequency is, why prices follow gas, how interconnectors work — and for pointing the user at further reading. Returns titles, summaries and URLs; call get_article to read one.",
+        parameters: {
+          type: 'object',
+          properties: {
+            query: {
+              type: 'string',
+              description: 'Keywords describing the topic, e.g. "grid frequency" or "interconnectors".',
+            },
+            limit: {
+              type: 'integer',
+              description: 'How many articles to return (1-5). Defaults to 3.',
+            },
+          },
+          required: ['query'],
+        },
+      },
+    },
+    execute: async (args) => {
+      const query = typeof args.query === 'string' ? args.query : '';
+      const rawLimit = typeof args.limit === 'number' ? args.limit : parseInt(String(args.limit), 10);
+      const limit = Number.isFinite(rawLimit) ? Math.min(5, Math.max(1, rawLimit)) : 3;
+
+      const matches = scoreArticles(query).slice(0, limit);
+
+      return {
+        data: matches.length > 0
+          ? { query, results: matches.map(({ score: _score, ...m }) => m) }
+          : { query, results: [], note: 'No GridMix article covers this topic.' },
+        source: 'GridMix Insights',
+        timestamp: new Date().toISOString(),
+      };
+    },
+  },
+  {
+    definition: {
+      type: 'function',
+      function: {
+        name: 'get_article',
+        description:
+          'Read the relevant part of one GridMix article, by slug (get slugs from search_articles). Use when a search result looks like it answers the question and you need the detail to summarise it accurately.',
+        parameters: {
+          type: 'object',
+          properties: {
+            slug: { type: 'string', description: 'Article slug from search_articles.' },
+            query: {
+              type: 'string',
+              description: "What you're looking for in the article — used to pick which passage to return.",
+            },
+          },
+          required: ['slug'],
+        },
+      },
+    },
+    execute: async (args) => {
+      const slug = typeof args.slug === 'string' ? args.slug.trim() : '';
+      const query = typeof args.query === 'string' ? args.query : '';
+      const post = slug ? getInsightBySlug(slug) : undefined;
+
+      if (!post) {
+        return {
+          data: { error: `No GridMix article with slug "${slug}". Use search_articles to find valid slugs.` },
+          source: 'GridMix Insights',
+          timestamp: new Date().toISOString(),
+        };
+      }
+
+      return {
+        data: {
+          slug: post.slug,
+          title: post.title,
+          excerpt: post.excerpt,
+          author: post.author,
+          date: post.date,
+          url: `https://gridmix.co.uk/insights/${post.slug}`,
+          extract: extractRelevantPassage(post.content || '', query),
+        },
+        source: `GridMix Insights — "${post.title}"`,
+        timestamp: post.date,
       };
     },
   },

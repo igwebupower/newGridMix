@@ -7,7 +7,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit } from '@/lib/rate-limit';
-import { runWattConversation, MAX_HISTORY_MESSAGES, type WattHistoryMessage } from '@/lib/watt-conversation';
+import {
+  runWattConversation,
+  sanitizeSessionId,
+  MAX_HISTORY_MESSAGES,
+  type WattHistoryMessage,
+} from '@/lib/watt-conversation';
 
 function parseHistory(raw: unknown): WattHistoryMessage[] {
   if (!Array.isArray(raw)) return [];
@@ -67,10 +72,15 @@ export async function POST(req: NextRequest) {
 
   let question: string;
   let history: WattHistoryMessage[];
+  // Optional for API callers: pass the same "session_id" across a multi-turn
+  // exchange and the traces group as one conversation. Omit it and each
+  // question stands alone.
+  let sessionId: string | null;
   try {
     const body = await req.json();
     question = typeof body?.question === 'string' ? body.question.trim() : '';
     history = parseHistory(body?.history);
+    sessionId = sanitizeSessionId(body?.session_id ?? body?.sessionId);
   } catch {
     return NextResponse.json(
       { error: 'invalid_request', message: 'Malformed JSON body. Expected { "question": "..." }.' },
@@ -102,7 +112,11 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const answer = await runWattConversation(question, apiKey, history);
+    const answer = await runWattConversation(question, apiKey, {
+      history,
+      ...(sessionId ? { sessionId } : {}),
+      surface: 'public-api',
+    });
     return NextResponse.json(
       {
         question,
@@ -110,6 +124,7 @@ export async function POST(req: NextRequest) {
         metadata: {
           source: 'GridMix Watt',
           api_version: 'v1',
+          ...(sessionId ? { session_id: sessionId } : {}),
         },
       },
       {

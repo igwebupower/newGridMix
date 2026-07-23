@@ -4,7 +4,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit } from '@/lib/rate-limit';
-import { runWattConversation, MAX_HISTORY_MESSAGES, type WattHistoryMessage } from '@/lib/watt-conversation';
+import {
+  runWattConversation,
+  sanitizeSessionId,
+  MAX_HISTORY_MESSAGES,
+  type WattHistoryMessage,
+} from '@/lib/watt-conversation';
 
 function parseHistory(raw: unknown): WattHistoryMessage[] {
   if (!Array.isArray(raw)) return [];
@@ -57,10 +62,14 @@ export async function POST(req: NextRequest) {
 
   let question: string;
   let history: WattHistoryMessage[];
+  // The widget mints one id per chat; it's what ties each question's trace to
+  // the rest of the conversation in Enprompta's session view.
+  let sessionId: string | null;
   try {
     const body = await req.json();
     question = typeof body?.question === 'string' ? body.question.trim() : '';
     history = parseHistory(body?.history);
+    sessionId = sanitizeSessionId(body?.sessionId);
   } catch {
     return NextResponse.json(
       { error: 'invalid_request', message: 'Malformed request body.' },
@@ -92,7 +101,11 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const answer = await runWattConversation(question, apiKey, history);
+    const answer = await runWattConversation(question, apiKey, {
+      history,
+      ...(sessionId ? { sessionId } : {}),
+      surface: 'widget',
+    });
     return NextResponse.json(
       { answer },
       {

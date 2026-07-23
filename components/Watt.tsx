@@ -29,12 +29,21 @@ function splitSource(content: string): { body: string; source?: string } {
   };
 }
 
+// One id for the life of this chat widget. Every question carries it so the
+// whole conversation shows up as a single grouped session in tracing, rather
+// than N unrelated one-shot traces.
+function newSessionId() {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
+  return `watt-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 export function Watt() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<WattMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const sessionIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -48,6 +57,9 @@ export function Watt() {
       .slice(-6)
       .map((m) => ({ role: m.role, content: m.content }));
 
+    // Minted on the first question, then reused for the rest of the chat.
+    sessionIdRef.current ??= newSessionId();
+
     setMessages((prev) => [...prev, { role: 'user', content: question }]);
     setInput('');
     setLoading(true);
@@ -56,7 +68,7 @@ export function Watt() {
       const res = await fetch('/api/watt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, history }),
+        body: JSON.stringify({ question, history, sessionId: sessionIdRef.current }),
       });
       const data = await res.json();
 
