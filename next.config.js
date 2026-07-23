@@ -7,6 +7,17 @@ const nextConfig = {
   // Restrict file tracing to this project only (prevents picking up sibling projects)
   outputFileTracingRoot: path.join(__dirname),
 
+  // EVALUATION ONLY (branch: arize-tracing-eval). The OTel instrumentation
+  // packages patch modules at require() time via require-in-the-middle, which
+  // the bundler breaks; they have to stay external to load correctly on the
+  // server. Remove alongside lib/arize-tracing.ts if Arize is not kept.
+  serverExternalPackages: [
+    '@opentelemetry/instrumentation',
+    '@opentelemetry/sdk-trace-node',
+    '@opentelemetry/exporter-trace-otlp-proto',
+    '@arizeai/openinference-instrumentation-openai',
+  ],
+
   // Optimize images for better performance and SEO
   images: {
     formats: ['image/avif', 'image/webp'],

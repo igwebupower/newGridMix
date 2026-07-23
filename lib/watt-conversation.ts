@@ -6,7 +6,23 @@
 import { randomUUID } from 'crypto';
 import OpenAI from 'openai';
 import { Enprompta } from '@enprompta/sdk';
+import { context, trace as otelTrace, SpanStatusCode } from '@opentelemetry/api';
+import { setSession } from '@arizeai/openinference-core';
+import {
+  INPUT_VALUE,
+  OUTPUT_VALUE,
+  SemanticConventions,
+  OpenInferenceSpanKind,
+} from '@arizeai/openinference-semantic-conventions';
 import { wattTools } from './watt-tools';
+import { initArizeTracing, flushArizeTracing } from './arize-tracing';
+
+// EVALUATION ONLY (branch: arize-tracing-eval) — Arize runs alongside Enprompta
+// so the two can be compared on identical traffic. Must happen at module load,
+// before any OpenAI client is constructed, or the instrumentor's patch misses it.
+initArizeTracing();
+
+const arizeTracer = otelTrace.getTracer('gridmix-watt');
 
 // Enprompta client. We use the manual span-tree builder (enprompta.trace())
 // rather than the flat tracedOpenAI() wrapper: WATT is a tool-calling agent, so
@@ -111,6 +127,28 @@ export async function runWattConversation(
     },
   });
 
+  // Arize equivalent of the tree above. `setSession` puts session.id on the
+  // OTel context rather than on a single span, so the auto-instrumented OpenAI
+  // spans inherit it too and Arize groups the chat as one conversation.
+  // The CHAIN span is still needed: the OpenAI instrumentor sees each API call
+  // but not the loop that ties them into one turn.
+  const sessionCtx = setSession(context.active(), { sessionId });
+  const chainSpan = arizeTracer.startSpan(`watt-turn-${turnNumber}`, undefined, sessionCtx);
+  chainSpan.setAttribute(
+    SemanticConventions.OPENINFERENCE_SPAN_KIND,
+    OpenInferenceSpanKind.CHAIN
+  );
+  chainSpan.setAttribute(INPUT_VALUE, question);
+  chainSpan.setAttribute('turn', turnNumber);
+  chainSpan.setAttribute('surface', surface);
+  // setSession() only reaches spans the OpenInference instrumentors create; a
+  // hand-built span has to carry session.id itself, or it drops out of Arize's
+  // session view and the multi-turn grouping breaks.
+  chainSpan.setAttribute(SemanticConventions.SESSION_ID, sessionId);
+  // Passing this context explicitly when creating child spans keeps the tree
+  // correct without wrapping the whole loop in a callback.
+  const chainCtx = otelTrace.setSpan(sessionCtx, chainSpan);
+
   let answer =
     'Watt is taking too long to find an answer — try a simpler or more specific question.';
 
@@ -132,12 +170,16 @@ export async function runWattConversation(
 
       let message: OpenAIMessage;
       try {
-        const completion = await openai.chat.completions.create({
-          model: 'gpt-4o-mini',
-          messages: messages as never,
-          ...(isFinalTurn ? {} : { tools: tools as never, tool_choice: 'auto' }),
-          temperature: 0.2,
-        });
+        // Run inside chainCtx so the instrumentor's LLM span attaches under the
+        // CHAIN span and picks up session.id from the context.
+        const completion = await context.with(chainCtx, () =>
+          openai.chat.completions.create({
+            model: 'gpt-4o-mini',
+            messages: messages as never,
+            ...(isFinalTurn ? {} : { tools: tools as never, tool_choice: 'auto' }),
+            temperature: 0.2,
+          })
+        );
         message = completion.choices[0].message as unknown as OpenAIMessage;
         llmSpan.end({
           output: message.content ?? message.tool_calls ?? '',
@@ -167,6 +209,24 @@ export async function runWattConversation(
           name: toolCall.function.name,
           input: toolCall.function.arguments,
         });
+        // The OpenAI instrumentor records that the model *asked* for this tool,
+        // but never the execution or its result — that part is ours to emit.
+        const arizeToolSpan = arizeTracer.startSpan(
+          toolCall.function.name,
+          undefined,
+          chainCtx
+        );
+        arizeToolSpan.setAttribute(
+          SemanticConventions.OPENINFERENCE_SPAN_KIND,
+          OpenInferenceSpanKind.TOOL
+        );
+        arizeToolSpan.setAttribute(SemanticConventions.TOOL_NAME, toolCall.function.name);
+        arizeToolSpan.setAttribute(INPUT_VALUE, toolCall.function.arguments || '{}');
+        arizeToolSpan.setAttribute(SemanticConventions.SESSION_ID, sessionId);
+        if (toolCall.id) {
+          arizeToolSpan.setAttribute('tool.id', toolCall.id);
+        }
+
         const tool = wattTools.find(
           (t) => t.definition.function.name === toolCall.function.name
         );
@@ -175,12 +235,22 @@ export async function runWattConversation(
         if (!tool) {
           resultContent = JSON.stringify({ error: `Unknown tool: ${toolCall.function.name}` });
           toolSpan.end({ status: 'ERROR', output: resultContent });
+          arizeToolSpan.setAttribute(OUTPUT_VALUE, resultContent);
+          arizeToolSpan.setStatus({ code: SpanStatusCode.ERROR, message: 'Unknown tool' });
+          arizeToolSpan.end();
         } else {
+          arizeToolSpan.setAttribute(
+            SemanticConventions.TOOL_DESCRIPTION,
+            tool.definition.function.description
+          );
           try {
             const args = toolCall.function.arguments ? JSON.parse(toolCall.function.arguments) : {};
             const result = await tool.execute(args);
             resultContent = JSON.stringify(result);
             toolSpan.end({ output: resultContent });
+            arizeToolSpan.setAttribute(OUTPUT_VALUE, resultContent);
+            arizeToolSpan.setStatus({ code: SpanStatusCode.OK });
+            arizeToolSpan.end();
           } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Tool execution failed';
             resultContent = JSON.stringify({ error: errorMessage });
@@ -189,6 +259,10 @@ export async function runWattConversation(
               errorMessage,
               output: resultContent,
             });
+            arizeToolSpan.setAttribute(OUTPUT_VALUE, resultContent);
+            arizeToolSpan.setStatus({ code: SpanStatusCode.ERROR, message: errorMessage });
+            if (error instanceof Error) arizeToolSpan.recordException(error);
+            arizeToolSpan.end();
           }
         }
 
@@ -206,5 +280,11 @@ export async function runWattConversation(
     // 'openai / gpt-4o-mini' instead of 'unknown / unknown' in the flat trace
     // list (child LLM spans carry these, but the root AGENT span otherwise won't).
     await trace.end({ output: answer, provider: 'openai', model: 'gpt-4o-mini' });
+
+    chainSpan.setAttribute(OUTPUT_VALUE, answer);
+    chainSpan.end();
+    // Serverless can freeze the instance as soon as the response returns, so
+    // push the spans out before that happens.
+    await flushArizeTracing();
   }
 }
