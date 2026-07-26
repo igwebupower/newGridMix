@@ -14,13 +14,19 @@ import {
   SemanticConventions,
   OpenInferenceSpanKind,
 } from '@arizeai/openinference-semantic-conventions';
+import { wrapOpenAI, traced, startSpan } from 'braintrust';
 import { wattTools } from './watt-tools';
 import { initArizeTracing, flushArizeTracing } from './arize-tracing';
+import { initBraintrustTracing, flushBraintrustTracing } from './braintrust-tracing';
 
-// EVALUATION ONLY (branch: arize-tracing-eval) — Arize runs alongside Enprompta
-// so the two can be compared on identical traffic. Must happen at module load,
-// before any OpenAI client is constructed, or the instrumentor's patch misses it.
+// EVALUATION ONLY (branch: arize-tracing-eval) — Arize and Braintrust both run
+// alongside Enprompta so all three can be compared on identical traffic. Arize
+// must init at module load, before any OpenAI client is constructed, or the
+// instrumentor's patch misses it; Braintrust's initLogger() doesn't have that
+// constraint (wrapOpenAI wraps the instance directly, see braintrust-tracing.ts)
+// but is called here too for a single, obvious init point.
 initArizeTracing();
+initBraintrustTracing();
 
 const arizeTracer = otelTrace.getTracer('gridmix-watt');
 
@@ -108,7 +114,9 @@ export async function runWattConversation(
   ];
 
   const tools = wattTools.map((t) => t.definition);
-  const openai = new OpenAI({ apiKey });
+  // wrapOpenAI wraps this exact instance (like tracedOpenAI above), so it's
+  // bundler-proof the same way — no require()-time patching involved.
+  const openai = wrapOpenAI(new OpenAI({ apiKey }));
 
   // One root AGENT span per question; each model turn becomes a child LLM span
   // and each tool execution a child TOOL span, grouped under `sessionId` so a
@@ -141,6 +149,7 @@ export async function runWattConversation(
   chainSpan.setAttribute(INPUT_VALUE, question);
   chainSpan.setAttribute('turn', turnNumber);
   chainSpan.setAttribute('surface', surface);
+  chainSpan.setAttribute('historyMessages', trimmedHistory.length);
   // setSession() only reaches spans the OpenInference instrumentors create; a
   // hand-built span has to carry session.id itself, or it drops out of Arize's
   // session view and the multi-turn grouping breaks.
@@ -149,8 +158,26 @@ export async function runWattConversation(
   // correct without wrapping the whole loop in a callback.
   const chainCtx = otelTrace.setSpan(sessionCtx, chainSpan);
 
+  // Braintrust root span, third leg of the comparison. TOOL spans below are
+  // parented to it via explicit span.export()/parent linking (the doc-confirmed
+  // mechanism) rather than an ambient "current span" context, since this loop's
+  // early returns and try/finally don't fit a single traced() callback the way
+  // Enprompta's trace()/span() builder does.
+  const braintrustSpan = startSpan({
+    name: `watt-turn-${turnNumber}`,
+    type: 'task',
+    event: {
+      input: question,
+      metadata: { turn: turnNumber, surface, historyMessages: trimmedHistory.length, sessionId },
+    },
+  });
+
   let answer =
     'Watt is taking too long to find an answer — try a simpler or more specific question.';
+  // Both root spans used to end without a status, so a turn that threw was
+  // indistinguishable from one that succeeded — error rates read clean straight
+  // through an outage. Captured here and applied in the finally.
+  let failure: Error | null = null;
 
   try {
     for (let turn = 0; turn < MAX_TOOL_TURNS; turn++) {
@@ -171,14 +198,25 @@ export async function runWattConversation(
       let message: OpenAIMessage;
       try {
         // Run inside chainCtx so the instrumentor's LLM span attaches under the
-        // CHAIN span and picks up session.id from the context.
-        const completion = await context.with(chainCtx, () =>
-          openai.chat.completions.create({
-            model: 'gpt-4o-mini',
-            messages: messages as never,
-            ...(isFinalTurn ? {} : { tools: tools as never, tool_choice: 'auto' }),
-            temperature: 0.2,
-          })
+        // CHAIN span and picks up session.id from the context. The traced()
+        // wrapper does the equivalent for Braintrust: it makes this call the
+        // "current" span for wrapOpenAI's auto-generated LLM span to nest under,
+        // parented explicitly to braintrustSpan via export().
+        const completion = await traced(
+          () =>
+            context.with(chainCtx, () =>
+              openai.chat.completions.create({
+                model: 'gpt-4o-mini',
+                messages: messages as never,
+                ...(isFinalTurn ? {} : { tools: tools as never, tool_choice: 'auto' }),
+                temperature: 0.2,
+              })
+            ),
+          {
+            name: isFinalTurn ? `model-turn-${turn}-final` : `model-turn-${turn}`,
+            type: 'llm',
+            parent: braintrustSpan.export(),
+          }
         );
         message = completion.choices[0].message as unknown as OpenAIMessage;
         llmSpan.end({
@@ -226,6 +264,12 @@ export async function runWattConversation(
         if (toolCall.id) {
           arizeToolSpan.setAttribute('tool.id', toolCall.id);
         }
+        const braintrustToolSpan = startSpan({
+          name: toolCall.function.name,
+          type: 'tool',
+          parent: braintrustSpan.export(),
+          event: { input: toolCall.function.arguments || '{}' },
+        });
 
         const tool = wattTools.find(
           (t) => t.definition.function.name === toolCall.function.name
@@ -238,10 +282,16 @@ export async function runWattConversation(
           arizeToolSpan.setAttribute(OUTPUT_VALUE, resultContent);
           arizeToolSpan.setStatus({ code: SpanStatusCode.ERROR, message: 'Unknown tool' });
           arizeToolSpan.end();
+          braintrustToolSpan.log({ output: resultContent, error: 'Unknown tool' });
+          braintrustToolSpan.end();
         } else {
           arizeToolSpan.setAttribute(
             SemanticConventions.TOOL_DESCRIPTION,
             tool.definition.function.description
+          );
+          arizeToolSpan.setAttribute(
+            SemanticConventions.TOOL_PARAMETERS,
+            JSON.stringify(tool.definition.function.parameters)
           );
           try {
             const args = toolCall.function.arguments ? JSON.parse(toolCall.function.arguments) : {};
@@ -251,6 +301,8 @@ export async function runWattConversation(
             arizeToolSpan.setAttribute(OUTPUT_VALUE, resultContent);
             arizeToolSpan.setStatus({ code: SpanStatusCode.OK });
             arizeToolSpan.end();
+            braintrustToolSpan.log({ output: resultContent });
+            braintrustToolSpan.end();
           } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Tool execution failed';
             resultContent = JSON.stringify({ error: errorMessage });
@@ -263,6 +315,8 @@ export async function runWattConversation(
             arizeToolSpan.setStatus({ code: SpanStatusCode.ERROR, message: errorMessage });
             if (error instanceof Error) arizeToolSpan.recordException(error);
             arizeToolSpan.end();
+            braintrustToolSpan.log({ output: resultContent, error: errorMessage });
+            braintrustToolSpan.end();
           }
         }
 
@@ -275,16 +329,38 @@ export async function runWattConversation(
     }
 
     return answer;
+  } catch (error) {
+    failure = error instanceof Error ? error : new Error(String(error));
+    throw error;
   } finally {
     // Set provider/model on the root span too, so the session reads
     // 'openai / gpt-4o-mini' instead of 'unknown / unknown' in the flat trace
     // list (child LLM spans carry these, but the root AGENT span otherwise won't).
-    await trace.end({ output: answer, provider: 'openai', model: 'gpt-4o-mini' });
+    await trace.end({
+      output: answer,
+      provider: 'openai',
+      model: 'gpt-4o-mini',
+      ...(failure ? { status: 'ERROR' as const, errorMessage: failure.message } : {}),
+    });
 
     chainSpan.setAttribute(OUTPUT_VALUE, answer);
+    if (failure) {
+      chainSpan.setStatus({ code: SpanStatusCode.ERROR, message: failure.message });
+      chainSpan.recordException(failure);
+    } else {
+      chainSpan.setStatus({ code: SpanStatusCode.OK });
+    }
     chainSpan.end();
+
+    braintrustSpan.log({
+      output: answer,
+      ...(failure ? { error: failure.message } : {}),
+    });
+    braintrustSpan.end();
+
     // Serverless can freeze the instance as soon as the response returns, so
     // push the spans out before that happens.
     await flushArizeTracing();
+    await flushBraintrustTracing();
   }
 }

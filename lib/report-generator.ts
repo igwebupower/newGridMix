@@ -3,8 +3,10 @@
 
 import { DataSnapshot, Insight } from './types';
 import { Enprompta } from '@enprompta/sdk';
+import { startSpan } from 'braintrust';
 import fs from 'fs/promises';
 import path from 'path';
+import { initBraintrustTracing, flushBraintrustTracing } from './braintrust-tracing';
 
 // Enprompta client for tracing report-generation LLM calls. Same manual-record
 // approach as lib/watt-conversation.ts: Next's bundler breaks global init()
@@ -13,6 +15,13 @@ import path from 'path';
 // method call — bundler-proof — and is fail-silent, so an unset key just means
 // no trace, never a thrown error in the report pipeline.
 const enprompta = new Enprompta({ apiKey: process.env.ENPROMPTA_API_KEY! });
+
+// Braintrust, EVALUATION ONLY (branch: arize-tracing-eval) — see
+// lib/braintrust-tracing.ts and lib/watt-conversation.ts for the primary
+// wiring/rationale. callOpenAI() below uses raw fetch() too, so this is the
+// same flat startSpan()+end() shape as the enprompta.traces.record() calls
+// it sits next to, rather than wrapOpenAI (which needs an actual client).
+initBraintrustTracing();
 
 const REPORT_SYSTEM_PROMPT =
   'You are an expert energy analyst and technical writer specializing in UK electricity grid data. You write clear, accurate, data-driven content that is both informative and engaging. You always cite sources and use specific data to support your analysis.';
@@ -142,6 +151,7 @@ async function callOpenAI(prompt: string, reportType: string): Promise<string> {
     });
   } catch (error) {
     // Network-level failure before we ever got a response.
+    const errorMessage = error instanceof Error ? error.message : String(error);
     await enprompta.traces.record({
       provider: 'openai',
       model,
@@ -152,9 +162,19 @@ async function callOpenAI(prompt: string, reportType: string): Promise<string> {
       maxTokens,
       latencyMs: Date.now() - startedAt,
       status: 'ERROR',
-      errorMessage: error instanceof Error ? error.message : String(error),
+      errorMessage,
       metadata,
     });
+    startSpan({
+      name: 'report-generator',
+      type: 'llm',
+      event: {
+        input: prompt,
+        metadata: { ...metadata, systemPrompt: REPORT_SYSTEM_PROMPT, temperature, maxTokens, model },
+        error: errorMessage,
+      },
+    }).end();
+    await flushBraintrustTracing();
     throw error;
   }
 
@@ -174,6 +194,16 @@ async function callOpenAI(prompt: string, reportType: string): Promise<string> {
       errorMessage: message,
       metadata,
     });
+    startSpan({
+      name: 'report-generator',
+      type: 'llm',
+      event: {
+        input: prompt,
+        metadata: { ...metadata, systemPrompt: REPORT_SYSTEM_PROMPT, temperature, maxTokens, model },
+        error: message,
+      },
+    }).end();
+    await flushBraintrustTracing();
     throw new Error(message);
   }
 
@@ -194,6 +224,25 @@ async function callOpenAI(prompt: string, reportType: string): Promise<string> {
     finishReason: data.choices[0].finish_reason,
     metadata,
   });
+  startSpan({
+    name: 'report-generator',
+    type: 'llm',
+    event: {
+      input: prompt,
+      output: content,
+      metadata: {
+        ...metadata,
+        systemPrompt: REPORT_SYSTEM_PROMPT,
+        temperature,
+        maxTokens,
+        model,
+        inputTokens: data.usage?.prompt_tokens,
+        outputTokens: data.usage?.completion_tokens,
+        finishReason: data.choices[0].finish_reason,
+      },
+    },
+  }).end();
+  await flushBraintrustTracing();
 
   return content;
 }
