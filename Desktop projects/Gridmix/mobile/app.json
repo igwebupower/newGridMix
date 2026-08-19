@@ -12,13 +12,18 @@
       "resizeMode": "contain",
       "backgroundColor": "#0f172a"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gridmix.app",
       "buildNumber": "1",
       "infoPlist": {
-        "UIBackgroundModes": ["fetch", "remote-notification"]
+        "UIBackgroundModes": [
+          "fetch",
+          "remote-notification"
+        ]
       }
     },
     "android": {
@@ -28,7 +33,11 @@
       },
       "package": "com.gridmix.app",
       "versionCode": 1,
-      "permissions": ["RECEIVE_BOOT_COMPLETED", "VIBRATE"]
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "com.google.android.gms.permission.AD_ID"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -36,19 +45,32 @@
     },
     "plugins": [
       [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "enableProguardInReleaseBuilds": true,
+            "includeNativeSymbols": true
+          }
+        }
+      ],
+      [
         "expo-notifications",
         {
           "icon": "./assets/images/notification-icon.png",
           "color": "#06B6D4",
           "sounds": []
         }
-      ]
+      ],
+      "expo-font"
     ],
     "extra": {
+      "apiUrl": "https://gridmix.co.uk/api",
       "eas": {
-        "projectId": "gridmix-uk-carbon-tracker"
-      },
-      "apiUrl": "https://gridmix.co.uk/api"
-    }
+        "projectId": "d5099566-4e01-4336-a5ff-2001f1d67199"
+      }
+    },
+    "owner": "igwebupower"
   }
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { ActivityIndicator } from 'react-native';
 import { render, screen } from '@testing-library/react-native';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 
@@ -17,7 +18,6 @@ describe('LoadingSpinner Component', () => {
 
   it('renders activity indicator', () => {
     const { UNSAFE_getByType } = render(<LoadingSpinner />);
-    const ActivityIndicator = require('react-native').ActivityIndicator;
 
     expect(UNSAFE_getByType(ActivityIndicator)).toBeTruthy();
   });

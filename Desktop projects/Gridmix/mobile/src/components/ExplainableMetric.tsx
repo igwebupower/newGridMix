@@ -58,7 +58,7 @@ export function ExplainableMetric({
         hapticType="selection"
       >
         {isNumeric ? (
-          <CountUp value={numericValue} style={{ ...styles.value, color }} />
+          <CountUp value={numericValue} style={[styles.value, { color }]} />
         ) : (
           <Text style={[styles.value, { color }]}>{value}</Text>
         )}

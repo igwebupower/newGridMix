@@ -81,6 +81,13 @@ def get_video(data, video_id):
     return None
 
 
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Accept": "application/json",
+    "Accept-Language": "en-US,en;q=0.9",
+}
+
+
 def api_request(endpoint, payload, api_key):
     """Make an API request to Suno API."""
     url = f"{API_BASE}/{endpoint}"
@@ -89,6 +96,8 @@ def api_request(endpoint, payload, api_key):
     req = urllib.request.Request(url, data=data, method="POST")
     req.add_header("Content-Type", "application/json")
     req.add_header("Authorization", f"Bearer {api_key}")
+    for k, v in HEADERS.items():
+        req.add_header(k, v)
 
     try:
         with urllib.request.urlopen(req, timeout=120) as resp:
@@ -107,6 +116,8 @@ def api_get(endpoint, api_key):
     url = f"{API_BASE}/{endpoint}"
     req = urllib.request.Request(url)
     req.add_header("Authorization", f"Bearer {api_key}")
+    for k, v in HEADERS.items():
+        req.add_header(k, v)
 
     try:
         with urllib.request.urlopen(req, timeout=60) as resp:
@@ -118,9 +129,18 @@ def api_get(endpoint, api_key):
 
 
 def download_file(url, output_path):
-    """Download a file from URL."""
+    """Download a file from URL with proper headers."""
     print(f"  Downloading to {output_path}...")
-    urllib.request.urlretrieve(url, output_path)
+    req = urllib.request.Request(url)
+    for k, v in HEADERS.items():
+        req.add_header(k, v)
+    with urllib.request.urlopen(req, timeout=300) as resp:
+        with open(output_path, "wb") as f:
+            while True:
+                chunk = resp.read(1024 * 1024)  # 1MB chunks
+                if not chunk:
+                    break
+                f.write(chunk)
     size_mb = os.path.getsize(output_path) / (1024 * 1024)
     print(f"  Downloaded: {size_mb:.1f} MB")
 
@@ -134,12 +154,14 @@ def generate_audio(video, api_key, model="V4_5PLUS"):
     style = CATEGORY_STYLES.get(category, CATEGORY_STYLES["brown_noise"])
 
     # Build the generation payload
+    # callBackUrl is required by the API but we poll instead
     payload = {
         "customMode": True,
         "instrumental": True,
         "style": style,
         "title": f"Laxx - {title}",
-        "model": model
+        "model": model,
+        "callBackUrl": "https://httpbin.org/post"
     }
 
     print(f"\n  Generating audio for {vid_id}: {title}")
@@ -155,76 +177,84 @@ def generate_audio(video, api_key, model="V4_5PLUS"):
         print("  ERROR: Generation request failed.")
         return None
 
-    # Handle response -- extract task/clip IDs
+    # Extract task ID from response
     if isinstance(result, dict) and result.get("code") == 200:
-        data = result.get("data", [])
-    elif isinstance(result, list):
-        data = result
+        resp_data = result.get("data", {})
     else:
-        print(f"  Unexpected response: {json.dumps(result)[:200]}")
-        # Still try to extract data
-        data = result.get("data", result.get("clips", []))
+        print(f"  Unexpected response: {json.dumps(result)[:300]}")
+        resp_data = result.get("data", {})
 
-    if not data:
-        print("  ERROR: No clips returned.")
-        print(f"  Response: {json.dumps(result)[:300]}")
+    # The API returns a taskId for polling
+    task_id = None
+    if isinstance(resp_data, dict):
+        task_id = resp_data.get("taskId") or resp_data.get("task_id") or resp_data.get("id")
+    elif isinstance(resp_data, str):
+        task_id = resp_data
+
+    if not task_id:
+        # Try extracting from top level
+        task_id = result.get("taskId") or result.get("task_id")
+
+    if not task_id:
+        print(f"  Could not extract task ID from response.")
+        print(f"  Full response: {json.dumps(result)[:500]}")
         return None
 
-    # Get the first clip's ID for polling
-    clip_ids = []
-    for item in data if isinstance(data, list) else [data]:
-        if isinstance(item, dict):
-            clip_id = item.get("id") or item.get("clip_id") or item.get("songId")
-            if clip_id:
-                clip_ids.append(clip_id)
+    print(f"  Submitted! Task ID: {task_id}")
+    print(f"  Waiting for generation (typically 60-180 seconds)...")
 
-    if not clip_ids:
-        print(f"  Could not extract clip IDs from response.")
-        print(f"  Response keys: {list(result.keys()) if isinstance(result, dict) else 'list'}")
-        print(f"  First item: {json.dumps(data[0] if isinstance(data, list) and data else data)[:200]}")
-        return None
-
-    print(f"  Submitted! Clip IDs: {clip_ids}")
-    print(f"  Waiting for generation (typically 30-120 seconds)...")
-
-    # Poll for completion
+    # Poll for completion using record-info endpoint
     audio_url = None
-    for attempt in range(30):  # Up to 5 minutes
+    for attempt in range(36):  # Up to 6 minutes
         time.sleep(10)
         print(f"  Polling... ({(attempt + 1) * 10}s)")
 
-        for clip_id in clip_ids:
-            status = api_get(f"feed/{clip_id}", api_key)
+        status_result = api_get(f"generate/record-info?taskId={task_id}", api_key)
 
-            if not status:
-                continue
+        if not status_result:
+            continue
 
-            clip_data = status.get("data", status)
-            if isinstance(clip_data, list) and clip_data:
-                clip_data = clip_data[0]
+        status_data = status_result.get("data", {})
+        if isinstance(status_data, str):
+            continue
 
-            state = clip_data.get("status", "").lower()
+        state = ""
+        if isinstance(status_data, dict):
+            state = (status_data.get("status") or "").upper()
 
-            if state in ("complete", "completed", "done"):
+        if state == "SUCCESS":
+            # Extract audio URL from response
+            response = status_data.get("response", {})
+            suno_data = response.get("sunoData", [])
+
+            if isinstance(suno_data, list) and suno_data:
+                audio_url = suno_data[0].get("audioUrl") or suno_data[0].get("audio_url")
+                if audio_url:
+                    duration = suno_data[0].get("duration", "?")
+                    print(f"  Generation complete! Duration: {duration}s")
+                    break
+            else:
+                # Try alternate response shapes
                 audio_url = (
-                    clip_data.get("audio_url") or
-                    clip_data.get("audioUrl") or
-                    clip_data.get("stream_url") or
-                    clip_data.get("streamUrl")
+                    status_data.get("audioUrl") or
+                    status_data.get("audio_url") or
+                    response.get("audioUrl")
                 )
                 if audio_url:
                     print(f"  Generation complete!")
                     break
 
-            elif state in ("failed", "error"):
-                print(f"  Generation failed: {clip_data.get('error', 'unknown error')}")
-                return None
+        elif state == "FIRST_SUCCESS":
+            print(f"  First track ready, waiting for completion...")
 
-        if audio_url:
-            break
+        elif state in ("FAILED", "ERROR"):
+            error_msg = status_data.get("errorMessage") or status_data.get("error") or "unknown"
+            print(f"  Generation failed: {error_msg}")
+            return None
 
     if not audio_url:
         print("  Timed out waiting for generation.")
+        print(f"  Last status: {json.dumps(status_result)[:300] if status_result else 'none'}")
         return None
 
     # Download the audio file

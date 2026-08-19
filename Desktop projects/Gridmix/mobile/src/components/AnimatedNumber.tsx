@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-import { Text, TextStyle, StyleSheet } from 'react-native';
+import { Text, StyleSheet, StyleProp, TextStyle } from 'react-native';
 
 interface AnimatedNumberProps {
   value: number;
-  style?: TextStyle;
+  style?: StyleProp<TextStyle>;
   decimalPlaces?: number;
   prefix?: string;
   suffix?: string;
@@ -27,7 +27,7 @@ export function AnimatedNumber({
 // Animated count-up effect
 interface CountUpProps {
   value: number;
-  style?: TextStyle;
+  style?: StyleProp<TextStyle>;
   decimalPlaces?: number;
   prefix?: string;
   suffix?: string;

@@ -39,4 +39,5 @@ coverage/
 # EAS
 eas.json.bak
 google-services.json
+google-services-key.json
 GoogleService-Info.plist

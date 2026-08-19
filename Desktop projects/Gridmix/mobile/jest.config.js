@@ -23,5 +23,6 @@ module.exports = {
     },
   },
   testMatch: ['**/__tests__/**/*.test.{ts,tsx}'],
+  testPathIgnorePatterns: ['/node_modules/', '__tests__/api/'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };

@@ -22,35 +22,28 @@ const getDevApiUrl = () => {
 
 export const API_BASE_URL = __DEV__
   ? getDevApiUrl()
-  : 'https://gridmix.co.uk/api';
+  : 'https://www.gridmix.co.uk/api/v1';
 
-// API Endpoints
+// API Endpoints (mapped to actual Next.js API routes)
 export const API_ENDPOINTS = {
-  // Energy data
-  energyCurrent: '/energy/current',
-  energyHistory: '/energy/history',
-  energyTimeseries: '/energy/timeseries',
+  // Energy data - uses /api/v1/current
+  energyCurrent: '/current',
+  energyHistory: '/historical',
+  energyTimeseries: '/historical',
 
-  // Carbon forecast
-  carbonForecast: '/carbon-forecast',
-  carbonForecastCleanest: '/carbon-forecast/cleanest',
+  // Carbon forecast - uses /api/v1/forecast
+  carbonForecast: '/forecast',
+  carbonForecastCleanest: '/forecast',
 
-  // BMRS data
-  bmrsGridStatus: '/bmrs/grid-status',
-  bmrsFrequency: '/bmrs/frequency',
-  bmrsInterconnectors: '/bmrs/interconnectors',
+  // Solar data
+  solar: '/solar',
 
-  // Projects
-  repdProjects: '/repd/projects',
-  repdLiveGeneration: '/repd/live-generation',
-
-  // Push notifications
+  // Push notifications (not implemented in web API)
   notificationRegister: '/notifications/register',
   notificationPreferences: '/notifications/preferences',
 
-  // Health
-  health: '/health',
-  dataSourcesStatus: '/data-sources/status',
+  // Health check
+  health: '/',
 } as const;
 
 // Refresh intervals (in milliseconds)

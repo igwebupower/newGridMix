@@ -93,8 +93,8 @@ export async function registerForPushNotifications(): Promise<string | null> {
   // Register token with backend
   try {
     await registerPushToken(token.data, Platform.OS as 'ios' | 'android');
-  } catch (error) {
-    console.error('Failed to register push token with backend:', error);
+  } catch {
+    // Silently fail - push token registration is not critical
   }
 
   return token.data;
@@ -116,6 +116,7 @@ export async function scheduleLocalNotification(
       priority: Notifications.AndroidNotificationPriority.HIGH,
     },
     trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
       seconds,
     },
   });
@@ -138,6 +139,7 @@ export async function scheduleDailySummary(hour: number = 7, minute: number = 0)
       sound: true,
     },
     trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
       hour,
       minute,
       repeats: true,

@@ -12,7 +12,7 @@ Setup:
 
 Usage:
     python generate_video.py V01                       # Generate video clip for V01
-    python generate_video.py V01 --model gen4_turbo    # Use specific model
+    python generate_video.py V01 --model gen3a_turbo    # Use specific model
     python generate_video.py V01 --duration 10         # 10-second clip
     python generate_video.py --batch "Batch 1"         # Generate all Batch 1 clips
 """
@@ -86,7 +86,7 @@ def download_file(url, output_path):
     print(f"  Downloaded: {size_mb:.1f} MB")
 
 
-def generate_clip(video, model="gen4_turbo", clip_duration=10):
+def generate_clip(video, model="gen3a_turbo", clip_duration=10):
     """Generate a video clip using Runway API."""
     from runwayml import RunwayML, TaskFailedError
 
@@ -161,9 +161,11 @@ def generate_clip(video, model="gen4_turbo", clip_duration=10):
 def estimate_cost(videos, model, clip_duration):
     """Estimate credit cost for generation."""
     credits_per_second = {
-        "gen3_turbo": 5,
-        "gen4_turbo": 5,
-        "gen4_aleph": 15,
+        "gen3a_turbo": 5,
+        "gen4.5": 12,
+        "veo3": 40,
+        "veo3.1": 40,
+        "veo3.1_fast": 20,
     }
     cps = credits_per_second.get(model, 5)
     total_credits = len(videos) * clip_duration * cps
@@ -174,7 +176,7 @@ def estimate_cost(videos, model, clip_duration):
 def main():
     parser = argparse.ArgumentParser(description="Generate video clips for Laxx Meditate via Runway API.")
     parser.add_argument("video_id", nargs="?", help="Video ID (e.g., V01)")
-    parser.add_argument("--model", default="gen4_turbo", help="Runway model (default: gen4_turbo)")
+    parser.add_argument("--model", default="gen3a_turbo", help="Runway model (default: gen3a_turbo)")
     parser.add_argument("--duration", type=int, default=10, help="Clip duration in seconds (default: 10)")
     parser.add_argument("--batch", help="Generate for all videos in a batch (e.g., 'Batch 1')")
     parser.add_argument("--dry-run", action="store_true", help="Show cost estimate without generating")

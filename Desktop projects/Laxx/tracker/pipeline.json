@@ -10,12 +10,21 @@
       "thumbnail_title": "Brown Noise for Sleep",
       "category": "brown_noise",
       "duration_hours": 10,
-      "status": "planned",
+      "status": "uploaded",
       "priority": 1,
       "audio_source": "Suno AI + Audacity layering",
       "visual_prompt": "Slow abstract dark brown gradient waves, smooth undulating motion, deep warm tones, 4K",
-      "seo_keywords": ["brown noise", "brown noise for sleep", "brown noise 10 hours", "deep brown noise sleep"],
-      "last_updated": null
+      "seo_keywords": [
+        "brown noise",
+        "brown noise for sleep",
+        "brown noise 10 hours",
+        "deep brown noise sleep"
+      ],
+      "last_updated": "2026-02-11T15:46:32.985828",
+      "audio_file": "C:\\Users\\john\\Desktop\\Desktop projects\\Laxx\\assets\\audio\\V01_brown_noise.mp3",
+      "youtube_url": "https://youtu.be/-RdcO_nmH8I",
+      "youtube_id": "-RdcO_nmH8I",
+      "uploaded_at": "2026-02-11T15:46:32.983054"
     },
     {
       "id": "V02",
@@ -24,12 +33,18 @@
       "thumbnail_title": "Rain Sounds",
       "category": "nature",
       "duration_hours": 10,
-      "status": "planned",
+      "status": "audio_done",
       "priority": 1,
       "audio_source": "Freesound.org rain recordings + Audacity mixing",
       "visual_prompt": "Cinematic rain falling on dark window at night, warm indoor glow, water droplets streaming down glass, 4K",
-      "seo_keywords": ["rain sounds", "rain sounds for sleeping", "rain 10 hours", "heavy rain for sleep"],
-      "last_updated": null
+      "seo_keywords": [
+        "rain sounds",
+        "rain sounds for sleeping",
+        "rain 10 hours",
+        "heavy rain for sleep"
+      ],
+      "last_updated": "2026-02-11T16:27:49.454464",
+      "audio_file": "C:\\Users\\john\\Desktop\\Desktop projects\\Laxx\\assets\\audio\\V02_nature.mp3"
     },
     {
       "id": "V03",
@@ -43,7 +58,12 @@
       "audio_source": "Audacity generated white noise + EQ shaping",
       "visual_prompt": null,
       "visual_notes": "Black screen -- no video needed, audio only with static black image",
-      "seo_keywords": ["white noise", "white noise for sleeping", "white noise black screen", "white noise 10 hours"],
+      "seo_keywords": [
+        "white noise",
+        "white noise for sleeping",
+        "white noise black screen",
+        "white noise 10 hours"
+      ],
       "last_updated": null
     },
     {
@@ -57,7 +77,12 @@
       "priority": 1,
       "audio_source": "Freesound.org ocean recordings + layering",
       "visual_prompt": "Aerial view of gentle ocean waves rolling onto dark sandy beach at twilight, slow motion, 4K cinematic",
-      "seo_keywords": ["ocean waves", "ocean sounds for sleep", "beach sounds", "waves 10 hours"],
+      "seo_keywords": [
+        "ocean waves",
+        "ocean sounds for sleep",
+        "beach sounds",
+        "waves 10 hours"
+      ],
       "last_updated": null
     },
     {
@@ -71,7 +96,12 @@
       "priority": 1,
       "audio_source": "Suno AI -- slightly brighter brown noise variant for alertness",
       "visual_prompt": "Minimal abstract dark scene, subtle warm particles floating slowly, deep focus aesthetic, 4K",
-      "seo_keywords": ["brown noise for studying", "brown noise focus", "study noise", "brown noise ADHD"],
+      "seo_keywords": [
+        "brown noise for studying",
+        "brown noise focus",
+        "study noise",
+        "brown noise ADHD"
+      ],
       "last_updated": null
     },
     {
@@ -85,7 +115,12 @@
       "priority": 1,
       "audio_source": "Freesound.org thunder + rain recordings, Audacity layering",
       "visual_prompt": "Dark stormy sky with distant lightning flashes illuminating clouds, rain visible, moody cinematic, 4K",
-      "seo_keywords": ["thunderstorm sounds", "thunder and rain", "thunderstorm for sleep", "storm sounds 10 hours"],
+      "seo_keywords": [
+        "thunderstorm sounds",
+        "thunder and rain",
+        "thunderstorm for sleep",
+        "storm sounds 10 hours"
+      ],
       "last_updated": null
     },
     {
@@ -99,7 +134,12 @@
       "priority": 1,
       "audio_source": "Audacity generated pink noise, gentle EQ curve",
       "visual_prompt": "Soft pastel gradient, very gentle slow color shifts between muted pink and lavender, minimal, 4K",
-      "seo_keywords": ["pink noise", "pink noise baby", "baby sleep sounds", "pink noise 10 hours"],
+      "seo_keywords": [
+        "pink noise",
+        "pink noise baby",
+        "baby sleep sounds",
+        "pink noise 10 hours"
+      ],
       "last_updated": null
     },
     {
@@ -113,7 +153,12 @@
       "priority": 1,
       "audio_source": "Audacity -- deep frequency brown noise, low-pass filter heavy",
       "visual_prompt": "Very dark abstract texture, barely visible slow movement, near-black with subtle brown tones, 4K",
-      "seo_keywords": ["deep brown noise", "brown noise no music", "pure brown noise", "deep noise for sleep"],
+      "seo_keywords": [
+        "deep brown noise",
+        "brown noise no music",
+        "pure brown noise",
+        "deep noise for sleep"
+      ],
       "last_updated": null
     },
     {
@@ -127,7 +172,12 @@
       "priority": 2,
       "audio_source": "Freesound.org fireplace recordings + Audacity",
       "visual_prompt": "Close-up of crackling fireplace with glowing embers, warm orange light, dark room, cozy atmosphere, 4K",
-      "seo_keywords": ["fireplace sounds", "crackling fire", "fireplace 10 hours", "fire sounds for sleep"],
+      "seo_keywords": [
+        "fireplace sounds",
+        "crackling fire",
+        "fireplace 10 hours",
+        "fire sounds for sleep"
+      ],
       "last_updated": null
     },
     {
@@ -141,7 +191,13 @@
       "priority": 2,
       "audio_source": "Freesound.org bird + stream recordings, Audacity layering",
       "visual_prompt": "Sunlight filtering through dense forest canopy, gentle stream visible, morning mist, birds, 4K",
-      "seo_keywords": ["forest sounds", "bird sounds", "nature ambience", "stream sounds", "forest birds 8 hours"],
+      "seo_keywords": [
+        "forest sounds",
+        "bird sounds",
+        "nature ambience",
+        "stream sounds",
+        "forest birds 8 hours"
+      ],
       "last_updated": null
     },
     {
@@ -155,7 +211,12 @@
       "priority": 2,
       "audio_source": "Freesound.org airplane cabin recordings",
       "visual_prompt": "View from airplane window at night, dark clouds below, subtle wing visible, cabin lighting reflection, 4K",
-      "seo_keywords": ["airplane white noise", "jet engine noise", "airplane cabin noise", "plane noise for sleep"],
+      "seo_keywords": [
+        "airplane white noise",
+        "jet engine noise",
+        "airplane cabin noise",
+        "plane noise for sleep"
+      ],
       "last_updated": null
     },
     {
@@ -169,7 +230,12 @@
       "priority": 2,
       "audio_source": "Freesound.org rain on glass recordings",
       "visual_prompt": "Extreme close-up of raindrops streaming down window glass, blurred city lights in background, night, 4K",
-      "seo_keywords": ["rain on window", "heavy rain", "rain for sleeping", "rain on glass sounds"],
+      "seo_keywords": [
+        "rain on window",
+        "heavy rain",
+        "rain for sleeping",
+        "rain on glass sounds"
+      ],
       "last_updated": null
     },
     {
@@ -183,7 +249,12 @@
       "priority": 2,
       "audio_source": "Audacity -- brown noise base + rain overlay, balanced mix",
       "visual_prompt": "Dark abstract scene with subtle rain streaks over warm brown gradient, minimal motion, 4K",
-      "seo_keywords": ["brown noise with rain", "brown noise rain mix", "rain brown noise sleep", "deep sleep sounds"],
+      "seo_keywords": [
+        "brown noise with rain",
+        "brown noise rain mix",
+        "rain brown noise sleep",
+        "deep sleep sounds"
+      ],
       "last_updated": null
     },
     {
@@ -198,7 +269,12 @@
       "audio_source": "Freesound.org fan recordings or Audacity simulation",
       "visual_prompt": null,
       "visual_notes": "Black screen or very subtle dark gradient -- focus is audio",
-      "seo_keywords": ["fan noise", "fan noise for sleeping", "fan white noise", "fan sound 10 hours"],
+      "seo_keywords": [
+        "fan noise",
+        "fan noise for sleeping",
+        "fan white noise",
+        "fan sound 10 hours"
+      ],
       "last_updated": null
     },
     {
@@ -212,7 +288,12 @@
       "priority": 2,
       "audio_source": "Freesound.org river recordings",
       "visual_prompt": "Peaceful mountain river flowing over rocks, sunlight dappling through trees, slow camera movement, 4K",
-      "seo_keywords": ["river sounds", "flowing water", "stream sounds", "water sounds for sleep"],
+      "seo_keywords": [
+        "river sounds",
+        "flowing water",
+        "stream sounds",
+        "water sounds for sleep"
+      ],
       "last_updated": null
     },
     {
@@ -226,7 +307,12 @@
       "priority": 2,
       "audio_source": "Freesound.org cafe ambience + Audacity",
       "visual_prompt": "Warm cozy coffee shop interior, soft lighting, steam rising from cup, rain on window in background, 4K",
-      "seo_keywords": ["coffee shop ambience", "cafe sounds", "cafe background noise", "coffee shop noise for studying"],
+      "seo_keywords": [
+        "coffee shop ambience",
+        "cafe sounds",
+        "cafe background noise",
+        "coffee shop noise for studying"
+      ],
       "last_updated": null
     },
     {
@@ -240,7 +326,13 @@
       "priority": 3,
       "audio_source": "Suno AI -- tuned brown noise for concentration, mid-frequency emphasis",
       "visual_prompt": "Dark minimalist desk scene, subtle warm light, abstract focus aesthetic, 4K",
-      "seo_keywords": ["academic brown noise", "brown noise studying", "focus noise", "ADHD noise", "study sounds"],
+      "seo_keywords": [
+        "academic brown noise",
+        "brown noise studying",
+        "focus noise",
+        "ADHD noise",
+        "study sounds"
+      ],
       "last_updated": null
     },
     {
@@ -254,7 +346,12 @@
       "priority": 3,
       "audio_source": "Suno AI -- low mechanical hum + subtle electronic ambience",
       "visual_prompt": "Interior of dimly lit space station corridor, blue LED lights, starfield visible through viewport, 4K",
-      "seo_keywords": ["space station sounds", "spaceship ambience", "space white noise", "sci-fi sleep sounds"],
+      "seo_keywords": [
+        "space station sounds",
+        "spaceship ambience",
+        "space white noise",
+        "sci-fi sleep sounds"
+      ],
       "last_updated": null
     },
     {
@@ -268,7 +365,12 @@
       "priority": 3,
       "audio_source": "Freesound.org rain on roof + indoor ambience layering",
       "visual_prompt": "Interior of warm wooden cabin, rain visible through window, fireplace glow, cozy blankets, 4K",
-      "seo_keywords": ["cabin rain sounds", "rain on roof", "cozy cabin ambience", "rain cabin sleep"],
+      "seo_keywords": [
+        "cabin rain sounds",
+        "rain on roof",
+        "cozy cabin ambience",
+        "rain cabin sleep"
+      ],
       "last_updated": null
     },
     {
@@ -282,7 +384,12 @@
       "priority": 3,
       "audio_source": "Freesound.org underwater recordings + Audacity deep EQ",
       "visual_prompt": "Deep blue underwater scene, sunlight rays penetrating from surface, gentle particles floating, 4K",
-      "seo_keywords": ["underwater sounds", "deep sea ambience", "ocean underwater", "subaquatic sounds sleep"],
+      "seo_keywords": [
+        "underwater sounds",
+        "deep sea ambience",
+        "ocean underwater",
+        "subaquatic sounds sleep"
+      ],
       "last_updated": null
     },
     {
@@ -296,7 +403,12 @@
       "priority": 3,
       "audio_source": "Freesound.org cricket recordings",
       "visual_prompt": "Dark meadow at night, moonlight, fireflies floating, tall grass silhouettes, summer atmosphere, 4K",
-      "seo_keywords": ["cricket sounds", "night sounds", "summer night ambience", "crickets for sleep"],
+      "seo_keywords": [
+        "cricket sounds",
+        "night sounds",
+        "summer night ambience",
+        "crickets for sleep"
+      ],
       "last_updated": null
     },
     {
@@ -310,7 +422,12 @@
       "priority": 3,
       "audio_source": "Freesound.org wind recordings + Audacity processing",
       "visual_prompt": "Snow blowing across dark arctic landscape, barely visible horizon, moody cold atmosphere, 4K",
-      "seo_keywords": ["wind sounds", "blizzard sounds", "arctic wind noise", "wind for sleeping"],
+      "seo_keywords": [
+        "wind sounds",
+        "blizzard sounds",
+        "arctic wind noise",
+        "wind for sleeping"
+      ],
       "last_updated": null
     },
     {
@@ -324,7 +441,13 @@
       "priority": 3,
       "audio_source": "Suno AI -- 528Hz base tone with gentle harmonics",
       "visual_prompt": "Abstract sacred geometry patterns slowly rotating, deep purple and gold colors, meditative, 4K",
-      "seo_keywords": ["528Hz", "healing frequency", "528Hz meditation", "solfeggio frequency", "DNA repair frequency"],
+      "seo_keywords": [
+        "528Hz",
+        "healing frequency",
+        "528Hz meditation",
+        "solfeggio frequency",
+        "DNA repair frequency"
+      ],
       "last_updated": null
     },
     {
@@ -338,7 +461,12 @@
       "priority": 4,
       "audio_source": "Suno AI + Audacity -- signature deep brown with subtle warmth layers",
       "visual_prompt": "Premium dark gradient with subtle golden particles, Laxx branding visible, elegant minimal motion, 4K",
-      "seo_keywords": ["Laxx deep brown", "ultra smooth brown noise", "premium brown noise", "smooth noise for sleep"],
+      "seo_keywords": [
+        "Laxx deep brown",
+        "ultra smooth brown noise",
+        "premium brown noise",
+        "smooth noise for sleep"
+      ],
       "last_updated": null
     },
     {
@@ -352,7 +480,12 @@
       "priority": 4,
       "audio_source": "Freesound.org rain on metal recordings",
       "visual_prompt": "View from inside dark car, rain streaming down windshield, blurred streetlights, night, cozy, 4K",
-      "seo_keywords": ["rain on car", "rain on car roof", "car rain sounds", "rain on metal for sleep"],
+      "seo_keywords": [
+        "rain on car",
+        "rain on car roof",
+        "car rain sounds",
+        "rain on metal for sleep"
+      ],
       "last_updated": null
     },
     {
@@ -366,7 +499,13 @@
       "priority": 4,
       "audio_source": "Freesound.org library ambience + soft rain, Audacity layering",
       "visual_prompt": "Old library interior, warm lamp light, bookshelves, rain visible through tall windows, quiet atmosphere, 4K",
-      "seo_keywords": ["library ambience", "library sounds", "study ambience", "library rain", "reading ambience"],
+      "seo_keywords": [
+        "library ambience",
+        "library sounds",
+        "study ambience",
+        "library rain",
+        "reading ambience"
+      ],
       "last_updated": null
     },
     {
@@ -380,7 +519,13 @@
       "priority": 4,
       "audio_source": "Freesound.org water fountain + bird recordings + bamboo chimes",
       "visual_prompt": "Peaceful Japanese zen garden, stone water feature, bamboo, cherry blossoms, soft morning light, 4K",
-      "seo_keywords": ["Japanese garden", "zen garden ambience", "water sounds", "Japanese ambience", "zen meditation"],
+      "seo_keywords": [
+        "Japanese garden",
+        "zen garden ambience",
+        "water sounds",
+        "Japanese ambience",
+        "zen meditation"
+      ],
       "last_updated": null
     },
     {
@@ -394,7 +539,12 @@
       "priority": 4,
       "audio_source": "Freesound.org campfire + night insects + wind recordings",
       "visual_prompt": "Campfire burning in mountain clearing at night, stars visible above, warm firelight on rocks, 4K",
-      "seo_keywords": ["campfire sounds", "campfire at night", "mountain campfire", "fire and nature sounds"],
+      "seo_keywords": [
+        "campfire sounds",
+        "campfire at night",
+        "mountain campfire",
+        "fire and nature sounds"
+      ],
       "last_updated": null
     },
     {
@@ -408,7 +558,12 @@
       "priority": 4,
       "audio_source": "Suno AI + Audacity -- signature brown noise + gentle rain + distant thunder blend",
       "visual_prompt": "Premium dark scene, soft rain with warm amber undertones, Laxx branding, elegant atmosphere, 4K",
-      "seo_keywords": ["Laxx Nightfall", "brown noise rain blend", "premium sleep sounds", "brown noise and rain"],
+      "seo_keywords": [
+        "Laxx Nightfall",
+        "brown noise rain blend",
+        "premium sleep sounds",
+        "brown noise and rain"
+      ],
       "last_updated": null
     },
     {
@@ -422,7 +577,13 @@
       "priority": 4,
       "audio_source": "Suno AI -- 432Hz tuned ambient music with gentle pads",
       "visual_prompt": "Slowly morphing cosmic nebula colors, deep purples and blues, gentle particle flow, meditative, 4K",
-      "seo_keywords": ["432Hz", "432Hz sleep music", "healing music", "deep healing tones", "sleep frequency"],
+      "seo_keywords": [
+        "432Hz",
+        "432Hz sleep music",
+        "healing music",
+        "deep healing tones",
+        "sleep frequency"
+      ],
       "last_updated": null
     }
   ]

@@ -1,5 +1,24 @@
 import '@testing-library/jest-native/extend-expect';
 
+// Mock expo-font
+jest.mock('expo-font', () => ({
+  isLoaded: jest.fn(() => true),
+  loadAsync: jest.fn(() => Promise.resolve()),
+  useFonts: jest.fn(() => [true, null]),
+}));
+
+// Mock @expo/vector-icons
+jest.mock('@expo/vector-icons', () => {
+  const React = require('react');
+  const MockIcon = (props) => React.createElement('Text', props, props.name);
+  return {
+    Ionicons: MockIcon,
+    MaterialIcons: MockIcon,
+    FontAwesome: MockIcon,
+    Feather: MockIcon,
+  };
+});
+
 // Mock expo modules
 jest.mock('expo-notifications', () => ({
   setNotificationHandler: jest.fn(),
@@ -14,6 +33,7 @@ jest.mock('expo-notifications', () => ({
   addNotificationResponseReceivedListener: jest.fn(() => ({ remove: jest.fn() })),
   AndroidNotificationPriority: { HIGH: 'high', DEFAULT: 'default' },
   AndroidImportance: { HIGH: 4, DEFAULT: 3 },
+  SchedulableTriggerInputTypes: { TIME_INTERVAL: 'timeInterval', CALENDAR: 'calendar' },
 }));
 
 jest.mock('expo-device', () => ({

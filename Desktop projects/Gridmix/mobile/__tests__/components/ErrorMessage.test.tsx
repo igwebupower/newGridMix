@@ -33,9 +33,7 @@ describe('ErrorMessage Component', () => {
   });
 
   it('displays the cloud-offline icon', () => {
-    const { getByTestId } = render(
-      <ErrorMessage message="Error" />,
-    );
+    render(<ErrorMessage message="Error" />);
 
     // Icon should be present (Ionicons renders with testID)
     expect(screen.getByText('Something went wrong')).toBeTruthy();

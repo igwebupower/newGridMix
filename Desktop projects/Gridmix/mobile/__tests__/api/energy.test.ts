@@ -5,7 +5,7 @@
  * Run against a local or staging backend.
  */
 
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const API_BASE_URL = process.env.TEST_API_URL || 'http://localhost:5000/api';
 const api = axios.create({ baseURL: API_BASE_URL, timeout: 10000 });
@@ -161,9 +161,10 @@ describe('Security', () => {
       try {
         await api.post('/energy/refresh');
         fail('Should have thrown 401 error');
-      } catch (error: any) {
-        expect(error.response.status).toBe(401);
-        expect(error.response.data.error).toBe('Unauthorized');
+      } catch (error) {
+        const axiosError = error as AxiosError<{ error: string }>;
+        expect(axiosError.response?.status).toBe(401);
+        expect(axiosError.response?.data?.error).toBe('Unauthorized');
       }
     });
 
@@ -171,8 +172,9 @@ describe('Security', () => {
       try {
         await api.post('/repd/update');
         fail('Should have thrown 401 error');
-      } catch (error: any) {
-        expect(error.response.status).toBe(401);
+      } catch (error) {
+        const axiosError = error as AxiosError;
+        expect(axiosError.response?.status).toBe(401);
       }
     });
   });
@@ -182,9 +184,10 @@ describe('Security', () => {
       try {
         await api.post('/newsletter/subscribe', { email: 'invalid' });
         fail('Should have rejected invalid email');
-      } catch (error: any) {
-        expect(error.response.status).toBe(400);
-        expect(error.response.data.message).toContain('Invalid email');
+      } catch (error) {
+        const axiosError = error as AxiosError<{ message: string }>;
+        expect(axiosError.response?.status).toBe(400);
+        expect(axiosError.response?.data?.message).toContain('Invalid email');
       }
     });
   });

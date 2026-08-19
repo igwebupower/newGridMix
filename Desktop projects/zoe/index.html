@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zoe Loves Math!</title>
+<title>Zoe Loves Maths!</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -37,7 +37,21 @@
     align-items: center;
     padding: 1.5rem 1rem;
     overflow-x: hidden;
+    position: relative;
   }
+
+  .unicorn-bg {
+    position: fixed;
+    bottom: 2%;
+    right: 2%;
+    width: clamp(280px, 50vw, 450px);
+    height: auto;
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .screen, .title, .subtitle { position: relative; z-index: 1; }
 
   /* ---- Title ---- */
   .title {
@@ -347,7 +361,52 @@
 </head>
 <body>
 
-  <h1 class="title">Zoe Loves Math!</h1>
+  <!-- Background unicorn -->
+  <svg class="unicorn-bg" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <!-- Body -->
+    <ellipse cx="260" cy="310" rx="130" ry="90" fill="#e9d5ff"/>
+    <!-- Neck -->
+    <path d="M180 270 Q160 200 170 160 Q180 140 200 150 Q210 170 215 260" fill="#e9d5ff"/>
+    <!-- Head -->
+    <ellipse cx="155" cy="145" rx="50" ry="40" fill="#e9d5ff"/>
+    <!-- Snout -->
+    <ellipse cx="115" cy="155" rx="22" ry="16" fill="#f3e8ff"/>
+    <!-- Horn -->
+    <polygon points="155,105 145,50 165,50" fill="#fbbf24"/>
+    <polygon points="155,105 148,65 155,50 162,65" fill="#fcd34d" opacity="0.6"/>
+    <!-- Ear -->
+    <polygon points="175,115 185,85 195,115" fill="#d8b4fe"/>
+    <!-- Eye -->
+    <circle cx="145" cy="138" r="6" fill="#1e1b4b"/>
+    <circle cx="143" cy="136" r="2" fill="#fff"/>
+    <!-- Mane -->
+    <path d="M175 115 Q200 100 195 130 Q215 115 210 145 Q230 130 220 160 Q235 155 225 180 Q240 175 225 200 Q240 200 220 225" stroke="#c084fc" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M170 120 Q190 108 188 135 Q205 122 202 150 Q220 140 212 168" stroke="#f0abfc" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <!-- Front legs -->
+    <rect x="185" y="370" width="24" height="90" rx="12" fill="#d8b4fe"/>
+    <rect x="225" y="375" width="24" height="85" rx="12" fill="#d8b4fe"/>
+    <!-- Back legs -->
+    <rect x="305" y="370" width="24" height="90" rx="12" fill="#d8b4fe"/>
+    <rect x="345" y="375" width="24" height="85" rx="12" fill="#d8b4fe"/>
+    <!-- Hooves -->
+    <rect x="185" y="448" width="24" height="12" rx="6" fill="#a78bfa"/>
+    <rect x="225" y="448" width="24" height="12" rx="6" fill="#a78bfa"/>
+    <rect x="305" y="448" width="24" height="12" rx="6" fill="#a78bfa"/>
+    <rect x="345" y="448" width="24" height="12" rx="6" fill="#a78bfa"/>
+    <!-- Tail -->
+    <path d="M390 280 Q430 260 440 290 Q460 270 455 310 Q475 295 465 335 Q480 325 470 360" stroke="#f0abfc" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M390 285 Q425 268 435 295 Q450 278 448 315 Q465 302 458 340" stroke="#c084fc" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <!-- Stars around unicorn -->
+    <polygon points="80,80 84,70 88,80 98,80 90,87 93,97 84,91 75,97 78,87 70,80" fill="#fbbf24" opacity="0.5"/>
+    <polygon points="430,140 433,133 436,140 443,140 437,145 439,152 433,148 427,152 429,145 423,140" fill="#f0abfc" opacity="0.5"/>
+    <polygon points="350,80 353,73 356,80 363,80 357,85 359,92 353,88 347,92 349,85 343,80" fill="#60a5fa" opacity="0.5"/>
+    <!-- Blush -->
+    <ellipse cx="125" cy="158" rx="10" ry="6" fill="#fda4af" opacity="0.5"/>
+    <!-- Smile -->
+    <path d="M108 162 Q115 170 122 162" stroke="#1e1b4b" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </svg>
+
+  <h1 class="title">Zoe Loves Maths!</h1>
   <p class="subtitle">Multiplication Practice</p>
 
   <!-- Menu screen -->
