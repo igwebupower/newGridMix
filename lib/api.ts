@@ -366,6 +366,48 @@ export async function getGridStats(): Promise<Stats> {
 
 // Fetch historical generation data
 export async function getHistoricalGeneration(hours: number = 24): Promise<HistoricalData[]> {
+  const groupedData = await fetchFuelHalfHourly(hours);
+
+  return groupedData.map(group => ({
+    from: group.startTime,
+    to: group.startTime,
+    intensity: {
+      forecast: group.intensity,
+      actual: group.intensity,
+    },
+    demand: group.demand_mw,
+  }));
+}
+
+export interface ConditionsPoint {
+  from: string;
+  demand_mw: number;
+  mix: GenerationMix[];
+  carbon_intensity_gco2kwh: number;
+}
+
+// Same FUELHH feed as getHistoricalGeneration, but keeps the full fuel mix and
+// demand per settlement period instead of collapsing everything down to
+// carbon intensity. Lets a caller correlate a metric spike (e.g. a price peak)
+// with what the grid was actually doing at that exact moment — which fuel was
+// setting the mix, how high demand was — instead of just the bare number.
+export async function getConditionsHistory(hours: number = 24): Promise<ConditionsPoint[]> {
+  const groupedData = await fetchFuelHalfHourly(hours);
+
+  return groupedData.map(group => ({
+    from: group.startTime,
+    demand_mw: group.demand_mw,
+    mix: group.mix,
+    carbon_intensity_gco2kwh: group.intensity,
+  }));
+}
+
+async function fetchFuelHalfHourly(hours: number): Promise<Array<{
+  startTime: string;
+  intensity: number;
+  demand_mw: number;
+  mix: GenerationMix[];
+}>> {
   try {
     const now = new Date();
     const from = new Date(now.getTime() - hours * 60 * 60 * 1000);
@@ -388,16 +430,7 @@ export async function getHistoricalGeneration(hours: number = 24): Promise<Histo
     }
 
     // Group by settlement period and calculate intensity
-    const groupedData = groupBySettlementPeriod(data.data);
-
-    return groupedData.map(group => ({
-      from: group.startTime,
-      to: group.startTime,
-      intensity: {
-        forecast: group.intensity,
-        actual: group.intensity,
-      },
-    }));
+    return groupBySettlementPeriod(data.data);
   } catch (error) {
     console.error('Error fetching historical data:', error);
     return [];
@@ -405,7 +438,12 @@ export async function getHistoricalGeneration(hours: number = 24): Promise<Histo
 }
 
 // Group data by settlement period
-function groupBySettlementPeriod(data: any[]): any[] {
+function groupBySettlementPeriod(data: any[]): Array<{
+  startTime: string;
+  intensity: number;
+  demand_mw: number;
+  mix: GenerationMix[];
+}> {
   const grouped: Record<string, any[]> = {};
 
   data.forEach(item => {
@@ -436,6 +474,8 @@ function groupBySettlementPeriod(data: any[]): any[] {
     return {
       startTime: items[0].startTime,
       intensity,
+      demand_mw: Math.round(totalGen),
+      mix: aggregated,
     };
   }).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
 }
@@ -884,5 +924,48 @@ export async function getCurrentSystemPrice(): Promise<SystemPriceData> {
       price: 0,
       datetime: new Date().toISOString(),
     };
+  }
+}
+
+export interface HistoricalPricePoint {
+  from: string;
+  price: number;
+}
+
+// Same MID feed as getCurrentSystemPrice, but returns the whole window instead
+// of collapsing to the latest point — lets a caller find when price peaked
+// over the last N hours, not just what it is right now.
+export async function getPriceHistory(hours: number = 24): Promise<HistoricalPricePoint[]> {
+  try {
+    const now = new Date();
+    const from = new Date(now.getTime() - hours * 60 * 60 * 1000);
+
+    const response = await fetch(
+      `${BMRS_API_BASE}/datasets/MID?from=${from.toISOString()}&to=${now.toISOString()}&format=json`,
+      {
+        cache: 'no-store',
+      }
+    );
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const data = await response.json();
+
+    if (!data.data || data.data.length === 0) {
+      return [];
+    }
+
+    return data.data
+      .filter((item: any) => item.dataProvider === 'APXMIDP' && item.price > 0)
+      .map((item: any) => ({ from: item.startTime, price: item.price }))
+      .sort(
+        (a: HistoricalPricePoint, b: HistoricalPricePoint) =>
+          new Date(a.from).getTime() - new Date(b.from).getTime()
+      );
+  } catch (error) {
+    console.error('Error fetching price history:', error);
+    return [];
   }
 }

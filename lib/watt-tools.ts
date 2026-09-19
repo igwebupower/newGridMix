@@ -12,7 +12,11 @@ import {
   getIntensityForecast,
   getCurrentFrequency,
   getCurrentSystemPrice,
+  getPriceHistory,
+  getConditionsHistory,
   calculateGridHealthScore,
+  type HistoricalPricePoint,
+  type ConditionsPoint,
 } from './api';
 import { getAllInsights, getInsightBySlug } from './posts';
 import type {
@@ -150,6 +154,47 @@ function summarizeIntensity(points: Array<{ from: string; intensity: { actual?: 
     max_time: max.from,
     count: withValue.length,
   };
+}
+
+function summarizePriceHistory(points: HistoricalPricePoint[]) {
+  if (points.length === 0) {
+    return { average: null, min: null, max: null, count: 0 };
+  }
+
+  const min = points.reduce((a, b) => (b.price < a.price ? b : a));
+  const max = points.reduce((a, b) => (b.price > a.price ? b : a));
+  const average = Math.round(points.reduce((sum, p) => sum + p.price, 0) / points.length);
+
+  return {
+    average,
+    min: min.price,
+    min_time: min.from,
+    max: max.price,
+    max_time: max.from,
+    count: points.length,
+  };
+}
+
+// Price (MID) and generation-mix (FUELHH) settlement periods both come from
+// BMRS and line up on the same half-hourly grid, but FUELHH's "from"/"to"
+// range is unreliable — it silently truncates to roughly its most recent 12
+// hours regardless of how far back "from" asks. So a price peak outside that
+// window has no real match, and returning the nearest one anyway would wrongly
+// present a several-hour-old snapshot as "conditions at the peak". Require the
+// match to fall within one settlement period (or a small allowance for the two
+// feeds updating a few minutes apart) and return null otherwise.
+const CONDITIONS_MATCH_TOLERANCE_MS = 45 * 60 * 1000;
+
+function findNearestConditions(points: ConditionsPoint[], targetIso: string | null): ConditionsPoint | null {
+  if (!targetIso || points.length === 0) return null;
+  const targetMs = new Date(targetIso).getTime();
+  const nearest = points.reduce((closest, p) => {
+    const diff = Math.abs(new Date(p.from).getTime() - targetMs);
+    const closestDiff = Math.abs(new Date(closest.from).getTime() - targetMs);
+    return diff < closestDiff ? p : closest;
+  });
+  if (Math.abs(new Date(nearest.from).getTime() - targetMs) > CONDITIONS_MATCH_TOLERANCE_MS) return null;
+  return nearest;
 }
 
 // Forecast points are half-hourly settlement periods, so a "window" is just a
@@ -528,6 +573,68 @@ export const wattTools: WattTool[] = [
     definition: {
       type: 'function',
       function: {
+        name: 'get_price_history',
+        description:
+          'Get the GB wholesale system price over the last N hours: its average, and the exact time it was highest and lowest — plus the generation mix and demand at the moment it peaked, so you can explain why. Use for "when was the price highest today/this week and why" style questions.',
+        parameters: {
+          type: 'object',
+          properties: {
+            hours: {
+              type: 'integer',
+              description: 'How many hours of history to return (1-168). Defaults to 24.',
+            },
+          },
+          required: [],
+        },
+      },
+    },
+    execute: async (args) => {
+      const hours = clampHours(args.hours, 24);
+      // Independent BMRS feeds (MID vs FUELHH) — fetch concurrently rather
+      // than paying two round-trips back to back.
+      const [priceHistory, conditions] = await Promise.all([
+        getPriceHistory(hours),
+        getConditionsHistory(hours),
+      ]);
+
+      if (priceHistory.length === 0) {
+        return {
+          data: { error: `No price data available for the last ${hours} hours.` },
+          source: 'Elexon BMRS (MID, APXMIDP)',
+          timestamp: new Date().toISOString(),
+        };
+      }
+
+      const summary = summarizePriceHistory(priceHistory);
+      const peakConditions = findNearestConditions(conditions, summary.max_time ?? null);
+
+      return {
+        data: {
+          hours_covered: hours,
+          ...summary,
+          conditions_at_peak: peakConditions
+            ? {
+                time: peakConditions.from,
+                demand_mw: peakConditions.demand_mw,
+                carbon_intensity_gco2kwh: peakConditions.carbon_intensity_gco2kwh,
+                mix_pct: peakConditions.mix
+                  .map((m) => ({ fuel: m.fuel, pct: Math.round(m.perc) }))
+                  .sort((a, b) => b.pct - a.pct),
+              }
+            : {
+                error:
+                  'Generation-mix data is not available that far back for this window — only the most recent few hours are covered. Do not guess a cause for the peak; report the price figures only.',
+              },
+        },
+        source: 'Elexon BMRS (MID for price, FUELHH for generation mix/demand)',
+        timestamp: priceHistory[priceHistory.length - 1].from,
+      };
+    },
+  },
+  {
+    definition: {
+      type: 'function',
+      function: {
         name: 'get_health_score',
         description:
           'Get GridMix\'s composite Grid Health Score (0-100, with a letter grade) combining frequency stability, carbon intensity, and renewable share right now.',
@@ -621,7 +728,7 @@ export const wattTools: WattTool[] = [
       function: {
         name: 'get_historical_record',
         description:
-          'Find the highest or lowest value of a metric across GridMix\'s historical archive (2000-2025). Use for "when was renewable share highest ever" or "what was the lowest carbon intensity on record" style questions.',
+          'Find the highest or lowest value of a metric across GridMix\'s historical archive (2000-2025). Returns the rest of that period\'s generation mix, demand and any recorded notes alongside the value, so you can explain why the record happened, not just when. Use for "when was renewable share highest ever" or "what was the lowest carbon intensity on record" style questions.',
         parameters: {
           type: 'object',
           properties: {
@@ -659,14 +766,16 @@ export const wattTools: WattTool[] = [
       const direction = args.direction === 'lowest' ? 'lowest' : 'highest';
       const scope = args.scope === 'annual' ? 'annual' : 'monthly';
 
-      let best: { period: string; value: number; data_quality?: string } | null = null;
+      let best:
+        | { period: string; value: number; entry: AnnualElectricitySummary | MonthlyElectricityData }
+        | null = null;
 
       if (scope === 'annual') {
         for (const entry of dataset.annual_summary) {
           const value = getAnnualMetric(entry, metric);
           if (value === null || value === undefined) continue;
           if (!best || (direction === 'highest' ? value > best.value : value < best.value)) {
-            best = { period: String(entry.year), value };
+            best = { period: String(entry.year), value, entry };
           }
         }
       } else {
@@ -674,7 +783,7 @@ export const wattTools: WattTool[] = [
           const value = getMonthlyMetric(entry, metric);
           if (value === null || value === undefined) continue;
           if (!best || (direction === 'highest' ? value > best.value : value < best.value)) {
-            best = { period: `${entry.year}-${String(entry.month).padStart(2, '0')}`, value, data_quality: entry.data_quality };
+            best = { period: `${entry.year}-${String(entry.month).padStart(2, '0')}`, value, entry };
           }
         }
       }
@@ -687,8 +796,52 @@ export const wattTools: WattTool[] = [
         };
       }
 
+      // The rest of the record period's mix/demand — not just the one metric
+      // that was searched for — is what actually lets the model explain *why*
+      // a record happened (e.g. a price record alongside a high gas share and
+      // near-peak demand) rather than just reporting the number.
+      const context =
+        scope === 'annual'
+          ? (() => {
+              const e = best!.entry as AnnualElectricitySummary;
+              return {
+                renewable_pct: e.renewable_pct,
+                wind_pct: e.wind_pct,
+                solar_pct: e.solar_pct,
+                nuclear_pct: e.nuclear_pct,
+                gas_pct: e.gas_pct,
+                coal_pct: e.coal_pct,
+                carbon_intensity_gco2kwh: e.carbon_intensity_gco2kwh,
+                peak_demand_gw: e.peak_demand_gw,
+                avg_price_gbp_mwh: e.avg_price_gbp_mwh,
+              };
+            })()
+          : (() => {
+              const e = best!.entry as MonthlyElectricityData;
+              return {
+                renewable_pct: e.generation.renewable_pct,
+                wind_pct: e.generation.wind_pct,
+                solar_pct: e.generation.solar_pct,
+                nuclear_pct: e.generation.nuclear_pct,
+                gas_pct: e.generation.gas_pct,
+                coal_pct: e.generation.coal_pct,
+                carbon_intensity_gco2kwh: e.carbon_intensity_gco2kwh,
+                peak_demand_gw: e.demand.peak_gw,
+                avg_price_gbp_mwh: e.price.avg_gbp_mwh,
+                notes: e.notes,
+              };
+            })();
+
       return {
-        data: { metric, direction, scope, ...best },
+        data: {
+          metric,
+          direction,
+          scope,
+          period: best.period,
+          value: best.value,
+          data_quality: scope === 'monthly' ? (best.entry as MonthlyElectricityData).data_quality : undefined,
+          context,
+        },
         source: 'GridMix historical archive (GOV.UK / NESO / DESNZ Energy Trends)',
         timestamp: new Date().toISOString(),
       };

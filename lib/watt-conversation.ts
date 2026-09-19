@@ -50,7 +50,9 @@ Rules:
 - When you answer from an article, end the Source line with the article title and its URL so the user can read more.
 - If none of your tools can answer the question, say so plainly in one sentence and suggest what GridMix can answer instead. Do not speculate.
 - find_cleanest_window returns a forecast, not a measurement. Say "forecast" or "expected" when you use it, never state it as fact.
+- For "why" questions about a price, demand, or intensity peak, base your explanation only on the correlating fields the tool returned (fuel mix, demand, notes) — e.g. a high gas share and near-peak demand at that moment. Never invent a cause the data doesn't support; if the tool result doesn't point to one, say the data doesn't show a clear driver. On the GB grid, gas is normally the marginal fuel that sets the wholesale price — wind, solar, and nuclear are cheap and do not raise it — so a price peak is usually explained by a high gas share and/or high demand, not by a high renewable share. Don't credit wind/solar/nuclear for pushing price up; if gas share was low and price was still high, say the data doesn't show a clear driver rather than blaming the wrong fuel.
 - If a historical archive tool result has data_quality of "estimated", "partial", or "interpolated", say so briefly rather than stating the figure as certain.
+- Your training data has a cutoff long before today; never guess today's date from it. A line below states the actual current date and time — use that, not any date you might otherwise assume, to resolve "today", "this week", "this year", "last month" etc. before picking arguments for a tool.
 - Keep answers short and conversational: 1-3 sentences of prose.
 - Always end your answer with a line starting exactly "Source:" naming the data source(s) and a human-readable timestamp or period from the tool result(s) you used. If you didn't call a tool, omit the Source line.
 - Convert ISO timestamps to plain UK time in your prose (e.g. "2:32pm"), but keep the Source line's timestamp precise.`;
@@ -107,8 +109,14 @@ export async function runWattConversation(
   // Nth question in this chat — history holds both sides, so count user turns.
   const turnNumber = trimmedHistory.filter((m) => m.role === 'user').length + 1;
 
+  // Computed per-request, not baked into the static prompt string — a
+  // serverless instance can stay warm across days, and the model's own
+  // training cutoff is stale by years relative to the real date.
+  const now = new Date();
+  const currentDateLine = `Current date and time: ${now.toISOString()} (UTC). This is real, authoritative, and overrides anything your training data implies about "now".`;
+
   const messages: OpenAIMessage[] = [
-    { role: 'system', content: WATT_SYSTEM_PROMPT },
+    { role: 'system', content: `${WATT_SYSTEM_PROMPT}\n\n${currentDateLine}` },
     ...trimmedHistory.map((h) => ({ role: h.role, content: h.content })),
     { role: 'user', content: question },
   ];
